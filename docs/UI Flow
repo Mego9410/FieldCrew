@@ -1,0 +1,415 @@
+# UI Flow Spec (Clickable Prototype First) — FieldCrew (Web App)
+
+Purpose:
+Build a **fully clickable UI** (no real backend required) so you can demo + validate flows before implementing functionality.
+
+Principles:
+- **Job selection is mandatory** (no job = no clock)
+- **2–3 taps** for worker clock-in
+- Owner sees **money (labour cost per job)**, not just hours
+- Web-first, mobile-first for workers
+- Keep it boring and fast
+
+---
+
+## 0) Global App Structure
+
+### Public (Unauthenticated)
+- `/` Landing
+- `/login` Owner login
+- `/demo` (optional) demo preview
+- `/worker/:token` Worker magic link entry (token in URL)
+
+### Owner App (Authenticated)
+- `/app` Overview
+- `/app/jobs` Jobs list
+- `/app/jobs/new` Create job
+- `/app/jobs/import` Import jobs (CSV)
+- `/app/jobs/:id` Job details (labour summary + time entries)
+- `/app/timesheets` Timesheets list (filters)
+- `/app/approvals` Approvals queue (MVP simple)
+- `/app/payroll/export` Export payroll
+- `/app/settings` Settings
+- `/app/workers` Workers list (for linking workers to company + rates)
+
+### Worker App (Token-auth, no password)
+- `/w/:token` Entry / resolve token
+- `/w/:token/jobs` Job select
+- `/w/:token/clock` Clock screen (selected job required)
+- `/w/:token/history` Recent entries (optional)
+- `/w/:token/help` Help / contact
+
+---
+
+## 1) Navigation & Layout Rules
+
+### Owner UI Layout (desktop-first with responsive)
+- Left sidebar:
+  - Overview
+  - Jobs
+  - Timesheets
+  - Approvals
+  - Payroll Export
+  - Workers
+  - Settings
+- Top bar:
+  - Company name
+  - “Create Job” button
+  - Profile menu
+
+### Worker UI Layout (mobile-first)
+- No sidebar
+- Single primary action per screen
+- Sticky bottom action buttons (Clock In/Out)
+- Large tap targets
+
+---
+
+## 2) Primary User Journeys
+
+## Journey A — Worker clocks in (Core)
+
+### A1. Worker receives SMS magic link
+CTA: “Tap to open FieldCrew”
+- Link: `/w/:token`
+
+**UI State**
+- Loading screen (token resolving)
+- If token invalid/expired → error + request new link
+
+### A2. Job selection screen (mandatory)
+Route: `/w/:token/jobs`
+
+Components:
+- Header: “Select a job”
+- Search input (typeahead)
+- Job list (cards):
+  - Job name
+  - Address (short)
+  - “Last used” badge (if applicable)
+- Quick filters:
+  - Recent
+  - Nearby (Phase 1.5 if GPS)
+- Primary button disabled until job selected:
+  - “Continue”
+
+Interactions:
+- Tap job card → highlights selection
+- Tap Continue → goes to clock screen with job locked-in for the session
+
+Empty state:
+- “No jobs found”
+- “Contact your office to add jobs”
+
+### A3. Clock screen
+Route: `/w/:token/clock`
+
+Components:
+- Selected job summary (always visible):
+  - Job name
+  - Address
+  - “Change job” link (returns to job selection)
+- Status panel:
+  - “Not clocked in” OR “Clocked in since 08:12”
+- Primary action button:
+  - “Clock In” (if not clocked in)
+  - “Clock Out” (if clocked in)
+- Secondary:
+  - “Start Break / End Break” (MVP: break minutes, optional)
+  - “Add note” (simple text)
+
+Click behavior (prototype):
+- Clock In → transitions state → shows timer running
+- Clock Out → confirmation modal:
+  - “Clock out from [Job]?”
+  - Optional “Add note”
+  - Confirm
+
+Edge states:
+- If worker tries to access `/clock` without job → redirect to `/jobs`
+
+---
+
+## Journey B — Owner creates jobs and invites workers (MVP setup)
+
+### B1. Owner login
+Route: `/login`
+- Email + magic link OR password (choose one; clickable UI can mock)
+- Redirect: `/app`
+
+### B2. Owner overview
+Route: `/app`
+
+Primary widgets:
+- “This week’s labour by job” (placeholder)
+- “Payroll ready?” card:
+  - “Export payroll” CTA
+- “Leaks flagged” card:
+  - overlapping / missing clock-out count (placeholder)
+- “Setup checklist” (first-run only):
+  1) Add jobs
+  2) Add workers
+  3) Set hourly rates
+  4) Send worker links
+
+### B3. Jobs list
+Route: `/app/jobs`
+
+Components:
+- “Create Job” button
+- “Import CSV” button
+- Table:
+  - Job name
+  - City/State
+  - Labour hours (placeholder)
+  - Labour cost (placeholder)
+  - Last activity
+
+Click:
+- Row click → `/app/jobs/:id`
+
+Empty state:
+- “No jobs yet”
+- CTA: Create / Import
+
+### B4. Create job
+Route: `/app/jobs/new`
+
+Fields:
+- Job name (required)
+- Address (required)
+- Optional:
+  - Customer name
+  - Job type (Install/Service/Maintenance) (Phase 2, can show disabled)
+
+Buttons:
+- Save job → goes to Job details
+- Save + add another
+
+### B5. Workers list
+Route: `/app/workers`
+
+Table:
+- Worker name
+- Phone number
+- Hourly rate
+- Status (invited/active)
+- “Send link” action
+
+Worker add modal:
+- Name
+- Phone
+- Hourly rate (optional default)
+- Save
+
+“Send link” click:
+- Opens modal showing:
+  - “This is the link we’ll text”
+  - (In prototype: copyable placeholder link)
+  - CTA: “Send SMS” (mock)
+
+---
+
+## Journey C — Owner views labour cost per job (Moat screen)
+
+### C1. Job details (core retention)
+Route: `/app/jobs/:id`
+
+Top section (sticky):
+- Job name + address
+- Date range picker (This week / last week / custom)
+- Labour summary:
+  - Total hours
+  - Total labour £
+  - # workers
+
+Main tabs:
+1) **Labour Summary** (default)
+   - Breakdown table:
+     - Worker → hours → labour £
+   - Trend strip (placeholder)
+2) Time Entries
+   - List/table of entries
+   - Edit (opens modal; logs audit trail placeholder)
+3) Notes (optional)
+   - Job notes
+
+The key is that the first thing an owner sees is:
+> Labour £ by job
+
+Not time entries.
+
+---
+
+## Journey D — Payroll export (Second moat screen)
+
+### D1. Payroll export hub
+Route: `/app/payroll/export`
+
+Sections:
+- Date range selection
+- Worker filters (optional)
+- Export format dropdown:
+  - “Generic CSV”
+  - “QuickBooks-friendly CSV”
+  - (future) Gusto / ADP templates
+
+Preview panel (table):
+- Worker
+- Total hours
+- Overtime hours (placeholder)
+- Total pay £
+- Jobs included (count)
+
+Primary CTA:
+- “Download CSV”
+
+Secondary:
+- “Mark as payroll run” (optional; adds habit loop)
+
+---
+
+## Journey E — Approvals + leak detection (Trust layer)
+
+### E1. Approvals queue
+Route: `/app/approvals`
+
+Two sections:
+- “Needs approval” list
+  - entries edited
+  - missing clock-out
+  - overlaps
+- “Approved” history
+
+Click row → side panel:
+- Entry details
+- Flags
+- Approve / Request change (MVP: approve only)
+
+Leak Detection badges (MVP):
+- Overlap
+- Long shift
+- Missing clock-out
+
+---
+
+## 3) UI States & Error Handling (Prototype-friendly)
+
+### Token invalid (worker)
+- Message: “This link has expired”
+- CTA: “Request a new link” (shows instructions: contact your office)
+
+### No jobs available (worker)
+- Message: “No jobs found”
+- CTA: “Contact your office”
+
+### Offline mode (worker)
+- Banner: “Offline — we’ll sync when connected”
+- Clock actions still appear to work in UI (queue)
+
+### Permissions (Phase 1.5 GPS)
+- Modal: “Allow location to verify clock in/out”
+- Skip option
+
+---
+
+## 4) First-Run Experience (Owner)
+
+Route: `/app` shows Setup Checklist until complete.
+
+Checklist items:
+1) Create/import at least 5 jobs
+2) Add at least 3 workers
+3) Set hourly rates (optional)
+4) Send first worker link
+5) First clock-in recorded (mocked)
+
+Each item links to the relevant screen.
+
+---
+
+## 5) Clickable Prototype Implementation Notes (No backend)
+
+Recommended approach:
+- Mock data in JSON
+- Store state in localStorage
+- Use simple route guards
+
+Prototype scaffolding:
+- `mockCompany`
+- `mockJobs[]`
+- `mockWorkers[]`
+- `mockTimeEntries[]`
+- `mockSession`:
+  - owner authenticated boolean
+  - worker token resolved boolean
+  - selected job id
+  - clock state
+
+Route behavior in prototype:
+- `/w/:token` → auto redirect to `/w/:token/jobs`
+- `/w/:token/clock` → if no selected job → redirect to jobs
+- Owner routes → if not “authenticated” → redirect to login
+
+---
+
+## 6) Minimum Click Map (Build This First)
+
+To feel “real”, you must be able to click through:
+
+### Worker
+- Open link → select job → clock in → clock out → change job → clock in
+
+### Owner
+- Login → create job → add worker → send link (mock) → view job summary → export payroll
+
+If those two flows are clickable, you can start testing with humans immediately.
+
+---
+
+## 7) Design Constraints (Keep You Honest)
+
+- No more than **5 owner nav items visible** at a time (group less-used under Settings)
+- Worker screen: **one primary action** per view
+- Job selection must be **the first step** for any clock action
+- “Labour £ per job” must be the default owner view
+
+---
+
+## 8) Phase 1.5 UI Hooks (placeholders now)
+
+Add UI placeholders now, disabled:
+
+Owner settings:
+- GPS verification toggle (Off / Clock-in/out only)
+Worker clock screen:
+- “Location will be recorded” badge (hidden until enabled)
+
+This ensures future features slot in without redesign.
+
+---
+
+## Appendix: Route List (Copy for Router)
+
+Public:
+- /
+- /login
+
+Owner:
+- /app
+- /app/jobs
+- /app/jobs/new
+- /app/jobs/import
+- /app/jobs/:id
+- /app/timesheets
+- /app/approvals
+- /app/payroll/export
+- /app/workers
+- /app/settings
+
+Worker:
+- /w/:token
+- /w/:token/jobs
+- /w/:token/clock
+- /w/:token/history
+- /w/:token/help
