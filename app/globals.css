@@ -4,11 +4,15 @@
 
 @layer base {
   :root {
-    --fc-brand: #1a1a1a;
-    --fc-accent: #1e40af;
-    --fc-muted: #52525b;
-    --fc-surface: #f4f4f5;
-    --fc-border: #e4e4e7;
+    --fc-brand: #0f172a;
+    --fc-accent: #6366f1;
+    --fc-accent-dark: #4f46e5;
+    --fc-muted: #64748b;
+    --fc-surface: #ffffff;
+    --fc-border: #e2e8f0;
+    --fc-gradient-start: #6366f1;
+    --fc-gradient-mid: #8b5cf6;
+    --fc-gradient-end: #ec4899;
   }
   html {
     @apply scroll-smooth;

@@ -28,47 +28,54 @@ export function Pricing() {
   return (
     <section
       id="pricing"
-      className="border-b border-fc-border bg-white py-16 sm:py-20 lg:py-24"
+      className="border-b border-fc-border bg-white py-20 sm:py-24 lg:py-32"
       aria-labelledby="pricing-heading"
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <p className="font-display text-xs font-semibold uppercase tracking-widest text-fc-accent">
-          Pricing
-        </p>
-        <h2
-          id="pricing-heading"
-          className="mt-2 font-display text-3xl font-bold text-fc-brand sm:text-4xl"
-        >
-          Flat, predictable plans
-        </h2>
-        <p className="mt-4 max-w-2xl text-lg text-fc-muted">
-          No feature gating. 14-day free trial. 2 months free on annual plans.
-        </p>
-        <div className="mt-12 grid gap-8 sm:grid-cols-3">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <p className="font-display text-sm font-semibold uppercase tracking-wider text-fc-accent">
+            Pricing
+          </p>
+          <h2
+            id="pricing-heading"
+            className="mt-4 font-display text-4xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
+          >
+            Flat, predictable plans
+          </h2>
+          <p className="mx-auto mt-6 max-w-2xl text-xl text-fc-muted">
+            No feature gating. 14-day free trial. 2 months free on annual plans.
+          </p>
+        </div>
+        <div className="mt-16 grid gap-8 sm:grid-cols-3">
           {tiers.map((tier) => (
             <div
               key={tier.name}
-              className={`flex flex-col rounded-xl border p-6 sm:p-8 ${
+              className={`group relative flex flex-col rounded-2xl border-2 p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
                 tier.highlighted
-                  ? "border-fc-accent bg-fc-accent/5 shadow-lg"
-                  : "border-fc-border bg-fc-surface/50"
+                  ? "border-fc-accent bg-gradient-to-br from-fc-accent/10 to-fc-gradient-mid/10 shadow-lg ring-2 ring-fc-accent/20"
+                  : "border-fc-border bg-white"
               }`}
             >
-              <h3 className="font-display text-lg font-semibold text-fc-brand">
+              {tier.highlighted && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-fc-accent to-fc-gradient-mid px-4 py-1 text-xs font-semibold text-white shadow-lg">
+                  Popular
+                </div>
+              )}
+              <h3 className="font-display text-2xl font-bold text-fc-brand">
                 {tier.name}
               </h3>
-              <p className="mt-2 text-fc-muted">{tier.workers}</p>
-              <p className="mt-4 font-display text-3xl font-bold text-fc-brand">
+              <p className="mt-2 text-base text-fc-muted">{tier.workers}</p>
+              <p className="mt-6 font-display text-5xl font-bold text-fc-brand">
                 ${tier.price}
-                <span className="text-base font-normal text-fc-muted">
+                <span className="text-xl font-normal text-fc-muted">
                   /month
                 </span>
               </p>
               <Link
                 href="#pricing"
-                className={`mt-6 inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-lg px-4 py-2.5 text-center font-medium transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 ${
+                className={`mt-8 inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-lg px-6 py-3 text-center font-semibold transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 ${
                   tier.highlighted
-                    ? "bg-fc-accent text-white hover:bg-fc-accent/90"
+                    ? "bg-gradient-to-r from-fc-accent to-fc-gradient-mid text-white shadow-lg hover:shadow-xl"
                     : "bg-fc-brand text-white hover:bg-fc-brand/90"
                 }`}
               >
@@ -77,7 +84,7 @@ export function Pricing() {
             </div>
           ))}
         </div>
-        <p className="mt-6 text-center text-sm text-fc-muted">
+        <p className="mt-8 text-center text-base text-fc-muted">
           Additional workers: $4/month each. Early founders plan available.
         </p>
       </div>

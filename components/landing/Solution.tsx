@@ -1,55 +1,56 @@
 export function Solution() {
   const steps = [
-    { label: "Field", desc: "Job-coded time at the point of work" },
-    { label: "Job", desc: "Mandatory job selection — no generic shifts" },
-    { label: "Payroll", desc: "Export with job context to QuickBooks" },
-    { label: "Profit", desc: "Labour cost per job and weekly insight" },
+    { label: "Centralize", desc: "Job-coded time at the point of work" },
+    { label: "Collaborate", desc: "Mandatory job selection — no generic shifts" },
+    { label: "Consolidate", desc: "Export with job context to QuickBooks" },
   ];
 
   return (
     <section
       id="how-it-works"
-      className="relative border-b border-fc-border bg-fc-surface py-16 sm:py-20 lg:py-24"
+      className="relative border-b border-fc-border bg-white py-20 sm:py-24 lg:py-32"
       aria-labelledby="solution-heading"
     >
-      {/* Soft blue tint */}
+      {/* Gradient mesh background */}
       <div
-        className="absolute inset-0 bg-fc-accent/[0.025]"
+        className="absolute inset-0 opacity-20"
         aria-hidden
+        style={{
+          background: `
+            radial-gradient(circle at 30% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)
+          `,
+        }}
       />
-      {/* Diagonal vector stripe */}
-      <div className="pointer-events-none absolute -right-32 top-1/2 hidden w-96 -translate-y-1/2 rotate-12 opacity-[0.06] lg:block" aria-hidden>
-        <svg viewBox="0 0 400 80" fill="none" className="h-24 w-full">
-          <rect x="0" y="20" width="400" height="40" rx="4" fill="currentColor" className="text-fc-accent" />
-        </svg>
-      </div>
-      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <p className="font-display text-xs font-semibold uppercase tracking-widest text-fc-accent">
-          How it works
-        </p>
-        <h2
-          id="solution-heading"
-          className="mt-2 font-display text-3xl font-bold text-fc-brand sm:text-4xl"
-        >
-          Field → Job → Payroll → Profit
-        </h2>
-        <p className="mt-4 max-w-2xl text-lg text-fc-muted">
-          We force job-coded time at the point of work and carry that context
-          all the way through payroll and reporting.
-        </p>
-        <div className="mt-12 flex flex-wrap items-stretch justify-center gap-4 sm:gap-6">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <p className="font-display text-sm font-semibold uppercase tracking-wider text-fc-accent">
+            How it works
+          </p>
+          <h2
+            id="solution-heading"
+            className="mt-4 font-display text-4xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
+          >
+            Incline toward converged payroll
+          </h2>
+          <p className="mx-auto mt-6 max-w-2xl text-xl text-fc-muted">
+            We force job-coded time at the point of work and carry that context
+            all the way through payroll and reporting.
+          </p>
+        </div>
+        <div className="mt-16 flex flex-wrap items-stretch justify-center gap-8 sm:gap-12">
           {steps.map((step, i) => (
-            <div
-              key={step.label}
-              className="flex min-w-0 flex-1 basis-36 flex-col rounded-lg border border-fc-border bg-white p-5 shadow-sm sm:basis-40"
-            >
-              <span className="font-display text-lg font-semibold text-fc-accent">
+            <div key={step.label} className="flex flex-col items-center text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-fc-accent to-fc-gradient-mid text-white shadow-lg">
+                <span className="font-display text-2xl font-bold">{i + 1}</span>
+              </div>
+              <h3 className="mt-6 font-display text-2xl font-bold text-fc-brand">
                 {step.label}
-              </span>
-              <p className="mt-2 text-sm text-fc-muted">{step.desc}</p>
+              </h3>
+              <p className="mt-3 max-w-xs text-base text-fc-muted">{step.desc}</p>
               {i < steps.length - 1 && (
                 <span
-                  className="mt-auto hidden pt-4 text-fc-muted/60 sm:inline"
+                  className="mt-8 hidden text-3xl text-fc-accent/40 sm:inline"
                   aria-hidden
                 >
                   →

@@ -9,36 +9,40 @@ export function Problem() {
   return (
     <section
       id="problem"
-      className="border-b border-fc-border bg-white py-16 sm:py-20 lg:py-24"
+      className="border-b border-fc-border bg-white py-12 sm:py-16 lg:py-20"
       aria-labelledby="problem-heading"
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <p className="font-display text-xs font-semibold uppercase tracking-widest text-fc-accent">
-          The problem
-        </p>
-        <h2
-          id="problem-heading"
-          className="mt-2 font-display text-3xl font-bold text-fc-brand sm:text-4xl"
-        >
-          Small HVAC businesses lose money silently
-        </h2>
-        <p className="mt-4 max-w-2xl text-lg text-fc-muted">
-          Owners often know revenue per job but not labour cost per job. That
-          makes margin control impossible.
-        </p>
-        <ul className="mt-10 grid gap-4 sm:grid-cols-1 sm:gap-6 lg:grid-cols-2">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <p className="font-display text-sm font-semibold uppercase tracking-wider text-fc-accent">
+            The problem
+          </p>
+          <h2
+            id="problem-heading"
+            className="mt-2 font-display text-4xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
+          >
+            Small HVAC businesses lose money silently
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-xl text-fc-muted">
+            Owners often know revenue per job but not labour cost per job. That
+            makes margin control impossible.
+          </p>
+        </div>
+        <ul className="mt-8 grid gap-6 sm:grid-cols-2">
           {points.map((point, i) => (
             <li
               key={i}
-              className="flex gap-3 rounded-lg border border-fc-border bg-fc-surface/50 p-4"
+              className="group cursor-pointer rounded-xl border border-fc-border bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-fc-accent/50 hover:shadow-lg"
             >
-              <span
-                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-fc-brand/10 text-sm font-medium text-fc-brand"
-                aria-hidden
-              >
-                {i + 1}
-              </span>
-              <span className="text-fc-brand">{point}</span>
+              <div className="flex gap-4">
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-fc-accent to-fc-gradient-mid text-sm font-bold text-white shadow-md transition-transform duration-300 group-hover:scale-110"
+                  aria-hidden
+                >
+                  {i + 1}
+                </span>
+                <span className="text-base leading-relaxed text-fc-brand">{point}</span>
+              </div>
             </li>
           ))}
         </ul>

@@ -1,57 +1,92 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { HeroDecor } from "./HeroDecor";
 import { HeroVisual } from "./HeroVisual";
+import { Check } from "lucide-react";
+
+const features = [
+  "Job-Based Time Tracking",
+  "Labour Cost Per Job",
+  "Payroll Export",
+  "Leak Detection",
+  "Magic Link Access",
+  "Weekly Reports",
+];
 
 export function Hero() {
+  const [selectedFeature, setSelectedFeature] = useState(0);
+
   return (
-    <section className="relative overflow-hidden border-b border-fc-border bg-gradient-to-b from-zinc-100 to-fc-surface">
-      <HeroDecor />
-      {/* Subtle industrial grid */}
-      <div
-        className="absolute inset-0 opacity-[0.4]"
-        aria-hidden
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, #d4d4d8 1px, transparent 1px),
-            linear-gradient(to bottom, #d4d4d8 1px, transparent 1px)
-          `,
-          backgroundSize: "48px 48px",
-        }}
-      />
-      {/* Subtle grain texture */}
-      <div className="hero-noise" aria-hidden />
-      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
-        <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-8 lg:justify-between">
-          <div className="mx-auto max-w-xl text-center lg:mx-0 lg:max-w-md lg:text-left">
-            <p className="hero-reveal hero-reveal-1 font-display text-xs font-semibold uppercase tracking-[0.2em] text-fc-accent">
-              Payroll intelligence for HVAC
-            </p>
-            <h1 className="hero-reveal hero-reveal-2 mt-3 border-l-4 border-fc-accent pl-4 font-display text-4xl font-extrabold tracking-tighter text-fc-brand sm:text-5xl lg:pl-5 lg:text-5xl">
-              Which jobs are destroying your margins?
+    <section className="relative overflow-x-hidden border-b border-fc-border bg-white">
+      <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20 xl:px-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start lg:gap-8">
+          {/* Left Content - Strictly contained in first half */}
+          <div className="flex flex-col justify-center text-center lg:text-left">
+            {/* Feature Announcement Badge */}
+            <div className="hero-reveal hero-reveal-1 mb-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-fc-accent/10 to-fc-gradient-mid/10 px-4 py-1.5 text-sm font-medium text-fc-accent lg:inline-flex">
+              <span>Introducing FieldCrew 2.0</span>
+              <span className="text-fc-accent">→</span>
+            </div>
+
+            {/* Main Headline - Large and Bold */}
+            <h1 className="hero-reveal hero-reveal-2 font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-fc-brand sm:text-5xl lg:text-6xl xl:text-7xl">
+              See labour cost
+              <br />
+              per job
             </h1>
-            <div className="hero-reveal hero-reveal-3 mx-auto mt-4 h-1 w-16 rounded-full bg-fc-accent lg:mx-0" aria-hidden />
-            <p className="hero-reveal hero-reveal-4 mt-6 text-lg leading-relaxed text-fc-muted sm:text-xl">
-              FieldCrew is job-based payroll intelligence for small US HVAC crews.
-              See labour cost per job, stop payroll leakage, and run payroll with
-              job context—not just hours.
+
+            {/* Sub-headline */}
+            <p className="hero-reveal hero-reveal-3 mt-6 text-lg leading-relaxed text-fc-muted sm:text-xl lg:text-xl">
+              Stop payroll leakage and see which jobs actually make money. Job-based payroll intelligence for HVAC crews.
             </p>
-            <div className="hero-reveal hero-reveal-5 mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
+
+            {/* Primary CTA */}
+            <div className="hero-reveal hero-reveal-4 mt-8">
               <Link
                 href="#pricing"
-                className="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-lg bg-fc-accent px-6 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-fc-accent/90 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
+                className="inline-flex min-h-[56px] min-w-[56px] cursor-pointer items-center justify-center rounded-lg bg-fc-brand px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:bg-fc-brand/90 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
               >
-                Start free trial
+                Get started. It&apos;s FREE!
               </Link>
-              <Link
-                href="#how-it-works"
-                className="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-lg border border-fc-border bg-white px-6 py-3 text-base font-medium text-fc-brand transition-all duration-200 hover:-translate-y-0.5 hover:border-fc-muted hover:bg-fc-surface focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
-              >
-                How it works
-              </Link>
+              <p className="mt-3 text-sm text-fc-muted">
+                Free forever. No credit card.
+              </p>
+            </div>
+
+            {/* Feature Tags */}
+            <div className="hero-reveal hero-reveal-5 mt-10">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-fc-muted">
+                STOP PAYROLL LEAKAGE • SEE WHICH JOBS MAKE MONEY
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+                {features.map((feature, i) => (
+                  <button
+                    key={feature}
+                    onClick={() => setSelectedFeature(i)}
+                    className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                      selectedFeature === i
+                        ? "border-fc-accent bg-fc-accent/10 text-fc-accent"
+                        : "border-fc-border bg-white text-fc-muted hover:border-fc-accent/50"
+                    }`}
+                  >
+                    {selectedFeature === i && <Check className="h-4 w-4" />}
+                    <span>{feature}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="hero-reveal hero-reveal-6 relative lg:ml-auto lg:flex-shrink-0 lg:self-end lg:-mr-4 xl:-mr-8">
-            <HeroVisual />
+
+          {/* Right Visual - Larger, extends closer to edges with fade-out */}
+          <div className="hero-reveal hero-reveal-6 relative mx-auto w-full lg:mx-0 lg:-mr-8 xl:-mr-12 lg:ml-auto">
+            <div className="relative w-full overflow-hidden">
+              <HeroVisual view={selectedFeature} />
+              {/* Fade-out gradient on right */}
+              <div className="pointer-events-none absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-white to-transparent" aria-hidden />
+              {/* Fade-out gradient on bottom */}
+              <div className="pointer-events-none absolute bottom-0 left-0 h-32 w-full bg-gradient-to-t from-white to-transparent" aria-hidden />
+            </div>
           </div>
         </div>
       </div>

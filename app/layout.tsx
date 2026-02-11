@@ -32,7 +32,7 @@ export default function RootLayout({
       lang="en"
       className={`${bricolage.variable} ${ibmPlexSans.variable} antialiased`}
     >
-      <body className="min-h-screen bg-fc-surface font-body text-fc-brand">
+      <body className="min-h-screen bg-white font-body text-fc-brand">
         {children}
       </body>
     </html>
