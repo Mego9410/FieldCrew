@@ -1,4 +1,4 @@
-import { Home, ClipboardList, DollarSign, Users, Check, Circle, ChevronDown, ChevronRight, MessageSquare, Calendar, GanttChart, UserCheck, Clock, AlertTriangle, Mail, FileSpreadsheet, BarChart3, Link2 } from "lucide-react";
+import { Home, ClipboardList, DollarSign, Users, Check, Circle, Clock, AlertTriangle, Mail, FileSpreadsheet, BarChart3, Link2 } from "lucide-react";
 
 export type ViewType = 0 | 1 | 2 | 3 | 4 | 5;
 
@@ -12,14 +12,6 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
     { Icon: ClipboardList, label: "Jobs" },
     { Icon: DollarSign, label: "Payroll" },
     { Icon: Users, label: "Workers" },
-  ];
-
-  const tabs = [
-    { label: "Chat", icon: MessageSquare },
-    { label: "Tasks", icon: ClipboardList, active: true },
-    { label: "Schedule", icon: Calendar },
-    { label: "Gantt", icon: GanttChart },
-    { label: "Customers", icon: UserCheck },
   ];
 
   function renderView(viewType: ViewType) {
@@ -182,7 +174,7 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
               <AlertTriangle className="h-5 w-5 shrink-0 text-orange-500" />
               <div className="flex-1">
                 <p className="font-body text-sm font-semibold text-orange-900">Missing Clock-Out</p>
-                <p className="font-body text-xs text-orange-700">Sarah K. didn't clock out yesterday</p>
+                <p className="font-body text-xs text-orange-700">Sarah K. didn&apos;t clock out yesterday</p>
               </div>
             </div>
           </div>
