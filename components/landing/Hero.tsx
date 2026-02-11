@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { HeroVisual } from "./HeroVisual";
+import { HeroVisual, type ViewType } from "./HeroVisual";
 import { Check } from "lucide-react";
 
 const features = [
@@ -15,7 +15,7 @@ const features = [
 ];
 
 export function Hero() {
-  const [selectedFeature, setSelectedFeature] = useState(0);
+  const [selectedFeature, setSelectedFeature] = useState<ViewType>(0);
 
   return (
     <section className="relative overflow-x-hidden border-b border-fc-border bg-white">

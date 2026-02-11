@@ -1,6 +1,6 @@
 import { Home, ClipboardList, DollarSign, Users, Check, Circle, ChevronDown, ChevronRight, MessageSquare, Calendar, GanttChart, UserCheck, Clock, AlertTriangle, Mail, FileSpreadsheet, BarChart3, Link2 } from "lucide-react";
 
-type ViewType = 0 | 1 | 2 | 3 | 4 | 5;
+export type ViewType = 0 | 1 | 2 | 3 | 4 | 5;
 
 /**
  * Hero visual: stylized view of the FieldCrew app.
