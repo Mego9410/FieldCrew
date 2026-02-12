@@ -31,9 +31,9 @@ export function Hero() {
 
             {/* Main Headline - Large and Bold */}
             <h1 className="hero-reveal hero-reveal-2 font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-fc-brand sm:text-5xl lg:text-6xl xl:text-7xl">
-              See labour cost
+              Stop losing money
               <br />
-              per job
+              on every job
             </h1>
 
             {/* Sub-headline */}
@@ -50,7 +50,7 @@ export function Hero() {
                 Get started. It&apos;s FREE!
               </Link>
               <p className="mt-3 text-sm text-fc-muted">
-                Free forever. No credit card.
+                Free 3-day trial, then $5 for the first month.
               </p>
             </div>
 

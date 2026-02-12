@@ -18,6 +18,9 @@ const config: Config = {
           "gradient-start": "#6366f1",
           "gradient-mid": "#8b5cf6",
           "gradient-end": "#ec4899",
+          "app-sidebar": "#2c2f33",
+          "app-header": "#373a40",
+          "app-surface": "#f5f6f8",
         },
       },
       backgroundImage: {

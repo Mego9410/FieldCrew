@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
 import { Mail, Lock, Loader2 } from "lucide-react";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -18,29 +18,43 @@ export default function LoginPage() {
       ? decodeURIComponent(searchParams.get("error") ?? "")
       : null
   );
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccessMessage(null);
     setLoading("email");
 
     const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
+      options: { emailRedirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/auth/callback?next=${routes.owner.home}` },
     });
 
     setLoading(null);
-    if (signInError) {
-      setError(signInError.message);
+    if (signUpError) {
+      setError(signUpError.message);
+      setSuccessMessage(null);
       return;
     }
-    router.push(routes.owner.home);
-    router.refresh();
+    // Supabase may require email confirmation; check session
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      router.push(routes.owner.home);
+      router.refresh();
+    } else {
+      setError(null);
+      setSuccessMessage("Check your email for the confirmation link to finish signing up.");
+      setEmail("");
+      setPassword("");
+    }
   };
 
   const handleGoogleSignIn = async () => {
     setError(null);
+    setSuccessMessage(null);
     setLoading("google");
 
     const supabase = createClient();
@@ -58,18 +72,16 @@ export default function LoginPage() {
       setError(signInError.message);
       return;
     }
-    // Supabase redirects the user to Google; no need to router.push here
   };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-fc-surface px-4">
       <div className="w-full max-w-[400px] rounded-xl border border-fc-border bg-white p-8 shadow-sm">
         <h1 className="font-display text-2xl font-bold text-fc-brand">
-          Owner login
+          Create an account
         </h1>
         <p className="mt-2 text-sm text-fc-muted">
-          Sign in to your FieldCrew account to manage jobs, workers, and
-          payroll.
+          Sign up for FieldCrew to manage jobs, workers, and payroll.
         </p>
 
         {error && (
@@ -78,6 +90,14 @@ export default function LoginPage() {
             role="alert"
           >
             {error}
+          </div>
+        )}
+        {successMessage && (
+          <div
+            className="mt-4 rounded-lg border border-fc-border bg-slate-50 px-3 py-2 text-sm text-fc-brand"
+            role="status"
+          >
+            {successMessage}
           </div>
         )}
 
@@ -124,11 +144,12 @@ export default function LoginPage() {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                minLength={6}
                 className="w-full rounded-lg border border-fc-border bg-white py-2.5 pl-10 pr-3 text-fc-brand placeholder:text-fc-muted focus:border-fc-accent focus:outline-none focus:ring-1 focus:ring-fc-accent"
                 disabled={loading !== null}
               />
@@ -142,10 +163,10 @@ export default function LoginPage() {
             {loading === "email" ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                Signing in…
+                Signing up…
               </>
             ) : (
-              "Sign in with email"
+              "Sign up with email"
             )}
           </button>
         </form>
@@ -173,7 +194,7 @@ export default function LoginPage() {
           ) : (
             <>
               <GoogleIcon className="h-5 w-5" aria-hidden />
-              Sign in with Google
+              Sign up with Google
             </>
           )}
         </button>
@@ -187,12 +208,12 @@ export default function LoginPage() {
           </Link>
         </p>
         <p className="mt-4 text-center text-sm text-fc-muted">
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Link
-            href={routes.public.signup}
+            href={routes.public.login}
             className="font-medium text-fc-accent underline underline-offset-2 hover:text-fc-accent-dark"
           >
-            Sign up
+            Sign in
           </Link>
           {" · "}
           <Link
