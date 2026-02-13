@@ -2,16 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { getProjects } from "@/lib/mock-storage";
 import {
   Plus,
   Home,
-  ClipboardList,
   Users,
-  Clock,
-  DollarSign,
-  BarChart3,
-  FolderKanban,
-  Settings,
   Bell,
   ChevronRight,
   CheckCircle2,
@@ -29,10 +24,12 @@ const topNav = [
 
 const tabNav = [
   { href: routes.owner.home, label: "Overview" },
+  { href: routes.owner.projects, label: "Projects" },
   { href: routes.owner.jobs, label: "Jobs" },
   { href: routes.owner.workers, label: "Workers" },
   { href: routes.owner.timesheets, label: "Timesheets" },
   { href: routes.owner.payrollExport, label: "Payroll" },
+  { href: routes.owner.data, label: "Data" },
   { href: routes.owner.settings, label: "Settings" },
 ];
 
@@ -42,13 +39,9 @@ const insightsNav = [
   { href: "/#goals", label: "Goals", icon: Target },
 ];
 
-const projectsNav = [
-  { label: "ASMobbin Campaign", color: "bg-teal-400", href: routes.owner.jobs },
-  { label: "Product Demo - A", color: "bg-violet-400", href: routes.owner.jobs },
-];
-
 export function AppSidebar() {
   const pathname = usePathname();
+  const projects = getProjects();
 
   const isTabActive = (href: string) => {
     if (href === routes.owner.home) return pathname === href;
@@ -84,61 +77,56 @@ export function AppSidebar() {
         </button>
       </div>
 
-      {/* Home, My tasks, Inbox */}
-      <div className="flex flex-col gap-0.5 px-3 py-3">
-        {topNav.map(({ href, label, icon: Icon, badge }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-              pathname === href || (href !== routes.owner.home && pathname.startsWith(href))
-                ? "bg-slate-700 text-white"
-                : "text-slate-100 hover:bg-slate-700 hover:text-white"
-            }`}
-          >
-            <span className="relative shrink-0">
-              <Icon className="h-5 w-5" />
-              {badge && (
-                <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-slate-800" aria-hidden />
-              )}
-            </span>
-            {label}
-          </Link>
-        ))}
-      </div>
-
-      {/* Vertical tab menu: Overview, Jobs, Workers, Timesheets, Payroll, Settings (+ purple active) */}
-      <nav className="border-b border-slate-600 px-3 py-2" aria-label="Main sections">
-        {tabNav.map(({ href, label }) => {
-          const active = isTabActive(href);
-          const isPayrollItem = isPayroll(href);
-          return (
+      {/* Scrollable section: Home, My tasks, Inbox, Tab menu, Insights, Projects, Team */}
+      <div className="scrollbar-dark flex min-h-0 flex-1 flex-col overflow-auto">
+        {/* Home, My tasks, Inbox */}
+        <div className="flex flex-col gap-0.5 px-3 py-3">
+          {topNav.map(({ href, label, icon: Icon, badge }) => (
             <Link
               key={href}
               href={href}
-              className={`flex items-center justify-between rounded-lg py-2.5 pl-3 pr-3 text-sm font-medium transition-colors ${
-                active
-                  ? "border-l-[3px] border-fc-accent bg-transparent pl-[9px] text-fc-accent"
-                  : isPayrollItem
-                    ? "rounded-full bg-slate-700 text-slate-100 hover:bg-slate-600"
-                    : "text-slate-100 hover:bg-slate-700 hover:text-white"
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                pathname === href || (href !== routes.owner.home && pathname.startsWith(href))
+                  ? "bg-slate-700 text-white"
+                  : "text-slate-100 hover:bg-slate-700 hover:text-white"
               }`}
             >
-              <span>{label}</span>
+              <span className="relative shrink-0">
+                <Icon className="h-5 w-5" />
+                {badge && (
+                  <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-slate-800" aria-hidden />
+                )}
+              </span>
+              {label}
             </Link>
-          );
-        })}
-        <button
-          type="button"
-          className="flex w-full items-center px-3 py-2.5 text-sm text-slate-300 hover:bg-slate-700 hover:text-white"
-          aria-label="Add section"
-        >
-          +
-        </button>
-      </nav>
+          ))}
+        </div>
 
-      {/* Insights, Projects, Team */}
-      <div className="sidebar-scroll flex min-h-0 flex-1 flex-col gap-4 overflow-auto px-3 py-3">
+        {/* Vertical tab menu: Overview, Jobs, Workers, Timesheets, Payroll, Settings (+ purple active) */}
+        <nav className="border-b border-slate-600 px-3 py-2" aria-label="Main sections">
+          {tabNav.map(({ href, label }) => {
+            const active = isTabActive(href);
+            const isPayrollItem = isPayroll(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`flex items-center justify-between rounded-lg py-2.5 pl-3 pr-3 text-sm font-medium transition-colors ${
+                  active
+                    ? isPayrollItem
+                      ? "rounded-full bg-slate-700 text-slate-100 hover:bg-slate-600"
+                      : "border-l-[3px] border-fc-accent bg-transparent pl-[9px] text-fc-accent"
+                    : "text-slate-100 hover:bg-slate-700 hover:text-white"
+                }`}
+              >
+                <span>{label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Insights, Projects, Team */}
+        <div className="flex flex-col gap-4 px-3 py-3">
         <div>
           <div className="mb-1 flex items-center justify-between px-3 py-1.5">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
@@ -168,19 +156,27 @@ export function AppSidebar() {
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
               Projects
             </span>
-            <button type="button" className="text-slate-400 hover:text-white">
+            <Link
+              href={routes.owner.projects}
+              className="text-slate-400 hover:text-white"
+              title="Manage projects"
+            >
               <Plus className="h-4 w-4" />
-            </button>
+            </Link>
           </div>
           <div className="flex flex-col gap-0.5">
-            {projectsNav.map(({ label, color, href }) => (
+            {projects.map((project) => (
               <Link
-                key={label}
-                href={href}
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-100 transition-colors hover:bg-slate-700 hover:text-white"
+                key={project.id}
+                href={routes.owner.projectJobs(project.id)}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                  pathname === routes.owner.projectJobs(project.id)
+                    ? "bg-slate-700 text-white"
+                    : "text-slate-100 hover:bg-slate-700 hover:text-white"
+                }`}
               >
-                <span className={`h-3 w-3 shrink-0 rounded-sm ${color}`} />
-                {label}
+                <span className={`h-3 w-3 shrink-0 rounded-sm ${project.color}`} />
+                {project.name}
               </Link>
             ))}
           </div>
@@ -203,6 +199,7 @@ export function AppSidebar() {
             </span>
             <ChevronRight className="h-4 w-4 text-slate-300" />
           </Link>
+        </div>
         </div>
       </div>
 

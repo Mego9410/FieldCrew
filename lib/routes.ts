@@ -17,6 +17,19 @@ export const routes = {
     timesheets: "/app/timesheets",
     payrollExport: "/app/payroll/export",
     settings: "/app/settings",
+    data: "/app/data",
+    projects: "/app/projects",
+    projectJobs: (projectId: string) => `/app/projects/${projectId}`,
+    dashboard: {
+      margin: "/app/dashboard/margin",
+      overtime: "/app/dashboard/overtime",
+      overruns: "/app/dashboard/overruns",
+      revenueLabour: "/app/dashboard/revenue-labour",
+      recovery: "/app/dashboard/recovery",
+      labourCostTrend: "/app/dashboard/labour-cost-trend",
+      estimateAccuracy: "/app/dashboard/estimate-accuracy",
+      revenuePerLabourHour: "/app/dashboard/revenue-per-labour-hour",
+    },
   },
   /** Worker: crew member views; use with token, e.g. routes.worker.home(token) */
   worker: {

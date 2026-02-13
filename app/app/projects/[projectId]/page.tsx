@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, use } from "react";
+import Link from "next/link";
 import {
   Plus,
   Search,
@@ -8,15 +9,14 @@ import {
   MoreHorizontal,
   ClipboardList,
   User,
+  ChevronLeft,
 } from "lucide-react";
-import { getJobs } from "@/lib/mock-storage";
-import { getWorkers } from "@/lib/mock-storage";
-import { getTimeEntries } from "@/lib/mock-storage";
+import { routes } from "@/lib/routes";
+import { getJobs, getWorkers, getTimeEntries, getProjects } from "@/lib/mock-storage";
 import { JobForm } from "@/components/forms";
 
-// Derive display data from entities
-function useJobsDisplay() {
-  const jobs = getJobs();
+function useJobsDisplay(projectId: string) {
+  const jobs = getJobs(undefined, projectId);
   const workers = getWorkers();
   const entries = getTimeEntries();
 
@@ -28,7 +28,6 @@ function useJobsDisplay() {
       .filter(Boolean);
     const assignee = assigneeNames.length ? assigneeNames.join(", ") : "—";
 
-    // Estimated: hours expected × assigned workers' hourly rates
     const assignedWorkers = assigneeIds.map((id) => workers.find((w) => w.id === id)).filter(Boolean) as { hourlyRate: number }[];
     const isMultiDay = job.startDate && job.endDate && job.hoursPerDay != null;
     const hrsExpected = isMultiDay
@@ -46,7 +45,6 @@ function useJobsDisplay() {
       ? `${hrsExpected} hrs / ${estimatedCost != null ? `$${estimatedCost}` : "—"}`
       : "—";
 
-    // Actual: from time entries (worker-submitted hours)
     const { actualHours, actualCost } = jobEntries.reduce(
       (acc, e) => {
         const w = workers.find((x) => x.id === e.workerId);
@@ -72,6 +70,7 @@ function useJobsDisplay() {
       : job.date
         ? new Date(job.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })
         : "—";
+
     return {
       ...job,
       assignee,
@@ -90,12 +89,19 @@ const statusStyles: Record<string, string> = {
   overdue: "bg-red-100 text-red-800",
 };
 
-export default function JobsPage() {
+export default function ProjectJobsPage({
+  params,
+}: {
+  params: Promise<{ projectId: string }>;
+}) {
+  const { projectId } = use(params);
   const [showAddModal, setShowAddModal] = useState(false);
   const [search, setSearch] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const jobsDisplay = useJobsDisplay();
+  const projects = getProjects();
+  const project = projects.find((p) => p.id === projectId);
+  const jobsDisplay = useJobsDisplay(projectId);
   const filtered = jobsDisplay.filter(
     (j) =>
       j.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -107,14 +113,37 @@ export default function JobsPage() {
     setRefreshKey((k) => k + 1);
   }, []);
 
+  if (!project) {
+    return (
+      <div className="px-6 py-6">
+        <p className="text-fc-muted">Project not found.</p>
+        <Link href={routes.owner.projects} className="mt-2 text-sm text-fc-accent hover:underline">
+          Back to projects
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="px-6 py-6">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-display text-xl font-bold text-fc-brand">Jobs</h1>
-          <p className="mt-1 text-sm text-fc-muted">
-            Manage jobs and see labour cost per job.
-          </p>
+          <Link
+            href={routes.owner.projects}
+            className="mb-2 inline-flex items-center gap-1 text-sm text-fc-muted hover:text-fc-brand"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Projects
+          </Link>
+          <div className="flex items-center gap-3">
+            <span className={`h-10 w-10 shrink-0 rounded-lg ${project.color}`} aria-hidden />
+            <div>
+              <h1 className="font-display text-xl font-bold text-fc-brand">{project.name}</h1>
+              <p className="mt-1 text-sm text-fc-muted">
+                Jobs in this project. Add multi-day work or ad-hoc tasks with different workers.
+              </p>
+            </div>
+          </div>
         </div>
         <button
           type="button"
@@ -122,11 +151,10 @@ export default function JobsPage() {
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-fc-brand/90"
         >
           <Plus className="h-4 w-4" />
-          New job
+          Add job
         </button>
       </div>
 
-      {/* Filters & search */}
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fc-muted" />
@@ -147,8 +175,7 @@ export default function JobsPage() {
         </button>
       </div>
 
-      {/* Jobs table */}
-      <div className="rounded-lg border border-fc-border bg-white shadow-sm overflow-hidden">
+      <div className="rounded-lg border border-fc-border bg-white shadow-sm overflow-hidden" key={refreshKey}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
@@ -162,7 +189,7 @@ export default function JobsPage() {
                 <th className="w-10 px-2 py-3" aria-hidden />
               </tr>
             </thead>
-            <tbody key={refreshKey}>
+            <tbody>
               {filtered.map((job) => (
                 <tr
                   key={job.id}
@@ -190,15 +217,9 @@ export default function JobsPage() {
                       {job.assignee}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-fc-muted">
-                    {job.dueDate}
-                  </td>
-                  <td className="px-4 py-3 text-fc-muted">
-                    {job.estimatedDisplay}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-fc-brand">
-                    {job.actualDisplay}
-                  </td>
+                  <td className="px-4 py-3 text-fc-muted">{job.dueDate}</td>
+                  <td className="px-4 py-3 text-fc-muted">{job.estimatedDisplay}</td>
+                  <td className="px-4 py-3 font-medium text-fc-brand">{job.actualDisplay}</td>
                   <td className="px-2 py-3">
                     <button
                       type="button"
@@ -215,7 +236,6 @@ export default function JobsPage() {
         </div>
       </div>
 
-      {/* Add job modal */}
       {showAddModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
@@ -225,9 +245,13 @@ export default function JobsPage() {
         >
           <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-fc-border bg-white p-6 shadow-lg">
             <h2 id="add-job-title" className="mb-4 font-display text-lg font-bold text-fc-brand">
-              New job
+              Add job to {project.name}
             </h2>
-            <JobForm onSuccess={handleJobSuccess} onCancel={() => setShowAddModal(false)} />
+            <JobForm
+              projectId={projectId}
+              onSuccess={handleJobSuccess}
+              onCancel={() => setShowAddModal(false)}
+            />
           </div>
         </div>
       )}

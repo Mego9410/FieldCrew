@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppHeader } from "@/components/app/AppHeader";
+import { MockStorageInit } from "@/components/MockStorageInit";
 
 export default function AppLayout({
   children,
@@ -8,6 +9,7 @@ export default function AppLayout({
 }) {
   return (
     <div className="flex h-screen overflow-hidden bg-fc-app-surface">
+      <MockStorageInit />
       <AppSidebar />
       <div className="flex min-h-0 flex-1 flex-col min-w-0">
         <AppHeader />

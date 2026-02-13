@@ -76,26 +76,99 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Sidebar scrollbar: thin, rounded, matches dark slate panel */
-  .sidebar-scroll {
+  /* Custom scrollbar styles for dark backgrounds (sidebar, etc.) */
+  .scrollbar-dark {
     scrollbar-width: thin;
-    scrollbar-color: rgb(100 116 139) rgb(30 41 59);
+    scrollbar-color: rgb(71 85 105) transparent;
   }
-  .sidebar-scroll::-webkit-scrollbar {
-    width: 6px;
+  .scrollbar-dark::-webkit-scrollbar {
+    width: 8px;
   }
-  .sidebar-scroll::-webkit-scrollbar-track {
+  .scrollbar-dark::-webkit-scrollbar-track {
     background: transparent;
-    margin: 4px 0;
+    margin: 8px 0;
   }
-  .sidebar-scroll::-webkit-scrollbar-thumb {
+  .scrollbar-dark::-webkit-scrollbar-thumb {
     background: rgb(71 85 105);
-    border-radius: 3px;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
   }
-  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  .scrollbar-dark::-webkit-scrollbar-thumb:hover {
     background: rgb(100 116 139);
+    background-clip: padding-box;
   }
-  .sidebar-scroll::-webkit-scrollbar-button {
+  .scrollbar-dark::-webkit-scrollbar-button {
     display: none;
+  }
+
+  /* Custom scrollbar styles for light backgrounds */
+  .scrollbar-light {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(203 213 225) transparent;
+  }
+  .scrollbar-light::-webkit-scrollbar {
+    width: 8px;
+  }
+  .scrollbar-light::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 8px 0;
+  }
+  .scrollbar-light::-webkit-scrollbar-thumb {
+    background: rgb(203 213 225);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  .scrollbar-light::-webkit-scrollbar-thumb:hover {
+    background: rgb(148 163 184);
+    background-clip: padding-box;
+  }
+  .scrollbar-light::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  /* Global scrollbar styling - applies to scrollable elements */
+  :where(html, body, main, [class*="overflow"]) {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(203 213 225) transparent;
+  }
+  :where(html, body, main, [class*="overflow"])::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  :where(html, body, main, [class*="overflow"])::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 8px;
+  }
+  :where(html, body, main, [class*="overflow"])::-webkit-scrollbar-thumb {
+    background: rgb(203 213 225);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  :where(html, body, main, [class*="overflow"])::-webkit-scrollbar-thumb:hover {
+    background: rgb(148 163 184);
+    background-clip: padding-box;
+  }
+  :where(html, body, main, [class*="overflow"])::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  /* Dark theme scrollbars - more specific targeting */
+  .dark :where(html, body, main, [class*="overflow"]),
+  [class*="bg-slate-800"] :where([class*="overflow"]),
+  [class*="bg-slate-900"] :where([class*="overflow"]) {
+    scrollbar-color: rgb(71 85 105) transparent;
+  }
+  .dark :where(html, body, main, [class*="overflow"])::-webkit-scrollbar-thumb,
+  [class*="bg-slate-800"] :where([class*="overflow"])::-webkit-scrollbar-thumb,
+  [class*="bg-slate-900"] :where([class*="overflow"])::-webkit-scrollbar-thumb {
+    background: rgb(71 85 105);
+  }
+  .dark :where(html, body, main, [class*="overflow"])::-webkit-scrollbar-thumb:hover,
+  [class*="bg-slate-800"] :where([class*="overflow"])::-webkit-scrollbar-thumb:hover,
+  [class*="bg-slate-900"] :where([class*="overflow"])::-webkit-scrollbar-thumb:hover {
+    background: rgb(100 116 139);
   }
 }
