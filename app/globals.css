@@ -4,15 +4,53 @@
 
 @layer base {
   :root {
+    /* Industrial Modern — deep navy + burnt orange */
     --fc-brand: #0f172a;
-    --fc-accent: #6366f1;
-    --fc-accent-dark: #4f46e5;
+    --fc-accent: #f97316;
+    --fc-accent-dark: #ea580c;
     --fc-muted: #64748b;
+    --fc-muted-strong: #334155;
+    --fc-gradient-start: #f97316;
+    --fc-gradient-mid: #ea580c;
+    --fc-gradient-end: #c2410c;
+
+    /* Background layering — soft off-white, no pastel */
+    --fc-bg-page: #f8fafc;
     --fc-surface: #ffffff;
+    --fc-surface-muted: #f1f5f9;
+
+    /* Border & shadow — reduced softness, operational */
     --fc-border: #e2e8f0;
-    --fc-gradient-start: #6366f1;
-    --fc-gradient-mid: #8b5cf6;
-    --fc-gradient-end: #ec4899;
+    --fc-border-subtle: #f1f5f9;
+    --fc-shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+    --fc-shadow-md: 0 2px 4px -1px rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.04);
+    --fc-shadow-lg: 0 4px 12px -2px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.04);
+
+    /* Radius — reduced, less SaaS rounded */
+    --fc-radius: 0.375rem;
+    --fc-radius-lg: 0.5rem;
+
+    /* Typography scale */
+    --fc-text-page-title: 1.25rem;
+    --fc-text-section: 0.875rem;
+    --fc-text-kpi: 1.875rem;
+    --fc-text-label: 0.75rem;
+    --fc-text-body: 0.875rem;
+
+    /* Semantic — muted red danger, no pastel warning */
+    --fc-success: #059669;
+    --fc-success-bg: #ecfdf5;
+    --fc-warning: #c2410c;
+    --fc-warning-bg: #fff7ed;
+    --fc-danger: #dc2626;
+    --fc-danger-bg: #fef2f2;
+    --fc-info: #0369a1;
+    --fc-info-bg: #f0f9ff;
+    --fc-neutral: #334155;
+    --fc-neutral-bg: #f1f5f9;
+
+    /* Sidebar — deeper navy (control board) */
+    --fc-nav-sidebar: #0a0f1a;
   }
   html {
     @apply scroll-smooth;
@@ -74,6 +112,20 @@
     pointer-events: none;
     opacity: 0.04;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Brand accent stripe — thin burnt orange for section headers / blocks */
+  .fc-accent-stripe {
+    display: block;
+    height: 3px;
+    width: 48px;
+    background: var(--fc-accent);
+  }
+  .fc-accent-stripe-vertical {
+    display: block;
+    width: 3px;
+    min-height: 48px;
+    background: var(--fc-accent);
   }
 
   /* Custom scrollbar styles for dark backgrounds (sidebar, etc.) */

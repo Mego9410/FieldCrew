@@ -55,6 +55,7 @@ export function Features() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
+          <span className="fc-accent-stripe mx-auto mb-3 block" aria-hidden />
           <p className="font-display text-sm font-semibold uppercase tracking-wider text-fc-accent">
             Everything you need
           </p>
@@ -73,10 +74,11 @@ export function Features() {
           {features.map(({ icon: Icon, title, description }) => (
             <li
               key={title}
-              className="group cursor-pointer rounded-xl border border-fc-border bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-fc-accent/50 hover:shadow-lg"
+              className="group relative cursor-pointer overflow-hidden rounded-lg border border-fc-border bg-white p-6 shadow-fc-sm transition-all duration-200 hover:border-fc-accent/40"
             >
+              <span className="absolute left-0 top-0 h-full w-0.5 bg-fc-accent opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden />
               <span
-                className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-fc-accent to-fc-gradient-mid text-white shadow-lg transition-transform duration-300 group-hover:scale-110"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-md bg-fc-accent text-white"
                 aria-hidden
               >
                 <Icon
@@ -85,7 +87,7 @@ export function Features() {
                   aria-hidden
                 />
               </span>
-              <h3 className="mt-6 font-display text-xl font-bold text-fc-brand">
+              <h3 className="mt-5 font-display text-xl font-bold text-fc-brand">
                 {title}
               </h3>
               <p className="mt-3 text-base leading-relaxed text-fc-muted">{description}</p>

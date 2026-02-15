@@ -251,10 +251,10 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
   }
 
   return (
-    <div className="relative w-full" aria-hidden>
-      <div className="overflow-hidden rounded-2xl border border-fc-border bg-white shadow-2xl w-full">
-        {/* Window chrome */}
-        <div className="flex items-center gap-2 border-b border-fc-border bg-slate-50 px-4 py-2.5">
+    <div className="relative w-full mb-[-20px] lg:mb-[-16px]" aria-hidden>
+      <div className="overflow-hidden rounded-lg border border-fc-border bg-white shadow-[0_8px_30px_rgba(15,23,42,0.12)] w-full">
+        {/* Browser frame */}
+        <div className="flex items-center gap-2 border-b border-fc-border bg-slate-100 px-4 py-2.5">
           <div className="flex gap-1.5">
             <span className="h-3 w-3 rounded-full bg-slate-300" />
             <span className="h-3 w-3 rounded-full bg-slate-300" />

@@ -3,18 +3,20 @@ import Link from "next/link";
 export function FinalCta() {
   return (
     <section
-      className="relative overflow-hidden border-b border-fc-border bg-gradient-cta py-20 sm:py-28 lg:py-32"
+      className="relative overflow-hidden border-b border-fc-border bg-fc-brand py-20 sm:py-28 lg:py-32 bg-gradient-cta-navy"
       aria-labelledby="final-cta-heading"
     >
-      {/* Gradient overlay for depth */}
+      {/* Subtle texture */}
       <div
-        className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-pink-500/20 to-red-500/20"
+        className="hero-noise absolute inset-0 opacity-[0.03]"
         aria-hidden
       />
+      {/* Thin burnt orange accent line above section */}
+      <div className="absolute left-0 right-0 top-0 h-[3px] bg-fc-accent" aria-hidden />
       <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-        <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+        <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-md border border-fc-accent/40 bg-fc-accent/10">
           <svg
-            className="h-10 w-10 text-white"
+            className="h-8 w-8 text-fc-accent"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -34,13 +36,13 @@ export function FinalCta() {
         >
           Time is priceless. FieldCrew is time.
         </h2>
-        <p className="mx-auto mt-6 max-w-2xl text-xl text-white/90 sm:text-2xl">
+        <p className="mx-auto mt-6 max-w-2xl text-xl text-slate-300 sm:text-2xl">
           Built for US HVAC crews with 3–15 field techs. Start your 14-day free
           trial — no credit card required.
         </p>
         <Link
           href="#pricing"
-          className="mt-10 inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-lg bg-white px-10 py-4 text-lg font-semibold text-fc-brand shadow-xl transition-all duration-200 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent"
+          className="mt-10 inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md bg-fc-accent px-10 py-4 text-lg font-semibold text-white transition-all duration-200 hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-brand"
         >
           Get Started
         </Link>

@@ -30,23 +30,23 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-fc-brand py-16 text-slate-400" role="contentinfo">
+    <footer className="bg-fc-brand py-10 sm:py-12 text-slate-400" role="contentinfo">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6 sm:gap-8">
           <div className="col-span-2 lg:col-span-1">
             <p className="font-display text-lg font-bold text-white">
               FieldCrew
             </p>
-            <p className="mt-4 text-sm text-slate-400">
+            <p className="mt-3 text-sm text-slate-400">
               Job-based payroll intelligence for HVAC crews.
             </p>
           </div>
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h3 className="font-display text-sm font-semibold text-white">
+              <h3 className="font-display text-sm font-bold text-white uppercase tracking-wider">
                 {category}
               </h3>
-              <ul className="mt-4 space-y-3">
+              <ul className="mt-3 space-y-2">
                 {links.map((link) => (
                   <li key={link.label}>
                     <Link
@@ -61,7 +61,7 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-8 sm:flex-row">
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-6 sm:flex-row">
           <p className="text-sm text-slate-500">
             © {new Date().getFullYear()} FieldCrew. All rights reserved.
           </p>

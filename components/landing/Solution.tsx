@@ -8,22 +8,12 @@ export function Solution() {
   return (
     <section
       id="how-it-works"
-      className="relative border-b border-fc-border bg-white py-20 sm:py-24 lg:py-32"
+      className="relative border-b border-fc-border bg-white py-20 sm:py-24 lg:py-28"
       aria-labelledby="solution-heading"
     >
-      {/* Gradient mesh background */}
-      <div
-        className="absolute inset-0 opacity-20"
-        aria-hidden
-        style={{
-          background: `
-            radial-gradient(circle at 30% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)
-          `,
-        }}
-      />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
+          <span className="fc-accent-stripe mx-auto mb-3 block" aria-hidden />
           <p className="font-display text-sm font-semibold uppercase tracking-wider text-fc-accent">
             How it works
           </p>
@@ -38,24 +28,21 @@ export function Solution() {
             all the way through payroll and reporting.
           </p>
         </div>
-        <div className="mt-16 flex flex-wrap items-stretch justify-center gap-8 sm:gap-12">
+        <div className="mt-20 flex flex-col items-center gap-10 sm:flex-row sm:justify-center sm:items-start sm:gap-6 lg:gap-10">
           {steps.map((step, i) => (
             <div key={step.label} className="flex flex-col items-center text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-fc-accent to-fc-gradient-mid text-white shadow-lg">
-                <span className="font-display text-2xl font-bold">{i + 1}</span>
+              <div className="flex items-center">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-fc-accent text-white shadow-fc-sm">
+                  <span className="font-display text-xl font-bold">{i + 1}</span>
+                </div>
+                {i < steps.length - 1 && (
+                  <span className="mx-2 hidden text-fc-accent/70 sm:inline" aria-hidden>→</span>
+                )}
               </div>
-              <h3 className="mt-6 font-display text-2xl font-bold text-fc-brand">
+              <h3 className="mt-5 font-display text-2xl font-bold text-fc-brand">
                 {step.label}
               </h3>
-              <p className="mt-3 max-w-xs text-base text-fc-muted">{step.desc}</p>
-              {i < steps.length - 1 && (
-                <span
-                  className="mt-8 hidden text-3xl text-fc-accent/40 sm:inline"
-                  aria-hidden
-                >
-                  →
-                </span>
-              )}
+              <p className="mt-2 max-w-xs text-base text-fc-muted">{step.desc}</p>
             </div>
           ))}
         </div>

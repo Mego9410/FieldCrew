@@ -12,7 +12,7 @@ export function ProductDemos() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-fc-accent to-fc-gradient-mid">
+          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-fc-accent">
             <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -31,7 +31,7 @@ export function ProductDemos() {
 
         <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {/* Integration showcase */}
-          <div className="lg:col-span-3 rounded-xl border border-slate-700 bg-slate-900/50 p-8 shadow-xl">
+          <div className="lg:col-span-3 rounded-lg border border-slate-700 bg-slate-900/50 p-6 shadow-fc-md">
             <h3 className="mb-4 font-display text-xl font-bold text-white">
               Seamlessly integrate with all your tools
             </h3>
@@ -39,7 +39,7 @@ export function ProductDemos() {
               {["QuickBooks", "Slack", "Google", "Microsoft", "GitHub", "Salesforce", "Notion", "Zoom"].map((tool) => (
                 <div
                   key={tool}
-                  className="flex h-16 items-center justify-center rounded-lg border border-slate-700 bg-slate-800/50 text-slate-400 transition-colors hover:border-slate-600 hover:text-white"
+                  className="flex h-14 items-center justify-center rounded-md border border-slate-700 bg-slate-800/50 text-slate-400 transition-colors hover:border-slate-600 hover:text-white"
                   aria-label={tool}
                 >
                   <span className="text-xs font-medium">{tool}</span>
@@ -54,7 +54,7 @@ export function ProductDemos() {
             </Link>
           </div>
           {/* 1. Worker: Job picker */}
-          <div className="group cursor-pointer rounded-xl border border-slate-700 bg-slate-900/50 p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-fc-accent/50 hover:shadow-2xl">
+          <div className="group cursor-pointer rounded-lg border border-slate-700 bg-slate-900/50 p-6 shadow-fc-md transition-all duration-200 hover:border-fc-accent/40">
             <p className="mb-4 font-body text-sm font-medium text-slate-400">
               Worker — Select job
             </p>
@@ -85,7 +85,7 @@ export function ProductDemos() {
           </div>
 
           {/* 2. Worker: Clock screen */}
-          <div className="group cursor-pointer rounded-xl border border-slate-700 bg-slate-900/50 p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-fc-accent/50 hover:shadow-2xl">
+          <div className="group cursor-pointer rounded-lg border border-slate-700 bg-slate-900/50 p-6 shadow-fc-md transition-all duration-200 hover:border-fc-accent/40">
             <p className="mb-4 font-body text-sm font-medium text-slate-400">
               Worker — Clock in
             </p>
@@ -105,7 +105,7 @@ export function ProductDemos() {
           </div>
 
           {/* 3. Owner: Labour cost per job */}
-          <div className="group cursor-pointer rounded-xl border border-slate-700 bg-slate-900/50 p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-fc-accent/50 hover:shadow-2xl">
+          <div className="group cursor-pointer rounded-lg border border-slate-700 bg-slate-900/50 p-6 shadow-fc-md transition-all duration-200 hover:border-fc-accent/40">
             <p className="mb-4 font-body text-sm font-medium text-slate-400">
               Owner — Labour by job
             </p>

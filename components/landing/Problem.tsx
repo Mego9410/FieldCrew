@@ -14,6 +14,7 @@ export function Problem() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
+          <span className="fc-accent-stripe mx-auto mb-3 block" aria-hidden />
           <p className="font-display text-sm font-semibold uppercase tracking-wider text-fc-accent">
             The problem
           </p>
@@ -28,15 +29,16 @@ export function Problem() {
             makes margin control impossible.
           </p>
         </div>
-        <ul className="mt-8 grid gap-6 sm:grid-cols-2">
+        <ul className="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-6 [&>li:nth-child(2)]:sm:mt-2 [&>li:nth-child(4)]:sm:mt-2">
           {points.map((point, i) => (
             <li
               key={i}
-              className="group cursor-pointer rounded-xl border border-fc-border bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-fc-accent/50 hover:shadow-lg"
+              className="group relative cursor-pointer overflow-hidden rounded-lg border border-fc-border bg-white p-5 shadow-fc-sm transition-all duration-200 hover:border-fc-accent/40"
             >
+              <span className="absolute left-0 top-0 h-full w-0.5 bg-fc-accent" aria-hidden />
               <div className="flex gap-4">
                 <span
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-fc-accent to-fc-gradient-mid text-sm font-bold text-white shadow-md transition-transform duration-300 group-hover:scale-110"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-fc-accent text-sm font-bold text-white"
                   aria-hidden
                 >
                   {i + 1}
