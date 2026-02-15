@@ -14,7 +14,7 @@ export default function TimeAllocationPage() {
       </Link>
       <h1 className="font-display text-xl font-bold text-fc-brand">Time Allocation Breakdown</h1>
       <p className="mt-1 text-sm text-fc-muted">
-        See how your team's time is allocated across billable, travel, admin, and idle categories.
+        See how your team&apos;s time is allocated across billable, travel, admin, and idle categories.
       </p>
       <div className="mt-6 rounded-lg border border-fc-border bg-white p-8 text-center">
         <p className="text-fc-muted">Detailed time allocation analysis coming soon...</p>

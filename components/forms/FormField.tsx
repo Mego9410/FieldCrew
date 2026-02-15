@@ -3,7 +3,7 @@
 import { InputHTMLAttributes, LabelHTMLAttributes } from "react";
 
 const inputClasses =
-  "w-full rounded-lg border border-fc-border bg-white py-2 px-3 text-sm text-fc-brand placeholder:text-fc-muted focus:border-fc-accent focus:outline-none focus:ring-1 focus:ring-fc-accent";
+  "w-full rounded-fc border border-fc-border bg-fc-surface py-2.5 px-3 text-sm text-fc-brand placeholder:text-fc-muted focus:border-fc-accent focus:outline-none focus:ring-2 focus:ring-fc-accent/20 transition-colors duration-fc";
 
 interface FormFieldProps {
   label: string;
@@ -28,11 +28,11 @@ export function FormField({
         {...labelProps}
       >
         {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
+        {required && <span className="text-fc-danger ml-0.5">*</span>}
       </label>
       {children}
       {error && (
-        <p className="text-xs text-red-500" role="alert">
+        <p className="text-xs text-fc-danger" role="alert">
           {error}
         </p>
       )}

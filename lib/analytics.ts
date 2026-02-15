@@ -113,10 +113,8 @@ export function getLastNDaysRange(days: number): DateRange {
 /**
  * Parse a date string (YYYY-MM-DD) to a Date object at local midnight
  */
-function parseDateString(dateStr: string): Date {
-  // If it's already a Date object, return it
+function parseDateString(dateStr: string | Date): Date {
   if (dateStr instanceof Date) return dateStr;
-  // Parse YYYY-MM-DD format and create date at local midnight
   const [year, month, day] = dateStr.split("-").map(Number);
   return new Date(year, month - 1, day, 0, 0, 0, 0);
 }

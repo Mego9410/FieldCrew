@@ -57,6 +57,13 @@ function uid(): string {
   return crypto.randomUUID?.() ?? `id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+/** YYYY-MM-DD for today + days (local date, consistent for client/server when called at same time) */
+function dateOffset(days: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
 /** Seed data used when storage is empty */
 const SEED = {
   companies: [
@@ -66,6 +73,7 @@ const SEED = {
     { id: "ou1", email: "owner@fieldcrew.com", name: "Admin User", companyId: "c1" },
   ] as OwnerUser[],
   workers: [
+    { id: "test-worker", name: "Test Worker", phone: "(555) 000-0000", hourlyRate: 40, companyId: "c1" },
     { id: "w1", name: "J. Martinez", phone: "(555) 123-4567", hourlyRate: 40, companyId: "c1" },
     { id: "w2", name: "M. Chen", phone: "(555) 234-5678", hourlyRate: 42, companyId: "c1" },
     { id: "w3", name: "R. Davis", phone: "(555) 345-6789", hourlyRate: 38, companyId: "c1" },
@@ -126,7 +134,7 @@ const SEED = {
       date: "2026-02-13",
       time: "10:00",
       hoursExpected: 4,
-      workerIds: ["w1"],
+      workerIds: ["w1", "test-worker"],
       status: "in_progress",
     },
     {
@@ -166,7 +174,7 @@ const SEED = {
       revenue: 650,
       date: "2026-02-14",
       hoursExpected: 3,
-      workerIds: ["w3"],
+      workerIds: ["w3", "test-worker"],
       status: "scheduled",
     },
     // Overrunning jobs (exceeding estimates)
@@ -803,9 +811,23 @@ function ensureSeeded() {
     set(STORAGE_KEYS.workers, SEED.workers);
     set(STORAGE_KEYS.projects, SEED.projects);
     set(STORAGE_KEYS.jobTypes, SEED.jobTypes);
-    set(STORAGE_KEYS.jobs, SEED.jobs);
+    set(STORAGE_KEYS.jobs, getSeedJobs());
     set(STORAGE_KEYS.timeEntries, SEED.timeEntries);
   }
+}
+
+/** Seed jobs with dates relative to today so they always show as current */
+function getSeedJobs(): Job[] {
+  const jobs = SEED.jobs;
+  return jobs.map((job, i) => {
+    if (job.startDate != null && job.endDate != null) {
+      return { ...job, startDate: dateOffset(i === 0 ? -4 : 0), endDate: dateOffset(i === 0 ? 0 : 4) };
+    }
+    if (job.date != null) {
+      return { ...job, date: dateOffset(i % 5) };
+    }
+    return job;
+  });
 }
 
 /** Call on app init to ensure data exists */
@@ -859,8 +881,24 @@ export function updateOwnerUser(id: string, input: Partial<OwnerUserInput>): Own
 }
 
 // ─── Workers ───────────────────────────────────────────────────────────────
+const TEST_WORKER: Worker = {
+  id: "test-worker",
+  name: "Test Worker",
+  phone: "(555) 000-0000",
+  hourlyRate: 40,
+  companyId: "c1",
+};
+
+function ensureTestWorker(): void {
+  if (!isBrowser()) return;
+  const workers = get<Worker[]>(STORAGE_KEYS.workers, SEED.workers);
+  if (workers.some((w) => w.id === "test-worker")) return;
+  set(STORAGE_KEYS.workers, [...workers, TEST_WORKER]);
+}
+
 export function getWorkers(companyId?: string): Worker[] {
   ensureSeeded();
+  ensureTestWorker();
   const workers = get<Worker[]>(STORAGE_KEYS.workers, SEED.workers);
   return companyId ? workers.filter((w) => w.companyId === companyId) : workers;
 }
@@ -882,6 +920,10 @@ export function deleteWorker(id: string): boolean {
   const workers = getWorkers().filter((w) => w.id !== id);
   set(STORAGE_KEYS.workers, workers);
   return true;
+}
+export function getWorker(id: string): Worker | null {
+  const workers = getWorkers();
+  return workers.find((w) => w.id === id) ?? null;
 }
 
 // ─── Projects ───────────────────────────────────────────────────────────────
@@ -913,10 +955,17 @@ export function deleteProject(id: string): boolean {
 // ─── Jobs ──────────────────────────────────────────────────────────────────
 export function getJobs(companyId?: string, projectId?: string): Job[] {
   ensureSeeded();
-  let jobs = get<Job[]>(STORAGE_KEYS.jobs, SEED.jobs);
+  let jobs = get<Job[]>(STORAGE_KEYS.jobs, getSeedJobs());
   if (companyId) jobs = jobs.filter((j) => j.companyId === companyId);
   if (projectId) jobs = jobs.filter((j) => j.projectId === projectId);
   return jobs;
+}
+/** Jobs assigned to a worker (workerIds includes workerId) */
+export function getJobsForWorker(workerId: string): Job[] {
+  return getJobs().filter((j) => j.workerIds?.includes(workerId));
+}
+export function getJob(id: string): Job | null {
+  return getJobs().find((j) => j.id === id) ?? null;
 }
 export function addJob(input: JobInput): Job {
   const jobs = getJobs();

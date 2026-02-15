@@ -1,0 +1,187 @@
+# Cursor Prompt — Full Platform Rebrand (Industrial Modern, Operator-Focused)
+
+You are rebranding the entire FieldCrew platform UI.
+
+IMPORTANT:
+- Do NOT change navigation structure or feature layout.
+- This is a visual system overhaul only.
+- Apply consistently across ALL pages.
+- Remove generic SaaS aesthetic.
+- Implement a rugged, operator-focused design system.
+
+Brand Direction:
+- Industrial Modern
+- Deep Navy + Burnt Orange
+- Strong numeric emphasis
+- No fluff
+- No pastel tones
+- No playful design
+
+---
+
+# 1) Global Theme System
+
+Update theme tokens:
+
+Primary Background:
+Deep navy for sidebar (#0F172A range)
+
+Surface:
+Soft off-white (#F8FAFC or similar)
+
+Accent:
+Burnt orange (#F97316 range)
+
+Neutral:
+Steel greys (#334155 / #64748B)
+
+Danger:
+Muted red (#DC2626 range)
+
+Remove:
+- Purple accents
+- Random blues
+- Pastel warning backgrounds
+
+---
+
+# 2) Typography
+
+Increase hierarchy:
+
+Page Title:
+Bold, strong
+
+KPI Numbers:
+Very large, heavy weight
+
+Labels:
+Small, uppercase optional
+
+Reduce softness.
+Increase numeric dominance.
+
+---
+
+# 3) Card Styling
+
+Refactor Card component:
+
+- Slightly reduce border radius (less soft)
+- Remove heavy borders
+- Use subtle shadow
+- Introduce accent left stripe option for highlighted cards
+
+Variants:
+- Default
+- Warning (subtle orange tint)
+- Critical (subtle red tint)
+- Highlight (dark navy background + orange accent)
+
+---
+
+# 4) Buttons
+
+Primary:
+Burnt orange background
+Dark navy text or white (test contrast)
+
+Secondary:
+Outlined navy
+
+No soft gradients.
+No pastel backgrounds.
+
+Add subtle hover elevation.
+
+---
+
+# 5) Charts
+
+Create shared chart theme:
+
+- Thicker lines (2–3px)
+- Burnt orange primary line
+- Navy secondary
+- Darker gridlines
+- Reduced clutter
+- No pastel fills
+
+Charts must feel deliberate and controlled.
+
+---
+
+# 6) Sidebar
+
+Keep dark navy.
+Active state:
+Burnt orange accent bar on left.
+
+Typography slightly heavier.
+No excessive hover animations.
+
+---
+
+# 7) Recoverable Profit Card
+
+Redesign to be signature element:
+
+- Dark navy background
+- Burnt orange accent
+- Large dollar figure
+- Clear subtext
+- No gradient softness
+- Strong and confident
+
+---
+
+# 8) Microcopy Adjustments
+
+Replace friendly language with operational tone:
+
+- "Weekly margin overview"
+- "Overtime cost (current week)"
+- "Jobs exceeding estimate"
+- "Revenue per labour hour"
+
+Remove conversational fluff.
+
+---
+
+# 9) Consistency Pass
+
+Apply across:
+- Dashboard
+- Reporting
+- Jobs
+- Workers
+- Timesheets
+- Payroll
+- Settings
+- Clock in/out
+
+Ensure:
+- Same radius
+- Same spacing
+- Same accent usage
+- Same typography scale
+
+---
+
+# 10) Acceptance Criteria
+
+Platform feels:
+- Rugged
+- Operator-focused
+- Recognisable
+- Confident
+- No-nonsense
+
+It should no longer resemble:
+Generic AI SaaS dashboard.
+
+Begin implementation by:
+1) Updating theme tokens
+2) Refactoring Card/Button/Badge
+3) Updating chart styling
+4) Applying visual system across pages

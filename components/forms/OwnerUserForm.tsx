@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { addOwnerUser, updateOwnerUser, getCompanies } from "@/lib/mock-storage";
+import { addOwnerUser, updateOwnerUser } from "@/lib/data";
+import { useCompanies } from "@/lib/hooks/useData";
 import type { OwnerUser, OwnerUserInput } from "@/lib/entities";
 import { FormField, FormInput, FormSelect } from "./FormField";
 
@@ -12,13 +13,13 @@ interface OwnerUserFormProps {
 }
 
 export function OwnerUserForm({ ownerUser, onSuccess, onCancel }: OwnerUserFormProps) {
-  const companies = getCompanies();
+  const { items: companies } = useCompanies();
   const [name, setName] = useState(ownerUser?.name ?? "");
   const [email, setEmail] = useState(ownerUser?.email ?? "");
   const [companyId, setCompanyId] = useState(ownerUser?.companyId ?? companies[0]?.id ?? "");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -41,13 +42,16 @@ export function OwnerUserForm({ ownerUser, onSuccess, onCancel }: OwnerUserFormP
       companyId,
     };
 
-    if (ownerUser) {
-      updateOwnerUser(ownerUser.id, input);
-    } else {
-      addOwnerUser(input);
+    try {
+      if (ownerUser) {
+        await updateOwnerUser(ownerUser.id, input);
+      } else {
+        await addOwnerUser(input);
+      }
+      onSuccess?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save owner");
     }
-
-    onSuccess?.();
   };
 
   return (

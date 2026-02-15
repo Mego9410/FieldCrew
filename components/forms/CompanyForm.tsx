@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { addCompany, updateCompany } from "@/lib/mock-storage";
+import { addCompany, updateCompany } from "@/lib/data";
 import type { Company, CompanyInput } from "@/lib/entities";
 import { FormField, FormInput } from "./FormField";
 
@@ -16,7 +16,7 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
   const [address, setAddress] = useState(company?.address ?? "");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -30,13 +30,16 @@ export function CompanyForm({ company, onSuccess, onCancel }: CompanyFormProps) 
       address: address.trim() || undefined,
     };
 
-    if (company) {
-      updateCompany(company.id, input);
-    } else {
-      addCompany(input);
+    try {
+      if (company) {
+        await updateCompany(company.id, input);
+      } else {
+        await addCompany(input);
+      }
+      onSuccess?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save company");
     }
-
-    onSuccess?.();
   };
 
   return (

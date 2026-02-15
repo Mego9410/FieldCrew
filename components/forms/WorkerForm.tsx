@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { addWorker, updateWorker, getCompanies } from "@/lib/mock-storage";
+import { addWorker, updateWorker } from "@/lib/data";
+import { useCompanies } from "@/lib/hooks/useData";
 import type { Worker, WorkerInput } from "@/lib/entities";
 import { FormField, FormInput } from "./FormField";
 
@@ -12,7 +13,7 @@ interface WorkerFormProps {
 }
 
 export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
-  const companies = getCompanies();
+  const { items: companies } = useCompanies();
   const companyId = companies[0]?.id ?? worker?.companyId ?? "";
 
   const [name, setName] = useState(worker?.name ?? "");
@@ -20,7 +21,7 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
   const [hourlyRate, setHourlyRate] = useState(worker?.hourlyRate?.toString() ?? "");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -49,13 +50,16 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
       companyId,
     };
 
-    if (worker) {
-      updateWorker(worker.id, input);
-    } else {
-      addWorker(input);
+    try {
+      if (worker) {
+        await updateWorker(worker.id, input);
+      } else {
+        await addWorker(input);
+      }
+      onSuccess?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save worker");
     }
-
-    onSuccess?.();
   };
 
   return (

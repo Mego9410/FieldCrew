@@ -13,31 +13,31 @@ const sections = [
   {
     title: "Profile",
     description: "Name, email, and profile photo",
-    href: "#profile",
+    href: routes.owner.settingsProfile,
     icon: User,
   },
   {
     title: "Company",
     description: "Business name, address, and tax ID",
-    href: "#company",
+    href: routes.owner.settingsCompany,
     icon: Building2,
   },
   {
     title: "Notifications",
     description: "Email and in-app notification preferences",
-    href: "#notifications",
+    href: routes.owner.settingsNotifications,
     icon: Bell,
   },
   {
     title: "Billing",
     description: "Plan, payment method, and invoices",
-    href: "#billing",
+    href: routes.owner.settingsBilling,
     icon: CreditCard,
   },
   {
     title: "Security",
     description: "Password and two-factor authentication",
-    href: "#security",
+    href: routes.owner.settingsSecurity,
     icon: Shield,
   },
 ];
@@ -47,32 +47,35 @@ export default function SettingsPage() {
     <div className="px-6 py-6">
       <div className="mb-6">
         <h1 className="font-display text-xl font-bold text-fc-brand">Settings</h1>
-        <p className="mt-1 text-sm text-fc-muted">
+        <p className="mt-0.5 text-sm text-fc-muted">
           Account and app settings.
         </p>
       </div>
 
-      <div className="max-w-2xl space-y-1">
-        {sections.map(({ title, description, href, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex items-center gap-4 rounded-lg border border-fc-border bg-white p-4 shadow-sm transition-colors hover:border-fc-accent/30 hover:bg-slate-50/50"
-          >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-fc-accent/10 text-fc-accent">
-              <Icon className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-medium text-fc-brand">{title}</p>
-              <p className="text-sm text-fc-muted">{description}</p>
-            </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-fc-muted" />
-          </Link>
-        ))}
-      </div>
+      <section className="mb-8">
+        <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-fc-muted">
+          Account & app
+        </h2>
+        <div className="max-w-2xl space-y-0 border border-fc-border bg-fc-surface">
+          {sections.map(({ title, description, href, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center gap-4 border-b border-fc-border p-4 last:border-b-0 transition-colors hover:bg-fc-surface-muted"
+            >
+              <Icon className="h-5 w-5 shrink-0 text-fc-muted" />
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-fc-brand">{title}</p>
+                <p className="text-sm text-fc-muted">{description}</p>
+              </div>
+              <ChevronRight className="h-5 w-5 shrink-0 text-fc-muted" />
+            </Link>
+          ))}
+        </div>
+      </section>
 
-      <p className="mt-6 text-sm text-fc-muted">
-        <Link href={routes.owner.home} className="text-fc-accent hover:underline">
+      <p className="text-sm text-fc-muted">
+        <Link href={routes.owner.home} className="font-medium text-fc-accent hover:underline">
           Back to dashboard
         </Link>
       </p>

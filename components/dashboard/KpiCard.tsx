@@ -1,19 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
 
 export interface KpiCardProps {
   title: string;
   primaryValue: string;
   secondaryValue: string;
   trend?: {
-    value: number; // percentage change
+    value: number;
     label?: string;
   };
-  icon: LucideIcon;
+  icon?: React.ComponentType<{ className?: string }>;
   href: string;
   warning?: boolean;
+  /** 2px top accent stripe for primary metrics */
+  primaryMetric?: boolean;
 }
 
 export function KpiCard({
@@ -21,45 +24,39 @@ export function KpiCard({
   primaryValue,
   secondaryValue,
   trend,
-  icon: Icon,
   href,
   warning = false,
+  primaryMetric = false,
 }: KpiCardProps) {
   const trendValue = trend?.value ?? 0;
   const isPositive = trendValue >= 0;
   const TrendIcon = isPositive ? TrendingUp : TrendingDown;
-  const trendColor = isPositive ? "text-emerald-600" : "text-red-600";
+  const trendColor = isPositive ? "text-fc-success" : "text-fc-danger";
 
   return (
     <Link
       href={href}
-      className={`group block rounded-lg border bg-white p-5 shadow-sm transition-all hover:shadow-md ${
-        warning ? "border-amber-300 border-2" : "border-fc-border"
-      }`}
+      className={`block border border-fc-border bg-fc-surface transition-shadow hover:shadow-fc-sm ${
+        warning ? "border-l-4 border-l-fc-warning" : ""
+      } ${primaryMetric ? "border-t-2 border-t-fc-accent" : ""}`}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="mb-2 flex items-center gap-2">
-            <p className="text-sm font-medium text-fc-muted">{title}</p>
-            {warning && (
-              <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
-                Warning
-              </span>
-            )}
-          </div>
-          <p className="text-3xl font-bold text-fc-brand">{primaryValue}</p>
-          <p className="mt-2 text-sm text-fc-muted">{secondaryValue}</p>
-          {trend && (
-            <div className={`mt-2 flex items-center gap-1 text-xs font-medium ${trendColor}`}>
-              <TrendIcon className="h-3.5 w-3.5" />
-              <span>
-                {isPositive ? "↑" : "↓"} {Math.abs(trendValue).toFixed(1)}% vs {trend.label ?? "last week"}
-              </span>
-            </div>
-          )}
+      <div className="flex flex-col p-4">
+        <div className="flex items-start justify-between gap-2">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-fc-muted">
+            {title}
+          </span>
+          {warning && <Badge variant="warning">Warning</Badge>}
         </div>
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-slate-100 group-hover:bg-slate-200 transition-colors">
-          <Icon className="h-6 w-6 text-slate-600" />
+        <p className="mt-2 text-2xl font-bold tracking-tight text-fc-brand">{primaryValue}</p>
+        <div className="mt-2 border-b border-fc-border-subtle pb-2" />
+        <div className="flex items-end justify-between gap-2">
+          <p className="text-xs text-fc-muted">{secondaryValue}</p>
+          {trend != null && (
+            <span className={`flex shrink-0 items-center gap-0.5 text-[10px] font-semibold ${trendColor}`}>
+              <TrendIcon className="h-3 w-3" />
+              {isPositive ? "+" : ""}{trendValue.toFixed(1)}% vs {trend.label ?? "last week"}
+            </span>
+          )}
         </div>
       </div>
     </Link>

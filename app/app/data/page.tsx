@@ -13,14 +13,15 @@ import {
   ProjectForm,
 } from "@/components/forms";
 import {
-  getCompanies,
-  getOwnerUsers,
-  getWorkers,
-  getJobs,
-  getTimeEntries,
-  getProjects,
-} from "@/lib/mock-storage";
+  useCompanies,
+  useOwnerUsers,
+  useWorkers,
+  useJobs,
+  useTimeEntries,
+  useProjects,
+} from "@/lib/hooks/useData";
 import { Folder } from "lucide-react";
+import { Card } from "@/components/ui/Card";
 
 const tabs = [
   { id: "company", label: "Company", icon: Building2 },
@@ -33,27 +34,33 @@ const tabs = [
 
 export default function DataPage() {
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]["id"]>("company");
-  const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleSuccess = () => setRefreshKey((k) => k + 1);
+  const { items: companies, refetch: refetchCompanies } = useCompanies();
+  const { items: ownerUsers, refetch: refetchOwnerUsers } = useOwnerUsers();
+  const { items: projects, refetch: refetchProjects } = useProjects();
+  const { items: workers, refetch: refetchWorkers } = useWorkers();
+  const { items: jobs, refetch: refetchJobs } = useJobs();
+  const { items: timeEntries, refetch: refetchTimeEntries } = useTimeEntries();
 
-  const companies = getCompanies();
-  const ownerUsers = getOwnerUsers();
-  const projects = getProjects();
-  const workers = getWorkers();
-  const jobs = getJobs();
-  const timeEntries = getTimeEntries();
+  const handleSuccess = () => {
+    refetchCompanies();
+    refetchOwnerUsers();
+    refetchProjects();
+    refetchWorkers();
+    refetchJobs();
+    refetchTimeEntries();
+  };
 
   return (
     <div className="px-6 py-6">
       <div className="mb-6">
         <h1 className="font-display text-xl font-bold text-fc-brand">Entity setup</h1>
-        <p className="mt-1 text-sm text-fc-muted">
-          Define entities and fields. Data is stored in mock local storage.
+        <p className="mt-0.5 text-sm text-fc-muted">
+          Define entities and fields. Data is stored in Supabase.
         </p>
         <Link
           href={routes.owner.home}
-          className="mt-2 inline-flex items-center gap-1 text-sm text-fc-accent hover:underline"
+          className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-fc-accent hover:underline"
         >
           <ChevronRight className="h-4 w-4 rotate-180" />
           Back to dashboard
@@ -61,9 +68,8 @@ export default function DataPage() {
       </div>
 
       <div className="flex flex-col gap-6 lg:flex-row">
-        {/* Tabs */}
         <nav
-          className="flex shrink-0 flex-col gap-1 rounded-lg border border-fc-border bg-white p-1 shadow-sm lg:w-48"
+          className="flex shrink-0 flex-col gap-0 border border-fc-border bg-fc-surface lg:w-48"
           aria-label="Entity types"
         >
           {tabs.map(({ id, label, icon: Icon }) => (
@@ -71,10 +77,10 @@ export default function DataPage() {
               key={id}
               type="button"
               onClick={() => setActiveTab(id)}
-              className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 border-l-4 px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
                 activeTab === id
-                  ? "bg-fc-accent/10 text-fc-accent"
-                  : "text-fc-brand hover:bg-slate-50"
+                  ? "border-l-fc-accent bg-fc-surface-muted text-fc-brand"
+                  : "border-l-transparent text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"
               }`}
             >
               <Icon className="h-4 w-4 shrink-0" />
@@ -83,25 +89,26 @@ export default function DataPage() {
           ))}
         </nav>
 
-        {/* Form + list */}
-        <div className="min-w-0 flex-1 space-y-6">
-          <div className="rounded-lg border border-fc-border bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-fc-muted">
+        <div className="min-w-0 flex-1 space-y-8">
+          <section>
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-fc-muted">
               Create {tabs.find((t) => t.id === activeTab)?.label}
             </h2>
+          <Card variant="default" className="p-5">
             {activeTab === "company" && <CompanyForm onSuccess={handleSuccess} />}
             {activeTab === "owner" && <OwnerUserForm onSuccess={handleSuccess} />}
             {activeTab === "project" && <ProjectForm onSuccess={handleSuccess} />}
             {activeTab === "worker" && <WorkerForm onSuccess={handleSuccess} />}
             {activeTab === "job" && <JobForm onSuccess={handleSuccess} />}
             {activeTab === "timeentry" && <TimeEntryForm onSuccess={handleSuccess} />}
-          </div>
+          </Card>
+          </section>
 
-          {/* Current data summary */}
-          <div className="rounded-lg border border-fc-border bg-white p-6 shadow-sm" key={refreshKey}>
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-fc-muted">
+          <section>
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-fc-muted">
               Stored data
             </h2>
+          <Card variant="muted" className="p-5">
             <dl className="space-y-3 text-sm">
               <div>
                 <dt className="font-medium text-fc-muted">Companies</dt>
@@ -128,7 +135,8 @@ export default function DataPage() {
                 <dd className="mt-0.5 text-fc-brand">{timeEntries.length}</dd>
               </div>
             </dl>
-          </div>
+          </Card>
+          </section>
         </div>
       </div>
     </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { addJob, updateJob, getCompanies, getWorkers, getProjects } from "@/lib/mock-storage";
+import { addJob, updateJob } from "@/lib/data";
+import { useCompanies, useWorkers, useProjects } from "@/lib/hooks/useData";
 import type { Job, JobInput } from "@/lib/entities";
 import { FormField, FormInput } from "./FormField";
 
@@ -13,9 +14,9 @@ interface JobFormProps {
 }
 
 export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel }: JobFormProps) {
-  const companies = getCompanies();
-  const workers = getWorkers();
-  const projects = getProjects();
+  const { items: companies } = useCompanies();
+  const { items: workers } = useWorkers();
+  const { items: projects } = useProjects();
   const companyId = companies[0]?.id ?? job?.companyId ?? "";
 
   const today = new Date().toISOString().slice(0, 10);
@@ -31,7 +32,9 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel }: 
   const [time, setTime] = useState(job?.time ?? "09:00");
   const [hoursPerDay, setHoursPerDay] = useState(job?.hoursPerDay?.toString() ?? "4");
   const [hoursExpected, setHoursExpected] = useState(job?.hoursExpected?.toString() ?? "");
-  const [workerIds, setWorkerIds] = useState<string[]>(job?.workerIds ?? []);
+  const [workerIds, setWorkerIds] = useState<string[]>(
+    job?.workerIds ?? (workers.some((w) => w.id === "test-worker") ? ["test-worker"] : [])
+  );
   const [workerSearch, setWorkerSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -50,7 +53,7 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel }: 
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -102,13 +105,16 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel }: 
       workerIds: validWorkerIds.length > 0 ? validWorkerIds : undefined,
     };
 
-    if (job) {
-      updateJob(job.id, input);
-    } else {
-      addJob(input);
+    try {
+      if (job) {
+        await updateJob(job.id, input);
+      } else {
+        await addJob(input);
+      }
+      onSuccess?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save job");
     }
-
-    onSuccess?.();
   };
 
   return (

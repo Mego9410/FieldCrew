@@ -1,6 +1,6 @@
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppHeader } from "@/components/app/AppHeader";
-import { MockStorageInit } from "@/components/MockStorageInit";
+import { ToastProvider } from "@/components/ui/Toast";
 
 export default function AppLayout({
   children,
@@ -8,13 +8,14 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
+    <ToastProvider>
     <div className="flex h-screen overflow-hidden bg-fc-app-surface">
-      <MockStorageInit />
       <AppSidebar />
       <div className="flex min-h-0 flex-1 flex-col min-w-0">
         <AppHeader />
-        <main className="min-h-0 flex-1 overflow-auto">{children}</main>
+        <main className="min-h-0 flex-1 overflow-auto bg-fc-page">{children}</main>
       </div>
     </div>
+    </ToastProvider>
   );
 }

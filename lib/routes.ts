@@ -13,11 +13,19 @@ export const routes = {
   owner: {
     home: "/app",
     jobs: "/app/jobs",
+    job: (jobId: string) => `/app/jobs/${jobId}`,
     workers: "/app/workers",
+    worker: (workerId: string) => `/app/workers/${workerId}`,
     timesheets: "/app/timesheets",
     payrollExport: "/app/payroll/export",
     settings: "/app/settings",
+    settingsProfile: "/app/settings/profile",
+    settingsCompany: "/app/settings/company",
+    settingsNotifications: "/app/settings/notifications",
+    settingsBilling: "/app/settings/billing",
+    settingsSecurity: "/app/settings/security",
     data: "/app/data",
+    reporting: "/app/reporting",
     projects: "/app/projects",
     projectJobs: (projectId: string) => `/app/projects/${projectId}`,
     dashboard: {
@@ -31,11 +39,13 @@ export const routes = {
       revenuePerLabourHour: "/app/dashboard/revenue-per-labour-hour",
     },
   },
-  /** Worker: crew member views; use with token, e.g. routes.worker.home(token) */
+  /** Worker: crew member views; use with token (workerId), e.g. routes.worker.home(token) */
   worker: {
     home: (token: string) => `/w/${token}`,
     jobs: (token: string) => `/w/${token}/jobs`,
-    clock: (token: string) => `/w/${token}/clock`,
+    job: (token: string, jobId: string) => `/w/${token}/jobs/${jobId}`,
+    clock: (token: string, jobId?: string) =>
+      jobId ? `/w/${token}/clock?jobId=${encodeURIComponent(jobId)}` : `/w/${token}/clock`,
   },
 } as const;
 

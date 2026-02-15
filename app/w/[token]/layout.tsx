@@ -10,8 +10,8 @@ export default async function WorkerLayout({
 }) {
   const { token } = await params;
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-fc-border bg-white">
+    <div className="min-h-screen bg-fc-page">
+      <header className="border-b border-fc-border bg-fc-surface">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           <Link
             href={routes.worker.home(token)}

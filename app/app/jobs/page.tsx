@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import {
   Plus,
   Search,
@@ -9,18 +10,25 @@ import {
   ClipboardList,
   User,
 } from "lucide-react";
-import { getJobs } from "@/lib/mock-storage";
-import { getWorkers } from "@/lib/mock-storage";
-import { getTimeEntries } from "@/lib/mock-storage";
+import { useJobs, useWorkers, useTimeEntries } from "@/lib/hooks/useData";
+import { routes } from "@/lib/routes";
 import { JobForm } from "@/components/forms";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
 
 // Derive display data from entities
 function useJobsDisplay() {
-  const jobs = getJobs();
-  const workers = getWorkers();
-  const entries = getTimeEntries();
+  const { items: jobs, refetch: refetchJobs } = useJobs();
+  const { items: workers } = useWorkers();
+  const { items: entries } = useTimeEntries();
 
-  return jobs.map((job) => {
+  const refetch = useCallback(() => {
+    refetchJobs();
+  }, [refetchJobs]);
+
+  return { display: jobs.map((job) => {
     const jobEntries = entries.filter((e) => e.jobId === job.id);
     const assigneeIds = job.workerIds?.length ? job.workerIds : [...new Set(jobEntries.map((e) => e.workerId))];
     const assigneeNames = assigneeIds
@@ -80,22 +88,20 @@ function useJobsDisplay() {
       dueDate,
       status: jobEntries.length ? "in_progress" : "scheduled",
     };
-  });
+  }), refetch };
 }
 
-const statusStyles: Record<string, string> = {
-  scheduled: "bg-slate-100 text-slate-700",
-  in_progress: "bg-amber-100 text-amber-800",
-  completed: "bg-emerald-100 text-emerald-800",
-  overdue: "bg-red-100 text-red-800",
+const statusVariants = {
+  scheduled: "neutral" as const,
+  in_progress: "warning" as const,
+  completed: "success" as const,
+  overdue: "danger" as const,
 };
 
 export default function JobsPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [search, setSearch] = useState("");
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  const jobsDisplay = useJobsDisplay();
+  const { display: jobsDisplay, refetch } = useJobsDisplay();
   const filtered = jobsDisplay.filter(
     (j) =>
       j.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -104,118 +110,106 @@ export default function JobsPage() {
 
   const handleJobSuccess = useCallback(() => {
     setShowAddModal(false);
-    setRefreshKey((k) => k + 1);
-  }, []);
+    refetch();
+  }, [refetch]);
 
   return (
     <div className="px-6 py-6">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-xl font-bold text-fc-brand">Jobs</h1>
-          <p className="mt-1 text-sm text-fc-muted">
+          <p className="mt-0.5 text-sm text-fc-muted">
             Manage jobs and see labour cost per job.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-fc-brand/90"
-        >
+        <Button type="button" onClick={() => setShowAddModal(true)}>
           <Plus className="h-4 w-4" />
           New job
-        </button>
+        </Button>
       </div>
 
-      {/* Filters & search */}
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fc-muted" />
-          <input
-            type="search"
-            placeholder="Search jobs…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-fc-border bg-white py-2 pl-9 pr-3 text-sm text-fc-brand placeholder:text-fc-muted focus:border-fc-accent focus:outline-none focus:ring-1 focus:ring-fc-accent"
-          />
+      <section className="mb-8">
+        <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-fc-muted">
+          Job list
+        </h2>
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[200px] max-w-sm">
+            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-fc-muted" />
+            <input
+              type="search"
+              placeholder="Search jobs…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full border border-fc-border bg-fc-surface py-2 pl-8 pr-3 text-sm text-fc-brand placeholder:text-fc-muted focus:border-fc-accent focus:outline-none focus:ring-1 focus:ring-fc-accent"
+            />
+          </div>
+          <Button type="button" variant="secondary">
+            <Filter className="h-4 w-4" />
+            Filters
+          </Button>
         </div>
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 rounded-lg border border-fc-border bg-white px-3 py-2 text-sm font-medium text-fc-brand hover:bg-slate-50"
-        >
-          <Filter className="h-4 w-4" />
-          Filters
-        </button>
-      </div>
-
-      {/* Jobs table */}
-      <div className="rounded-lg border border-fc-border bg-white shadow-sm overflow-hidden">
+        <Card variant="default" className="overflow-hidden p-0">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-fc-border bg-slate-50/80">
-                <th className="px-4 py-3 font-semibold text-fc-brand">Job</th>
-                <th className="px-4 py-3 font-semibold text-fc-brand">Status</th>
-                <th className="px-4 py-3 font-semibold text-fc-brand">Assignee</th>
-                <th className="px-4 py-3 font-semibold text-fc-brand">Due</th>
-                <th className="px-4 py-3 font-semibold text-fc-brand">Estimated</th>
-                <th className="px-4 py-3 font-semibold text-fc-brand">Actual</th>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="px-4">Job</TableHead>
+                <TableHead className="px-4">Status</TableHead>
+                <TableHead className="px-4">Assignee</TableHead>
+                <TableHead className="px-4">Due</TableHead>
+                <TableHead className="px-4">Estimated</TableHead>
+                <TableHead className="px-4">Actual</TableHead>
                 <th className="w-10 px-2 py-3" aria-hidden />
-              </tr>
-            </thead>
-            <tbody key={refreshKey}>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {filtered.map((job) => (
-                <tr
-                  key={job.id}
-                  className="border-b border-fc-border last:border-0 hover:bg-slate-50/50"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <ClipboardList className="h-4 w-4 shrink-0 text-fc-muted" />
+                <TableRow key={job.id} className="*:px-4">
+                  <TableCell>
+                    <Link
+                      href={routes.owner.job(job.id)}
+                      className="flex items-center gap-2 group"
+                    >
+                      <ClipboardList className="h-4 w-4 shrink-0 text-fc-muted transition-colors duration-fc group-hover:text-fc-accent" />
                       <div>
-                        <span className="font-medium text-fc-brand">{job.name}</span>
+                        <span className="font-medium text-fc-brand group-hover:text-fc-accent group-hover:underline">
+                          {job.name}
+                        </span>
                         <p className="text-xs text-fc-muted mt-0.5">{job.address}</p>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusStyles[job.status] ?? "bg-slate-100 text-slate-700"}`}
-                    >
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={statusVariants[job.status as keyof typeof statusVariants] ?? "neutral"}>
                       {job.status.replace("_", " ")}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-fc-muted">
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-fc-muted">
                     <span className="flex items-center gap-1.5">
                       <User className="h-3.5 w-3.5" />
                       {job.assignee}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-fc-muted">
-                    {job.dueDate}
-                  </td>
-                  <td className="px-4 py-3 text-fc-muted">
-                    {job.estimatedDisplay}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-fc-brand">
-                    {job.actualDisplay}
-                  </td>
-                  <td className="px-2 py-3">
+                  </TableCell>
+                  <TableCell className="text-fc-muted">{job.dueDate}</TableCell>
+                  <TableCell className="text-fc-muted">{job.estimatedDisplay}</TableCell>
+                  <TableCell className="font-medium text-fc-brand">{job.actualDisplay}</TableCell>
+                  <TableCell className="px-2">
                     <button
                       type="button"
-                      className="rounded p-1.5 text-fc-muted hover:bg-slate-100 hover:text-fc-brand"
+                      className="rounded p-1.5 text-fc-muted transition-colors duration-fc hover:bg-fc-surface-muted hover:text-fc-brand"
                       aria-label="More options"
                     >
                       <MoreHorizontal className="h-4 w-4" />
                     </button>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
-      </div>
+      </Card>
+      </section>
 
-      {/* Add job modal */}
       {showAddModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
@@ -223,8 +217,8 @@ export default function JobsPage() {
           aria-modal="true"
           aria-labelledby="add-job-title"
         >
-          <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-fc-border bg-white p-6 shadow-lg">
-            <h2 id="add-job-title" className="mb-4 font-display text-lg font-bold text-fc-brand">
+          <div className="max-h-[90vh] w-full max-w-md overflow-auto border border-fc-border bg-fc-surface p-6">
+            <h2 id="add-job-title" className="mb-4 text-xs font-bold uppercase tracking-widest text-fc-muted">
               New job
             </h2>
             <JobForm onSuccess={handleJobSuccess} onCancel={() => setShowAddModal(false)} />

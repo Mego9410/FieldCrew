@@ -76,7 +76,7 @@ export default function SignUpPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-fc-surface px-4">
-      <div className="w-full max-w-[400px] rounded-xl border border-fc-border bg-white p-8 shadow-sm">
+      <div className="w-full max-w-[400px] border border-fc-border bg-fc-surface p-8">
         <h1 className="font-display text-2xl font-bold text-fc-brand">
           Create an account
         </h1>

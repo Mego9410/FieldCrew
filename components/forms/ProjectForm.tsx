@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { addProject, updateProject, getCompanies } from "@/lib/mock-storage";
+import { addProject, updateProject } from "@/lib/data";
+import { useCompanies } from "@/lib/hooks/useData";
 import type { Project, ProjectInput } from "@/lib/entities";
 import { FormField, FormInput } from "./FormField";
 
@@ -21,14 +22,14 @@ interface ProjectFormProps {
 }
 
 export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) {
-  const companies = getCompanies();
+  const { items: companies } = useCompanies();
   const companyId = companies[0]?.id ?? project?.companyId ?? "";
 
   const [name, setName] = useState(project?.name ?? "");
   const [color, setColor] = useState(project?.color ?? "bg-teal-400");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -47,13 +48,16 @@ export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) 
       companyId,
     };
 
-    if (project) {
-      updateProject(project.id, input);
-    } else {
-      addProject(input);
+    try {
+      if (project) {
+        await updateProject(project.id, input);
+      } else {
+        await addProject(input);
+      }
+      onSuccess?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save project");
     }
-
-    onSuccess?.();
   };
 
   return (

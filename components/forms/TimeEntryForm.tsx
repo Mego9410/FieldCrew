@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { addTimeEntry, updateTimeEntry, getWorkers, getJobs } from "@/lib/mock-storage";
+import { addTimeEntry, updateTimeEntry } from "@/lib/data";
+import { useWorkers, useJobs } from "@/lib/hooks/useData";
 import type { TimeEntry, TimeEntryInput } from "@/lib/entities";
 import { FormField, FormInput, FormSelect, FormTextarea } from "./FormField";
 
@@ -25,8 +26,8 @@ export function TimeEntryForm({
   onSuccess,
   onCancel,
 }: TimeEntryFormProps) {
-  const workers = getWorkers();
-  const jobs = getJobs();
+  const { items: workers } = useWorkers();
+  const { items: jobs } = useJobs();
 
   const defaultStart = timeEntry?.start
     ? new Date(timeEntry.start)
@@ -47,7 +48,7 @@ export function TimeEntryForm({
   const [notes, setNotes] = useState(timeEntry?.notes ?? "");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -84,13 +85,16 @@ export function TimeEntryForm({
       notes: notes.trim() || undefined,
     };
 
-    if (timeEntry) {
-      updateTimeEntry(timeEntry.id, input);
-    } else {
-      addTimeEntry(input);
+    try {
+      if (timeEntry) {
+        await updateTimeEntry(timeEntry.id, input);
+      } else {
+        await addTimeEntry(input);
+      }
+      onSuccess?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save time entry");
     }
-
-    onSuccess?.();
   };
 
   return (
