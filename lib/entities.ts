@@ -56,6 +56,7 @@ export interface Job {
   isAdhoc?: boolean;      // true = ad-hoc (one-off, can use different workers)
   workerIds?: string[];   // assigned workers (multiselect)
   status?: "scheduled" | "in_progress" | "completed" | "overdue";
+  instructions?: string;  // notes for crew (access, scope, contact)
 }
 
 export type TimeEntryCategory = "billable" | "travel" | "admin" | "idle";

@@ -42,6 +42,7 @@ export const routes = {
   /** Worker: crew member views; use with token (workerId), e.g. routes.worker.home(token) */
   worker: {
     home: (token: string) => `/w/${token}`,
+    dashboard: (token: string) => `/w/${token}/dashboard`,
     jobs: (token: string) => `/w/${token}/jobs`,
     job: (token: string, jobId: string) => `/w/${token}/jobs/${jobId}`,
     clock: (token: string, jobId?: string) =>

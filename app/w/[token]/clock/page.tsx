@@ -8,10 +8,7 @@ import {
   Square,
   Pause,
   PlayCircle,
-  Calendar,
-  Clock3,
   MapPin,
-  DollarSign,
   Users,
   Edit3,
 } from "lucide-react";

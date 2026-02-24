@@ -552,6 +552,7 @@ function KpiCard({
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <div className="mb-2 flex items-center gap-2">
+            <Icon className="h-4 w-4 shrink-0 text-fc-muted" />
             <p className="text-[10px] font-bold uppercase tracking-widest text-fc-muted">{title}</p>
             {warning && <Badge variant="warning">Warning</Badge>}
             {tooltip && (

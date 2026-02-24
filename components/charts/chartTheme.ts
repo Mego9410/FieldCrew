@@ -53,3 +53,44 @@ export const chartTheme = {
 } as const;
 
 export const dashboardChartTheme = chartTheme;
+
+/** Industrial console: heavy grid, no gradients, steel + burnt orange */
+export const consoleChartTheme = {
+  colors: {
+    primary: "#ea580c",
+    grid: "#334155",
+    text: "#94a3b8",
+    textStrong: "#e2e8f0",
+  },
+  grid: {
+    stroke: "#334155",
+    strokeDasharray: "1 2",
+    strokeOpacity: 1,
+  },
+  tooltip: {
+    contentStyle: {
+      backgroundColor: "#0f1620",
+      border: "1px solid #1e2936",
+      borderRadius: "2px",
+      boxShadow: "0 4px 12px rgb(0 0 0 / 0.4)",
+      padding: "6px 10px",
+      fontSize: "11px",
+      color: "#e2e8f0",
+    },
+    labelStyle: {
+      color: "#94a3b8",
+      fontWeight: 600,
+    },
+  },
+  axis: {
+    tick: { fontSize: 10, fill: "#64748b" },
+    axisLine: { stroke: "#334155" },
+    tickLine: { stroke: "#334155" },
+    tickCount: 5,
+  },
+  line: {
+    strokeWidth: 2,
+    dot: { r: 0 },
+    activeDot: { r: 3, fill: "#ea580c", stroke: "#f97316" },
+  },
+} as const;

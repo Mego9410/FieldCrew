@@ -12,37 +12,37 @@ const features = [
     icon: ClipboardCheck,
     title: "Mandatory job selection",
     description:
-      "Workers must select a job to clock in. No generic shifts — every hour is tied to a job.",
+      "Workers must select a job to clock in. Every hour is tied to a revenue event.",
   },
   {
     icon: Link2,
     title: "Magic link worker access",
     description:
-      "SMS-based magic link. Web app only, no passwords. Workers get in with one tap.",
+      "SMS-based magic link. No passwords. No apps to install. Clock-in in under 10 seconds.",
   },
   {
     icon: BarChart3,
     title: "Job labour summary",
     description:
-      "See labour hours and cost per job. The core retention screen — money, not just time.",
+      "See labour hours and cost per job. This is the core retention screen. Owners don't buy time tracking. They buy visibility into profit.",
   },
   {
     icon: FileSpreadsheet,
     title: "Payroll export",
     description:
-      "CSV with job attribution and labour cost. QuickBooks-friendly format.",
+      "CSV with job attribution and labour cost. QuickBooks-friendly. No more spreadsheet gymnastics.",
   },
   {
     icon: Mail,
     title: "Weekly labour email",
     description:
-      "Automatic weekly summary so labour insight becomes a habit.",
+      "Every week you receive: \"Last week's labour cost by job.\" Margin awareness becomes habit.",
   },
   {
     icon: ShieldAlert,
     title: "Payroll leak detection",
     description:
-      "Flags overlapping shifts, excessively long shifts, and missing clock-outs.",
+      "Automatic flags for: Overlapping shifts, Excessively long shifts, Missing clock-outs. Catch leakage before payday.",
   },
 ];
 
@@ -57,7 +57,7 @@ export function Features() {
         <div className="text-center">
           <span className="fc-accent-stripe mx-auto mb-3 block" aria-hidden />
           <p className="font-display text-sm font-semibold uppercase tracking-wider text-fc-accent">
-            Everything you need
+            Core Features
           </p>
           <h2
             id="features-heading"
@@ -66,8 +66,10 @@ export function Features() {
             Built for owners who care about margin
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-xl text-fc-muted">
-            Job-coded time, payroll with context, and labour cost per job — so you
-            see which jobs actually make money.
+            FieldCrew exists for one reason: <strong className="text-fc-brand">Expose hidden labour cost.</strong>
+          </p>
+          <p className="mx-auto mt-3 max-w-2xl text-lg text-fc-muted">
+            Success is when you rely on FieldCrew to understand labour cost per job and run payroll through it.
           </p>
         </div>
         <ul className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

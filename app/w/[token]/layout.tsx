@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { routes } from "@/lib/routes";
+import { resolveWorkerToken } from "@/lib/workerToken";
+import { InvalidTokenScreen } from "./InvalidTokenScreen";
 
 export default async function WorkerLayout({
   children,
@@ -9,6 +11,12 @@ export default async function WorkerLayout({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
+  const result = await resolveWorkerToken(token);
+
+  if (!result.valid) {
+    return <InvalidTokenScreen />;
+  }
+
   return (
     <div className="min-h-screen bg-fc-page">
       <header className="border-b border-fc-border bg-fc-surface">
@@ -21,7 +29,7 @@ export default async function WorkerLayout({
           </Link>
           <nav className="flex items-center gap-4">
             <Link
-              href={routes.worker.home(token)}
+              href={routes.worker.dashboard(token)}
               className="text-sm font-medium text-fc-muted transition-colors hover:text-fc-brand"
             >
               Dashboard

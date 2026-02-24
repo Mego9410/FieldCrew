@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 /**
  * Small demos of the software in action — job picker, clock, labour cost, export.
  */
@@ -24,35 +22,22 @@ export function ProductDemos() {
             The only payroll that works when you work
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-xl text-slate-300">
-            Workers pick a job and clock in. You see labour cost per job and export
-            payroll with context.
+            Workers pick a job. They clock in.
+          </p>
+          <p className="mx-auto mt-2 max-w-2xl text-xl text-slate-300">
+            You see:
+          </p>
+          <ul className="mx-auto mt-2 max-w-md list-inside list-disc text-lg text-slate-300">
+            <li>Labour hours per job</li>
+            <li>Labour cost per job</li>
+            <li>Margin pressure in real time</li>
+          </ul>
+          <p className="mx-auto mt-4 text-xl font-medium text-white">
+            Not just time. Money.
           </p>
         </div>
 
         <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Integration showcase */}
-          <div className="lg:col-span-3 rounded-lg border border-slate-700 bg-slate-900/50 p-6 shadow-fc-md">
-            <h3 className="mb-4 font-display text-xl font-bold text-white">
-              Seamlessly integrate with all your tools
-            </h3>
-            <div className="mt-6 grid grid-cols-4 gap-4 sm:grid-cols-6 lg:grid-cols-8">
-              {["QuickBooks", "Slack", "Google", "Microsoft", "GitHub", "Salesforce", "Notion", "Zoom"].map((tool) => (
-                <div
-                  key={tool}
-                  className="flex h-14 items-center justify-center rounded-md border border-slate-700 bg-slate-800/50 text-slate-400 transition-colors hover:border-slate-600 hover:text-white"
-                  aria-label={tool}
-                >
-                  <span className="text-xs font-medium">{tool}</span>
-                </div>
-              ))}
-            </div>
-            <Link
-              href="#pricing"
-              className="mt-6 inline-flex min-h-[44px] cursor-pointer items-center justify-center rounded-lg bg-white px-6 py-2.5 text-sm font-semibold text-fc-brand transition-all duration-200 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-slate-900"
-            >
-              Learn More
-            </Link>
-          </div>
           {/* 1. Worker: Job picker */}
           <div className="group cursor-pointer rounded-lg border border-slate-700 bg-slate-900/50 p-6 shadow-fc-md transition-all duration-200 hover:border-fc-accent/40">
             <p className="mb-4 font-body text-sm font-medium text-slate-400">

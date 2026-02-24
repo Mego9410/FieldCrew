@@ -3,185 +3,142 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useProjects } from "@/lib/hooks/useData";
-import {
-  Plus,
-  Home,
-  Bell,
-  TrendingUp,
-  Folder,
-  Target,
-} from "lucide-react";
+import { Home, Briefcase, Users, Clock, Banknote, FolderOpen, Database, BarChart3, Settings } from "lucide-react";
 import { routes } from "@/lib/routes";
 
-const topNav = [
+const primaryNav = [
   { href: routes.owner.home, label: "Home", icon: Home },
-  { href: "/#inbox", label: "Inbox", icon: Bell, badge: true },
+  { href: routes.owner.jobs, label: "Jobs", icon: Briefcase },
+  { href: routes.owner.workers, label: "Workers", icon: Users },
+  { href: routes.owner.timesheets, label: "Timesheets", icon: Clock },
+  { href: routes.owner.payrollExport, label: "Payroll", icon: Banknote },
 ];
 
-const tabNav = [
-  { href: routes.owner.home, label: "Overview" },
-  { href: routes.owner.projects, label: "Projects" },
-  { href: routes.owner.jobs, label: "Jobs" },
-  { href: routes.owner.workers, label: "Workers" },
-  { href: routes.owner.timesheets, label: "Timesheets" },
-  { href: routes.owner.payrollExport, label: "Payroll" },
-  { href: routes.owner.data, label: "Data" },
-  { href: routes.owner.settings, label: "Settings" },
-];
-
-const insightsNav = [
-  { href: routes.owner.reporting, label: "Reporting", icon: TrendingUp },
-  { href: "/#portfolios", label: "Portfolios", icon: Folder },
-  { href: "/#goals", label: "Goals", icon: Target },
+const secondaryNav = [
+  { href: routes.owner.projects, label: "Projects", icon: FolderOpen },
+  { href: routes.owner.data, label: "Data", icon: Database },
+  { href: routes.owner.reporting, label: "Reporting", icon: BarChart3 },
+  { href: routes.owner.settings, label: "Settings", icon: Settings },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
   const { items: projects } = useProjects();
 
-  const isTabActive = (href: string) => {
+  const isActive = (href: string) => {
     if (href === routes.owner.home) return pathname === href;
     return pathname.startsWith(href);
   };
 
   return (
     <aside
-      className="flex h-full w-60 shrink-0 flex-col min-h-0 bg-fc-nav-sidebar text-white"
+      className="flex h-full w-56 shrink-0 flex-col min-h-0 overflow-hidden rounded-xl bg-fc-surface shadow-fc-md"
       aria-label="App navigation"
     >
-      <div className="border-b border-slate-800 px-3 py-2.5">
-        <button
-          type="button"
-          className="flex w-full items-center justify-center gap-2 bg-fc-accent px-3 py-2 text-sm font-bold text-white hover:bg-fc-accent-dark"
+      <div className="flex flex-col px-3 py-4">
+        <Link
+          href={routes.owner.home}
+          className="font-display text-lg font-semibold text-fc-brand hover:text-fc-accent"
         >
-          <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
-          Create
-        </button>
+          FieldCrew
+        </Link>
       </div>
 
-      <div className="scrollbar-dark flex min-h-0 flex-1 flex-col overflow-auto">
-        <div className="flex flex-col px-2 py-1.5">
-          {topNav.map(({ href, label, icon: Icon, badge }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-2.5 px-3 py-2 text-sm transition-colors ${
-                pathname === href || (href !== routes.owner.home && pathname.startsWith(href))
-                  ? "border-l-4 border-fc-accent bg-slate-800 font-bold text-white"
-                  : "border-l-4 border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white"
-              }`}
-            >
-              <span className="relative shrink-0">
-                <Icon className="h-4 w-4" />
-                {badge && (
-                  <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-fc-accent" aria-hidden />
-                )}
-              </span>
-              {label}
-            </Link>
-          ))}
-        </div>
-
-        <nav className="border-b border-slate-800 px-2 py-1.5" aria-label="Main sections">
-          {tabNav.map(({ href, label }) => {
-            const active = isTabActive(href);
+      <nav className="flex min-h-0 flex-1 flex-col overflow-auto px-2 pb-4" aria-label="Main navigation">
+        <div className="space-y-0.5">
+          {primaryNav.map(({ href, label, icon: Icon }) => {
+            const active = isActive(href);
             return (
               <Link
                 key={href}
                 href={href}
-                className={`block px-3 py-2 text-sm transition-colors ${
+                className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   active
-                    ? "border-l-4 border-fc-accent bg-slate-800 font-bold text-fc-accent -ml-0.5 pl-[11px]"
-                    : "border-l-4 border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                    ? "bg-fc-surface-muted text-fc-brand"
+                    : "text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"
                 }`}
               >
+                <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
                 {label}
               </Link>
             );
           })}
-        </nav>
+        </div>
 
-        <div className="flex flex-col px-2 py-1.5">
-          <div className="mt-4 first:mt-0">
-            <div className="mb-1 px-3 py-1">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">
-                Insights
-              </span>
-            </div>
-            <div className="flex flex-col">
-              {insightsNav.map(({ href, label, icon: Icon }) => (
+        <div className="mt-6">
+          <p className="px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-fc-muted">
+            More
+          </p>
+          <div className="mt-0.5 space-y-0.5">
+            {secondaryNav.map(({ href, label, icon: Icon }) => {
+              const active = isActive(href);
+              return (
                 <Link
                   key={href}
                   href={href}
-                  className="flex items-center gap-2.5 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                  className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                    active
+                      ? "bg-fc-surface-muted font-medium text-fc-brand"
+                      : "text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"
+                  }`}
                 >
-                  <Icon className="h-4 w-4 shrink-0" />
+                  <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
                   {label}
                 </Link>
-              ))}
-            </div>
+              );
+            })}
           </div>
+        </div>
 
-          <div className="mt-4">
-            <div className="mb-1 px-3 py-1">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+        {projects.length > 0 && (
+          <div className="mt-6">
+            <div className="flex items-center justify-between px-3 py-1.5">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-fc-muted">
                 Projects
-              </span>
+              </p>
+              <Link
+                href={routes.owner.projects}
+                className="text-fc-muted hover:text-fc-brand"
+                title="Manage projects"
+                aria-label="Manage projects"
+              >
+                <FolderOpen className="h-3.5 w-3.5" />
+              </Link>
             </div>
-            <div className="flex flex-col">
-              <div className="flex items-center justify-between px-3 py-1">
-                <span className="flex-1" />
-                <Link href={routes.owner.projects} className="text-slate-500 hover:text-white" title="Manage projects">
-                  <Plus className="h-3 w-3" />
-                </Link>
-              </div>
-              {projects.map((project) => (
+            <div className="mt-0.5 space-y-0.5">
+              {projects.slice(0, 6).map((project) => (
                 <Link
                   key={project.id}
                   href={routes.owner.projectJobs(project.id)}
-                  className={`flex items-center gap-2.5 px-3 py-2 text-sm ${
+                  className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm ${
                     pathname === routes.owner.projectJobs(project.id)
-                      ? "font-medium text-white"
-                      : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                      ? "font-medium text-fc-brand"
+                      : "text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"
                   }`}
                 >
-                  <span className={`h-2.5 w-2.5 shrink-0 ${project.color}`} />
-                  {project.name}
+                  <span className={`h-2 w-2 shrink-0 rounded-full ${project.color}`} />
+                  <span className="truncate">{project.name}</span>
                 </Link>
               ))}
             </div>
           </div>
-        </div>
-      </div>
+        )}
+      </nav>
 
-      <div className="border-t border-slate-800 px-3 py-3">
-        <div className="mb-2 bg-slate-800/80 px-3 py-2">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400">Free trial · 10 days left</span>
-        </div>
-        <button
-          type="button"
-          className="mb-2 w-full bg-fc-accent py-2 text-sm font-bold text-white hover:bg-fc-accent-dark"
+      <div className="border-t border-fc-border px-3 py-4">
+        <Link
+          href={routes.owner.settings}
+          className="block text-sm font-medium text-fc-muted hover:text-fc-brand"
         >
-          Add billing info
-        </button>
-        <button
-          type="button"
-          className="mb-3 w-full border border-slate-700 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 hover:text-white"
-        >
-          Invite teammates
-        </button>
+          Account
+        </Link>
         <Link
           href={routes.public.home}
-          className="block text-center text-[10px] font-medium uppercase tracking-wider text-slate-500 hover:text-white"
+          className="mt-2 block text-xs text-fc-muted hover:text-fc-brand"
         >
           Back to site
         </Link>
-        <Link
-          href={routes.public.home}
-          className="mt-3 block text-center font-display text-sm font-bold text-white"
-        >
-          FieldCrew
-        </Link>
+        <p className="mt-3 text-[11px] font-medium text-fc-muted">FieldCrew</p>
       </div>
     </aside>
   );

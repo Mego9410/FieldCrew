@@ -6,7 +6,6 @@ import { Problem } from "@/components/landing/Problem";
 import { Solution } from "@/components/landing/Solution";
 import { ProductDemos } from "@/components/landing/ProductDemos";
 import { Features } from "@/components/landing/Features";
-import { Statistics } from "@/components/landing/Statistics";
 import { Differentiation } from "@/components/landing/Differentiation";
 import { Pricing } from "@/components/landing/Pricing";
 import { FinalCta } from "@/components/landing/FinalCta";
@@ -29,7 +28,6 @@ export default function Home() {
         <Problem />
         <Solution />
         <ProductDemos />
-        <Statistics />
         <Features />
         <Differentiation />
         <Pricing />

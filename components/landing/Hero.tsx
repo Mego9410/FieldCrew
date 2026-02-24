@@ -46,15 +46,20 @@ export function Hero() {
               <div className="flex items-stretch gap-4 lg:gap-5">
                 <span className="fc-accent-stripe-vertical hero-reveal hero-reveal-2 hidden shrink-0 self-center lg:block" aria-hidden />
                 <h1 className="hero-reveal hero-reveal-2 font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-fc-brand sm:text-5xl lg:text-6xl xl:text-7xl">
-                  Stop losing money
+                  See labour cost
                   <br />
-                  on every job
+                  per job
                 </h1>
               </div>
 
               {/* Sub-headline — tightened spacing */}
               <p className="hero-reveal hero-reveal-3 mt-4 text-lg leading-relaxed text-fc-muted sm:text-xl lg:text-xl">
-                Stop payroll leakage and see which jobs actually make money. Job-based payroll intelligence for HVAC crews.
+                Stop payroll leakage.
+                <br className="hidden sm:block" />
+                See which jobs actually make money.
+              </p>
+              <p className="hero-reveal hero-reveal-3 mt-2 text-base font-medium text-fc-brand sm:text-lg">
+                Job-based payroll intelligence built for US HVAC crews with 3–15 techs.
               </p>
 
               {/* Primary CTA */}
@@ -66,7 +71,7 @@ export function Hero() {
                   Get started. It&apos;s FREE!
                 </Link>
                 <p className="mt-3 text-sm text-fc-muted">
-                  Free 3-day trial, then $5 for the first month.
+                  Free forever. No credit card.
                 </p>
               </div>
 

@@ -291,6 +291,12 @@ export default function JobDetailPage({
                   {hasRevenue ? `$${snapshot.revenue.toLocaleString()}` : "—"}
                 </dd>
               </div>
+              {job.instructions?.trim() && (
+                <div>
+                  <dt className="text-fc-muted mb-1">Instructions</dt>
+                  <dd className="font-medium text-fc-brand whitespace-pre-wrap text-sm">{job.instructions}</dd>
+                </div>
+              )}
             </dl>
           </section>
 

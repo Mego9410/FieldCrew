@@ -516,6 +516,36 @@ export function getLowestMarginJobTypes(
 }
 
 /**
+ * Breakdown of recoverable profit by lever (for UI)
+ */
+export interface RecoverableProfitBreakdown {
+  total: number;
+  fromOvertime: number;
+  fromOverruns: number;
+  fromIdle: number;
+}
+
+/**
+ * Get recoverable profit breakdown by lever (same constants as calculateRecoverableProfit)
+ */
+export function getRecoverableProfitBreakdown(
+  overtimeCost: number,
+  overrunCost: number,
+  idleHours: number,
+  blendedHourlyRate: number
+): RecoverableProfitBreakdown {
+  const fromOvertime = overtimeCost * 0.2; // 20% reduction potential
+  const fromOverruns = overrunCost * 0.2; // 20% reduction potential
+  const fromIdle = idleHours * blendedHourlyRate * 0.15; // 15% reduction potential
+  return {
+    total: fromOvertime + fromOverruns + fromIdle,
+    fromOvertime,
+    fromOverruns,
+    fromIdle,
+  };
+}
+
+/**
  * Calculate recoverable profit estimate
  */
 export function calculateRecoverableProfit(
@@ -524,10 +554,7 @@ export function calculateRecoverableProfit(
   idleHours: number,
   blendedHourlyRate: number
 ): number {
-  const potentialOvertimeSavings = overtimeCost * 0.2; // 20% reduction potential
-  const potentialOverrunSavings = overrunCost * 0.2; // 20% reduction potential
-  const potentialIdleSavings = idleHours * blendedHourlyRate * 0.15; // 15% reduction potential
-  return potentialOvertimeSavings + potentialOverrunSavings + potentialIdleSavings;
+  return getRecoverableProfitBreakdown(overtimeCost, overrunCost, idleHours, blendedHourlyRate).total;
 }
 
 /**

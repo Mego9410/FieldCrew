@@ -9,7 +9,7 @@ export default function AppLayout({
 }) {
   return (
     <ToastProvider>
-    <div className="flex h-screen overflow-hidden bg-fc-app-surface">
+    <div className="flex h-screen overflow-hidden bg-fc-app-surface p-4 gap-4">
       <AppSidebar />
       <div className="flex min-h-0 flex-1 flex-col min-w-0">
         <AppHeader />

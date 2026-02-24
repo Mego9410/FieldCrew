@@ -18,18 +18,25 @@ export function Differentiation() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <div className="h-[3px] w-12 bg-fc-accent mx-auto mb-4" aria-hidden />
-          <p className="font-display text-sm font-semibold uppercase tracking-wider text-fc-accent">
-            The difference
-          </p>
           <h2
             id="differentiation-heading"
-            className="mt-4 font-display text-4xl font-bold text-white sm:text-5xl lg:text-6xl"
+            className="mt-4 font-display text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
           >
-            A new era of payroll intelligence
+            The difference
           </h2>
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
+            Most time tracking tools answer:
+          </p>
+          <blockquote className="mx-auto mt-2 max-w-xl text-xl italic text-slate-400">
+            &ldquo;How many hours did my staff work?&rdquo;
+          </blockquote>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-300">
+            FieldCrew answers:
+          </p>
+          <blockquote className="mx-auto mt-2 max-w-xl text-xl font-semibold text-white">
+            &ldquo;Which jobs are destroying my margins?&rdquo;
+          </blockquote>
           <p className="mx-auto mt-6 max-w-2xl text-xl text-slate-300">
-            Competitors answer: &ldquo;How many hours did my staff work?&rdquo;
-            FieldCrew answers: &ldquo;Which jobs are destroying my margins?&rdquo;
             That reframes the buying decision from admin to profitability.
           </p>
         </div>
@@ -46,11 +53,15 @@ export function Differentiation() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-sm bg-slate-600" aria-hidden />
-                <span>Payroll exports worker-centric</span>
+                <span>Worker-centric payroll exports</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-sm bg-slate-600" aria-hidden />
-                <span>No labour cost per job</span>
+                <span>No surfaced labour cost per job</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-sm bg-slate-600" aria-hidden />
+                <span>No financial narrative</span>
               </li>
             </ul>
           </div>
@@ -71,7 +82,11 @@ export function Differentiation() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-sm bg-fc-accent" aria-hidden />
-                <span>Labour cost per job surfaced</span>
+                <span>Labour cost per job surfaced automatically</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-sm bg-fc-accent" aria-hidden />
+                <span>Built specifically for US HVAC crews with 3–15 techs</span>
               </li>
             </ul>
           </div>

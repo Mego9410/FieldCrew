@@ -93,6 +93,7 @@ function toJob(r: Record<string, unknown>): Job {
     isAdhoc: Boolean(row.is_adhoc),
     workerIds: Array.isArray(row.worker_ids) ? (row.worker_ids as string[]) : undefined,
     status: row.status as Job["status"],
+    instructions: row.instructions as string | undefined,
   };
 }
 
@@ -381,6 +382,7 @@ function jobToRow(input: JobInput & { id?: string }) {
     is_adhoc: input.isAdhoc ?? false,
     worker_ids: input.workerIds ?? [],
     status: input.status ?? "scheduled",
+    instructions: input.instructions ?? null,
   };
 }
 
@@ -413,6 +415,7 @@ export async function updateJob(id: string, input: Partial<JobInput>, supabase?:
   if (input.isAdhoc != null) updates.is_adhoc = input.isAdhoc;
   if (input.workerIds != null) updates.worker_ids = input.workerIds;
   if (input.status != null) updates.status = input.status;
+  if (input.instructions !== undefined) updates.instructions = input.instructions;
   const { data, error } = await db.from("jobs").update(updates).eq("id", id).select().single();
   if (error || !data) return null;
   return toJob(data);

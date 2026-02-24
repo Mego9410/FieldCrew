@@ -185,12 +185,14 @@ export default function WorkersPage() {
       {viewMode === "cards" && (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((worker) => (
-          <Link
+          <div
             key={worker.id}
-            href={routes.owner.worker(worker.id)}
             className="block border border-fc-border bg-fc-surface p-4 transition-colors hover:border-fc-accent"
           >
-            <div className="flex items-start justify-between gap-2">
+            <Link
+              href={routes.owner.worker(worker.id)}
+              className="flex items-start justify-between gap-2 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded-fc -m-1 p-1"
+            >
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-fc-accent/10 text-fc-accent font-semibold">
                   {worker.name.charAt(0)}
@@ -209,7 +211,7 @@ export default function WorkersPage() {
               >
                 <MoreHorizontal className="h-4 w-4" />
               </span>
-            </div>
+            </Link>
             <div className="mt-4 border-t border-fc-border pt-3 text-sm">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-fc-muted">
@@ -221,14 +223,13 @@ export default function WorkersPage() {
                 href={routes.worker.home(worker.id)}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
                 className="mt-2 inline-flex w-full items-center justify-center gap-1.5 border border-fc-border bg-fc-surface py-2 text-xs font-semibold text-fc-brand hover:bg-fc-surface-muted"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 Open as worker
               </a>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
       )}

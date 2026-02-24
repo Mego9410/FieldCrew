@@ -97,6 +97,7 @@ export default function ProjectJobsPage({
 }) {
   const { projectId } = use(params);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [formHasChanges, setFormHasChanges] = useState(false);
   const [search, setSearch] = useState("");
 
   const { items: projects } = useProjects();
@@ -112,6 +113,11 @@ export default function ProjectJobsPage({
     setShowAddModal(false);
     refetchJobs();
   }, [refetchJobs]);
+
+  const handleCloseJobModal = useCallback(() => {
+    if (formHasChanges && !window.confirm("You have unsaved changes. Are you sure you want to close?")) return;
+    setShowAddModal(false);
+  }, [formHasChanges]);
 
   if (!project) {
     return (
@@ -240,16 +246,23 @@ export default function ProjectJobsPage({
           role="dialog"
           aria-modal="true"
           aria-labelledby="add-job-title"
+          onClick={(e) => e.target === e.currentTarget && handleCloseJobModal()}
         >
-          <div className="max-h-[90vh] w-full max-w-md overflow-auto border border-fc-border bg-fc-surface p-6">
-            <h2 id="add-job-title" className="mb-4 text-xs font-bold uppercase tracking-widest text-fc-muted">
+          <div
+            className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden border border-fc-border bg-fc-surface p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="add-job-title" className="shrink-0 text-xs font-bold uppercase tracking-widest text-fc-muted mb-4">
               Add job to {project.name}
             </h2>
-            <JobForm
-              projectId={projectId}
-              onSuccess={handleJobSuccess}
-              onCancel={() => setShowAddModal(false)}
-            />
+            <div className="flex min-h-0 flex-1 flex-col">
+              <JobForm
+                projectId={projectId}
+                onSuccess={handleJobSuccess}
+                onCancel={handleCloseJobModal}
+                onDirtyChange={setFormHasChanges}
+              />
+            </div>
           </div>
         </div>
       )}

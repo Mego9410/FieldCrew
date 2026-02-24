@@ -160,6 +160,14 @@ export default async function WorkerJobDetailPage({
                   </dd>
                 </div>
               )}
+              {job.instructions?.trim() && (
+                <div>
+                  <dt className="flex items-center gap-1.5 text-fc-muted">
+                    <ClipboardList className="h-3.5 w-3.5" /> Instructions
+                  </dt>
+                  <dd className="font-medium text-fc-brand whitespace-pre-wrap mt-1">{job.instructions}</dd>
+                </div>
+              )}
             </dl>
           </section>
 

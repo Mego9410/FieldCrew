@@ -57,6 +57,8 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
         body: ["var(--font-body)", "system-ui", "sans-serif"],
+        "console-display": ["var(--font-console-display)", "Oswald", "ui-monospace", "monospace"],
+        "console-mono": ["var(--font-console-mono)", "ui-monospace", "monospace"],
       },
       transitionDuration: {
         "fc": "150ms",

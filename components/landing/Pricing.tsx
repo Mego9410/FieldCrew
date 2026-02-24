@@ -9,7 +9,7 @@ const tiers = [
     highlighted: false,
   },
   {
-    name: "Growth",
+    name: "Growth (Most Popular)",
     price: 79,
     workers: "Up to 15 workers",
     cta: "Start free trial",
@@ -44,7 +44,7 @@ export function Pricing() {
             Flat, predictable plans
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-xl text-fc-muted">
-            No feature gating. 14-day free trial. 2 months free on annual plans.
+            No feature gating. 3 days free, then $9 for the first month. 2 months free on annual plans.
           </p>
         </div>
         <div className="mt-16 grid gap-6 sm:grid-cols-3 sm:items-end">

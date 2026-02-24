@@ -37,8 +37,8 @@ export function FinalCta() {
           Time is priceless. FieldCrew is time.
         </h2>
         <p className="mx-auto mt-6 max-w-2xl text-xl text-slate-300 sm:text-2xl">
-          Built for US HVAC crews with 3–15 field techs. Start your 14-day free
-          trial — no credit card required.
+          Built for US HVAC crews with 3–15 field techs. 3 days free, then $9 for
+          the first month — no credit card required.
         </p>
         <Link
           href="#pricing"
