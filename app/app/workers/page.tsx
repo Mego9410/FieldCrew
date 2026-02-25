@@ -38,7 +38,7 @@ export default function WorkersPage() {
 
   if (loading && workers.length === 0) {
     return (
-      <div className="px-6 py-6">
+      <div className="px-4 py-6 sm:px-6">
         <div className="mb-6">
           <h1 className="font-display text-xl font-bold text-fc-brand">Workers</h1>
           <p className="mt-1 text-sm text-fc-muted">
@@ -54,7 +54,7 @@ export default function WorkersPage() {
   }
 
   return (
-    <div className="px-6 py-6">
+    <div className="px-4 py-6 sm:px-6">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-xl font-bold text-fc-brand">Workers</h1>
@@ -168,7 +168,7 @@ export default function WorkersPage() {
                     <TableCell className="px-2">
                       <button
                         type="button"
-                        className="rounded p-1.5 text-fc-muted transition-colors duration-fc hover:bg-fc-surface-muted hover:text-fc-brand"
+                        className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded text-fc-muted transition-colors duration-fc hover:bg-fc-surface-muted hover:text-fc-brand -m-2"
                         aria-label="More options"
                       >
                         <MoreHorizontal className="h-4 w-4" />

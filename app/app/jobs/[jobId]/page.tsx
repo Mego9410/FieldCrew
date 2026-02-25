@@ -67,7 +67,7 @@ export default function JobDetailPage({
 
   if (loading && !job) {
     return (
-      <div className="px-6 py-6">
+      <div className="px-4 py-6 sm:px-6">
         <Link
           href={routes.owner.jobs}
           className="inline-flex items-center gap-1 text-sm font-medium text-fc-accent hover:underline"
@@ -84,7 +84,7 @@ export default function JobDetailPage({
 
   if (job === null) {
     return (
-      <div className="px-6 py-6">
+      <div className="px-4 py-6 sm:px-6">
         <Link
           href={routes.owner.jobs}
           className="inline-flex items-center gap-1 text-sm font-medium text-fc-accent hover:underline"
@@ -132,7 +132,7 @@ export default function JobDetailPage({
   const varianceWarning = snapshot.varianceHours > 0;
 
   return (
-    <div className="px-6 py-6">
+    <div className="px-4 py-6 sm:px-6">
       <Link
         href={routes.owner.jobs}
         className="inline-flex items-center gap-1 text-sm font-medium text-fc-accent hover:underline"

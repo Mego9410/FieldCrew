@@ -22,7 +22,7 @@ export default function ProjectsPage() {
     jobs.filter((j) => j.projectId === projectId).length;
 
   return (
-    <div className="px-6 py-6">
+    <div className="px-4 py-6 sm:px-6">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-xl font-bold text-fc-brand">Projects</h1>

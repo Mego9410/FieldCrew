@@ -9,7 +9,7 @@ export function InvalidTokenScreen() {
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-fc-border bg-fc-surface">
           <AlertCircle className="h-7 w-7 text-fc-muted" aria-hidden />
         </div>
-        <h1 className="mt-6 font-display text-xl font-semibold text-fc-brand">
+        <h1 className="mt-6 font-display text-xl font-semibold text-fc-brand sm:text-2xl">
           This link is invalid or has expired
         </h1>
         <p className="mt-2 text-sm text-fc-muted">
@@ -18,7 +18,7 @@ export function InvalidTokenScreen() {
         </p>
         <Link
           href={routes.public.home}
-          className="mt-8 inline-flex items-center justify-center rounded-md bg-fc-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-fc-accent-dark"
+          className="mt-8 inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md bg-fc-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
         >
           Back to site
         </Link>

@@ -50,7 +50,7 @@ export function Features() {
   return (
     <section
       id="features"
-      className="border-b border-fc-border bg-white py-20 sm:py-24 lg:py-32"
+      className="border-b border-fc-border bg-white py-12 sm:py-24 lg:py-32"
       aria-labelledby="features-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -61,7 +61,7 @@ export function Features() {
           </p>
           <h2
             id="features-heading"
-            className="mt-4 font-display text-4xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
+            className="mt-4 font-display text-3xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
           >
             Built for owners who care about margin
           </h2>

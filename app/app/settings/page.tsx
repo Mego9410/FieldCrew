@@ -44,7 +44,7 @@ const sections = [
 
 export default function SettingsPage() {
   return (
-    <div className="px-6 py-6">
+    <div className="px-4 py-6 sm:px-6">
       <div className="mb-6">
         <h1 className="font-display text-xl font-bold text-fc-brand">Settings</h1>
         <p className="mt-0.5 text-sm text-fc-muted">

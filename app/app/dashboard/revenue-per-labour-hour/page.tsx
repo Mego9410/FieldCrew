@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 export default function RevenuePerLabourHourPage() {
   return (
-    <div className="px-6 py-6">
+    <div className="px-4 py-6 sm:px-6">
       <Link
         href={routes.owner.home}
         className="mb-4 inline-flex items-center gap-2 text-sm text-fc-muted hover:text-fc-brand"

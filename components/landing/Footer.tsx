@@ -51,7 +51,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm transition-colors duration-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-brand rounded"
+                      className="inline-flex min-h-[44px] min-w-[44px] items-center text-sm transition-colors duration-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-brand rounded -m-2 p-2"
                     >
                       {link.label}
                     </Link>
@@ -70,7 +70,7 @@ export function Footer() {
               <a
                 key={social}
                 href="#"
-                className="text-slate-400 transition-colors hover:text-white"
+                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-slate-400 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-brand rounded"
                 aria-label={social}
               >
                 <span className="text-sm">{social}</span>

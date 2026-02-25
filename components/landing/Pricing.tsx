@@ -28,7 +28,7 @@ export function Pricing() {
   return (
     <section
       id="pricing"
-      className="border-b border-fc-border bg-white py-20 sm:py-24 lg:py-32"
+      className="border-b border-fc-border bg-white py-12 sm:py-24 lg:py-32"
       aria-labelledby="pricing-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -39,7 +39,7 @@ export function Pricing() {
           </p>
           <h2
             id="pricing-heading"
-            className="mt-4 font-display text-4xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
+            className="mt-4 font-display text-3xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
           >
             Flat, predictable plans
           </h2>

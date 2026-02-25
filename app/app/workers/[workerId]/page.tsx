@@ -127,7 +127,7 @@ export default function WorkerDetailPage() {
 
   if (workerLoading && !worker) {
     return (
-      <div className="px-6 py-6">
+      <div className="px-4 py-6 sm:px-6">
         <Link href={routes.owner.workers} className="mb-4 inline-flex items-center gap-2 text-sm text-fc-muted hover:text-fc-brand">
           <ArrowLeft className="h-4 w-4" /> Back to workers
         </Link>
@@ -137,7 +137,7 @@ export default function WorkerDetailPage() {
   }
   if (!worker) {
     return (
-      <div className="px-6 py-6">
+      <div className="px-4 py-6 sm:px-6">
         <Link
           href={routes.owner.workers}
           className="mb-4 inline-flex items-center gap-2 text-sm text-fc-muted hover:text-fc-brand"
@@ -154,7 +154,7 @@ export default function WorkerDetailPage() {
   const showBelowTargetBadge = snapshot && snapshot.revenuePerLabourHour > 0 && snapshot.revenuePerLabourHour < TARGET_RPLH;
 
   return (
-    <div className="px-6 py-6">
+    <div className="px-4 py-6 sm:px-6">
       <Link
         href={routes.owner.workers}
         className="mb-4 inline-flex items-center gap-2 text-sm text-fc-muted hover:text-fc-brand"

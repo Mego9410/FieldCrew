@@ -52,7 +52,7 @@ export default function DataPage() {
   };
 
   return (
-    <div className="px-6 py-6">
+    <div className="px-4 py-6 sm:px-6">
       <div className="mb-6">
         <h1 className="font-display text-xl font-bold text-fc-brand">Entity setup</h1>
         <p className="mt-0.5 text-sm text-fc-muted">
@@ -77,7 +77,7 @@ export default function DataPage() {
               key={id}
               type="button"
               onClick={() => setActiveTab(id)}
-              className={`flex items-center gap-3 border-l-4 px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
+              className={`flex min-h-[44px] min-w-[44px] items-center gap-3 border-l-4 px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
                 activeTab === id
                   ? "border-l-fc-accent bg-fc-surface-muted text-fc-brand"
                   : "border-l-transparent text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"

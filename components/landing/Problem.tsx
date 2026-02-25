@@ -60,7 +60,7 @@ export function Problem() {
           </p>
           <h2
             id="problem-heading"
-            className="mt-2 font-display text-4xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
+            className="mt-2 font-display text-3xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
           >
             Small HVAC businesses lose money silently
           </h2>

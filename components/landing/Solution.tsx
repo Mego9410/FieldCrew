@@ -20,7 +20,7 @@ export function Solution() {
   return (
     <section
       id="how-it-works"
-      className="relative border-b border-fc-border bg-white py-20 sm:py-24 lg:py-28"
+      className="relative border-b border-fc-border bg-white py-12 sm:py-24 lg:py-28"
       aria-labelledby="solution-heading"
     >
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -28,7 +28,7 @@ export function Solution() {
           <span className="fc-accent-stripe mx-auto mb-3 block" aria-hidden />
           <h2
             id="solution-heading"
-            className="font-display text-4xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
+            className="font-display text-3xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
           >
             FieldCrew fixes the root cause
           </h2>

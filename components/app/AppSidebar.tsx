@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { useProjects } from "@/lib/hooks/useData";
-import { Home, Briefcase, Users, Clock, Banknote, FolderOpen, Database, BarChart3, Settings } from "lucide-react";
+import { Home, Briefcase, Users, Clock, Banknote, FolderOpen, Database, BarChart3, Settings, X } from "lucide-react";
 import { routes } from "@/lib/routes";
 
 const primaryNav = [
@@ -21,9 +22,19 @@ const secondaryNav = [
   { href: routes.owner.settings, label: "Settings", icon: Settings },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({
+  onNavigate,
+  showCloseButton = false,
+}: {
+  onNavigate?: () => void;
+  showCloseButton?: boolean;
+}) {
   const pathname = usePathname();
   const { items: projects } = useProjects();
+
+  useEffect(() => {
+    onNavigate?.();
+  }, [pathname, onNavigate]);
 
   const isActive = (href: string) => {
     if (href === routes.owner.home) return pathname === href;
@@ -36,12 +47,24 @@ export function AppSidebar() {
       aria-label="App navigation"
     >
       <div className="flex flex-col px-3 py-4">
-        <Link
-          href={routes.owner.home}
-          className="font-display text-lg font-semibold text-fc-brand hover:text-fc-accent"
-        >
-          FieldCrew
-        </Link>
+        <div className="flex items-center justify-between gap-2">
+          <Link
+            href={routes.owner.home}
+            className="font-display text-lg font-semibold text-fc-brand hover:text-fc-accent min-h-[44px] min-w-[44px] inline-flex items-center"
+          >
+            FieldCrew
+          </Link>
+          {showCloseButton && (
+            <button
+              type="button"
+              onClick={onNavigate}
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand focus:outline-none focus:ring-2 focus:ring-fc-accent lg:hidden"
+              aria-label="Close menu"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
+        </div>
       </div>
 
       <nav className="flex min-h-0 flex-1 flex-col overflow-auto px-2 pb-4" aria-label="Main navigation">

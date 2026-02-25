@@ -90,7 +90,7 @@ export default function OvertimePage() {
   }, [timeframe]);
 
   return (
-    <div className="px-6 py-6">
+    <div className="px-4 py-6 sm:px-6">
       <Link
         href={routes.owner.home}
         className="mb-4 inline-flex items-center gap-2 text-sm text-fc-muted hover:text-fc-brand"
@@ -183,7 +183,8 @@ export default function OvertimePage() {
             {topWorkers.length === 0 ? (
               <p className="mt-4 text-sm text-fc-muted">No overtime by worker in this period.</p>
             ) : (
-              <div className="mt-4 overflow-x-auto">
+              <>
+              <div className="mt-4 overflow-x-auto max-w-full">
                 <table className="w-full min-w-[320px] text-sm">
                   <thead>
                     <tr className="border-b border-fc-border text-left text-xs font-medium uppercase tracking-widest text-fc-muted">
@@ -207,6 +208,8 @@ export default function OvertimePage() {
                   </tbody>
                 </table>
               </div>
+              <p className="mt-1 text-xs text-fc-muted md:hidden" aria-hidden>Scroll horizontally for more columns.</p>
+              </>
             )}
           </div>
 

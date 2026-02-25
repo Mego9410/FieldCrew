@@ -15,8 +15,8 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
-      <h1 className="font-display text-2xl font-bold text-fc-brand">
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-8 sm:px-6">
+      <h1 className="font-display text-xl font-bold text-fc-brand sm:text-2xl">
         Something went wrong
       </h1>
       <p className="mt-2 text-fc-muted">

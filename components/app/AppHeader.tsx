@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { ChevronDown, User, CreditCard, UserPlus, LogOut } from "lucide-react";
+import { ChevronDown, User, CreditCard, UserPlus, LogOut, Menu } from "lucide-react";
 import { routes } from "@/lib/routes";
 
 const PAGE_TITLES: Record<string, string> = {
@@ -45,7 +45,13 @@ function getPageTitle(pathname: string): string {
   return "FieldCrew";
 }
 
-export function AppHeader() {
+export function AppHeader({
+  onMenuClick,
+  showMenuButton = false,
+}: {
+  onMenuClick?: () => void;
+  showMenuButton?: boolean;
+}) {
   const pathname = usePathname();
   const [accountOpen, setAccountOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -62,16 +68,28 @@ export function AppHeader() {
   }, []);
 
   return (
-    <header className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-fc-border bg-fc-surface px-4">
-      <h1 className="truncate font-display text-base font-semibold text-fc-brand">
-        {title}
-      </h1>
+    <header className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-fc-border bg-fc-surface px-3 sm:px-4">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        {showMenuButton && (
+          <button
+            type="button"
+            onClick={onMenuClick}
+            className="inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-lg text-fc-brand hover:bg-fc-surface-muted focus:outline-none focus:ring-2 focus:ring-fc-accent -m-2"
+            aria-label="Open menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+        <h1 className="truncate font-display text-base font-semibold text-fc-brand">
+          {title}
+        </h1>
+      </div>
 
-      <div className="relative flex items-center gap-2" ref={ref}>
+      <div className="relative flex shrink-0 items-center gap-2" ref={ref}>
         <button
           type="button"
           onClick={() => setAccountOpen((o) => !o)}
-          className="flex items-center gap-1.5 rounded-lg border border-fc-border bg-fc-surface px-2.5 py-1.5 text-sm font-medium text-fc-brand transition-colors hover:bg-fc-surface-muted"
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center gap-1.5 rounded-lg border border-fc-border bg-fc-surface px-2.5 py-1.5 text-sm font-medium text-fc-brand transition-colors hover:bg-fc-surface-muted"
           aria-expanded={accountOpen}
           aria-haspopup="true"
           aria-label="Account menu"

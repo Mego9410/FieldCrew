@@ -36,6 +36,12 @@ export const metadata: Metadata = {
     "Job-based payroll intelligence for small US HVAC crews. See which jobs make money and stop payroll leakage.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
