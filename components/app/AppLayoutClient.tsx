@@ -36,15 +36,16 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
         />
       )}
 
-      {/* Sidebar: fixed drawer on mobile, in-flow on lg */}
+      {/* Sidebar: fixed drawer on mobile, in-flow on lg. pointer-events-none when closed so menu button stays clickable. */}
       <aside
         className={`
           fixed inset-y-0 left-0 z-50 flex h-full w-56 shrink-0 flex-col
           transform transition-transform duration-200 ease-out
-          lg:relative lg:left-auto lg:inset-auto lg:translate-x-0 lg:transition-none
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          lg:relative lg:left-auto lg:inset-auto lg:translate-x-0 lg:transition-none lg:pointer-events-auto
+          ${sidebarOpen ? "translate-x-0 pointer-events-auto" : "-translate-x-full pointer-events-none lg:translate-x-0"}
         `}
         aria-label="App navigation"
+        aria-hidden={!isLg && !sidebarOpen}
       >
         <AppSidebar
           onNavigate={() => setSidebarOpen(false)}
@@ -52,7 +53,7 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
         />
       </aside>
 
-      <div className="flex min-h-0 flex-1 flex-col min-w-0">
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col min-w-0 lg:z-auto">
         <AppHeader
           onMenuClick={() => setSidebarOpen(true)}
           showMenuButton={!isLg}
