@@ -44,65 +44,98 @@ export function ProfitDashboard() {
     topOvertimeWorkers: OvertimeWorker[];
     lowestMarginJobTypes: JobTypeMargin[];
   } | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([
+    setLoadError(null);
+
+    const LOAD_TIMEOUT_MS = 12000;
+    const dataPromise = Promise.all([
       getJobs(),
       getWorkers(),
       getTimeEntries(),
       getJobTypes(),
-    ]).then(([jobs, workers, timeEntries, jobTypes]) => {
-      if (cancelled) return;
-
-      const currentWeek = getCurrentWeekRange();
-      const lastWeek = getLastWeekRange();
-      const last30Days = getLastNDaysRange(30);
-
-      const range = timeframe === "this_week" ? currentWeek : timeframe === "last_week" ? lastWeek : last30Days;
-
-      const revenueThisWeek = calculateWeeklyRevenue(jobs, range);
-      const labourCostThisWeek = calculateWeeklyLabourCost(timeEntries, workers, range);
-      const labourMarginPct = revenueThisWeek > 0
-        ? ((revenueThisWeek - labourCostThisWeek) / revenueThisWeek) * 100
-        : 0;
-
-      const overtime = calculateOvertime(timeEntries, workers, range);
-      const blendedHourlyRate = calculateBlendedHourlyRate(workers);
-      const overruns = calculateOverruns(jobs, timeEntries, workers, blendedHourlyRate, range);
-
-      const timeAllocation = calculateTimeAllocation(timeEntries, range);
-      const idleHours = timeAllocation.idle;
-      const recoverableProfit = calculateRecoverableProfit(
-        overtime.cost,
-        overruns.estimatedCostOverrun,
-        idleHours,
-        blendedHourlyRate
-      );
-
-      const labourCostPerJobData = calculateAvgLabourCostPerJob(jobs, timeEntries, workers, last30Days);
-      const rplhMetrics = calculateRevenuePerLabourHour(jobs, timeEntries, range);
-
-      const topOverrunningJobs = overruns.jobs.slice(0, 5);
-      const topOvertimeWorkers = getTopOvertimeWorkers(timeEntries, workers, jobs, range).slice(0, 5);
-      const lowestMarginJobTypes = getLowestMarginJobTypes(jobs, jobTypes, timeEntries, workers, range).slice(0, 5);
-
-      setDashboardData({
-        revenueThisWeek,
-        labourCostThisWeek,
-        labourMarginPct,
-        overtime,
-        overruns,
-        recoverableProfit,
-        labourCostPerJobData,
-        rplh: rplhMetrics.rplh,
-        topOverrunningJobs,
-        topOvertimeWorkers,
-        lowestMarginJobTypes,
-      });
+    ]);
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error("Loading is taking longer than usual. Check your connection or try again.")), LOAD_TIMEOUT_MS);
     });
+
+    Promise.race([dataPromise, timeoutPromise])
+      .then(([jobs, workers, timeEntries, jobTypes]) => {
+        if (cancelled) return;
+
+        const currentWeek = getCurrentWeekRange();
+        const lastWeek = getLastWeekRange();
+        const last30Days = getLastNDaysRange(30);
+
+        const range = timeframe === "this_week" ? currentWeek : timeframe === "last_week" ? lastWeek : last30Days;
+
+        const revenueThisWeek = calculateWeeklyRevenue(jobs, range);
+        const labourCostThisWeek = calculateWeeklyLabourCost(timeEntries, workers, range);
+        const labourMarginPct = revenueThisWeek > 0
+          ? ((revenueThisWeek - labourCostThisWeek) / revenueThisWeek) * 100
+          : 0;
+
+        const overtime = calculateOvertime(timeEntries, workers, range);
+        const blendedHourlyRate = calculateBlendedHourlyRate(workers);
+        const overruns = calculateOverruns(jobs, timeEntries, workers, blendedHourlyRate, range);
+
+        const timeAllocation = calculateTimeAllocation(timeEntries, range);
+        const idleHours = timeAllocation.idle;
+        const recoverableProfit = calculateRecoverableProfit(
+          overtime.cost,
+          overruns.estimatedCostOverrun,
+          idleHours,
+          blendedHourlyRate
+        );
+
+        const labourCostPerJobData = calculateAvgLabourCostPerJob(jobs, timeEntries, workers, last30Days);
+        const rplhMetrics = calculateRevenuePerLabourHour(jobs, timeEntries, range);
+
+        const topOverrunningJobs = overruns.jobs.slice(0, 5);
+        const topOvertimeWorkers = getTopOvertimeWorkers(timeEntries, workers, jobs, range).slice(0, 5);
+        const lowestMarginJobTypes = getLowestMarginJobTypes(jobs, jobTypes, timeEntries, workers, range).slice(0, 5);
+
+        setDashboardData({
+          revenueThisWeek,
+          labourCostThisWeek,
+          labourMarginPct,
+          overtime,
+          overruns,
+          recoverableProfit,
+          labourCostPerJobData,
+          rplh: rplhMetrics.rplh,
+          topOverrunningJobs,
+          topOvertimeWorkers,
+          lowestMarginJobTypes,
+        });
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setLoadError(err?.message ?? "Failed to load dashboard");
+          setDashboardData(null);
+        }
+      });
     return () => { cancelled = true; };
-  }, [timeframe]);
+  }, [timeframe, retryCount]);
+
+  if (loadError) {
+    return (
+      <div className="min-h-full bg-fc-page px-4 py-8 md:px-6">
+        <h1 className="font-display text-xl font-semibold text-fc-brand">Dashboard</h1>
+        <p className="mt-2 text-sm text-fc-muted">{loadError}</p>
+        <button
+          type="button"
+          onClick={() => { setLoadError(null); setRetryCount((c) => c + 1); }}
+          className="mt-4 rounded-lg bg-fc-accent px-4 py-2 text-sm font-medium text-white hover:bg-fc-accent-dark"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
 
   if (!dashboardData) {
     return (

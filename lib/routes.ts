@@ -28,6 +28,8 @@ export const routes = {
     reporting: "/app/reporting",
     projects: "/app/projects",
     projectJobs: (projectId: string) => `/app/projects/${projectId}`,
+    jobTypes: "/app/job-types",
+    jobType: (id: string) => `/app/job-types/${id}`,
     dashboard: {
       margin: "/app/dashboard/margin",
       overtime: "/app/dashboard/overtime",

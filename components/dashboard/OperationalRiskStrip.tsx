@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { routes } from "@/lib/routes";
 import type { OverrunningJob, JobTypeMargin, OvertimeWorker } from "@/lib/analytics";
 
 export interface OperationalRiskStripProps {
@@ -58,7 +59,7 @@ export function OperationalRiskStrip({
               Lowest margin types
             </span>
             <Link
-              href="/app/job-types?sort=margin_asc"
+              href={`${routes.owner.jobTypes}?sort=margin_asc`}
               className="text-xs font-medium text-fc-accent hover:underline"
             >
               View all
@@ -71,7 +72,7 @@ export function OperationalRiskStrip({
               lowestMarginJobTypes.slice(0, 4).map((type) => (
                 <li key={type.jobTypeId} className="flex items-center justify-between gap-2 text-sm">
                   <Link
-                    href={`/app/job-types/${type.jobTypeId}`}
+                    href={routes.owner.jobType(type.jobTypeId)}
                     className="truncate text-fc-brand hover:text-fc-accent hover:underline"
                   >
                     {type.jobTypeName}
