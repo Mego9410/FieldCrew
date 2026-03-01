@@ -4,10 +4,33 @@
  * Workers assigned to jobs (multi-day or ad-hoc)
  */
 
+export type WorkType = "residential" | "commercial" | "install" | "mixed";
+export type TrackingMethod = "digital" | "paper" | "none";
+export type WorkerRole = "lead" | "tech" | "apprentice";
+export type InviteStatus = "not_sent" | "sent" | "accepted";
+
+export interface CompanySettings {
+  onboardingStep?: number;
+  otAfterHoursPerDay?: number;
+  otAfterHoursPerWeek?: number;
+  weekendMultiplier?: number;
+  holidayMultiplier?: number;
+  requireJobCode?: boolean;
+  requireGps?: boolean;
+  requireNotesOnClockOut?: boolean;
+  requirePhotoOnClockOut?: boolean;
+}
+
 export interface Company {
   id: string;
   name: string;
   address?: string;
+  ownerUserId?: string | null;
+  workType?: WorkType;
+  expectedTeamSize?: number;
+  currentTrackingMethod?: TrackingMethod;
+  onboardingStatus?: string;
+  settings?: CompanySettings;
 }
 
 export interface OwnerUser {
@@ -23,6 +46,20 @@ export interface Worker {
   phone: string;
   hourlyRate: number;
   companyId: string;
+  role?: WorkerRole;
+  overtimeRate?: number | null;
+  inviteStatus?: InviteStatus;
+}
+
+export interface WorkerInvite {
+  id: string;
+  workerId: string;
+  companyId: string;
+  token: string;
+  sentAt: string | null;
+  acceptedAt: string | null;
+  expiresAt: string;
+  channel: string;
 }
 
 export interface Project {
@@ -78,6 +115,7 @@ export type CompanyInput = Omit<Company, "id">;
 export type ProjectInput = Omit<Project, "id">;
 export type OwnerUserInput = Omit<OwnerUser, "id">;
 export type WorkerInput = Omit<Worker, "id">;
+export type WorkerInviteInput = Omit<WorkerInvite, "id">;
 export type JobTypeInput = Omit<JobType, "id">;
 export type JobInput = Omit<Job, "id">;
 export type TimeEntryInput = Omit<TimeEntry, "id">;

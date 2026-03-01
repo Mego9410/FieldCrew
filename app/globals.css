@@ -53,6 +53,19 @@
     --fc-nav-sidebar: #0a0f1a;
   }
 
+  /* Fallbacks so page and links look right even if Tailwind fails to load */
+  body {
+    background-color: var(--fc-bg-page);
+    color: var(--fc-brand);
+  }
+  a {
+    color: var(--fc-brand);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--fc-accent);
+  }
+
   /* Profit Control Console — Industrial Tactical Finance (dashboard only) */
   .profit-control-console {
     --console-bg: #0a0e14;
@@ -150,6 +163,11 @@
     width: 3px;
     min-height: 48px;
     background: var(--fc-accent);
+  }
+
+  /* Hidden profit CTA — ensure button is visible even if Tailwind overrides */
+  a[data-cta="hidden-profit"]:hover {
+    background-color: var(--fc-accent-dark) !important;
   }
 
   /* Custom scrollbar styles for dark backgrounds (sidebar, etc.) */
@@ -307,5 +325,27 @@
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+  }
+}
+
+/* Hidden Profit modal: print only report body, hide overlay and chrome */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  [class*="print:block"],
+  [class*="print:block"] * {
+    visibility: visible;
+  }
+  [class*="print:block"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    padding: 1rem;
+  }
+  .print\:hidden {
+    display: none !important;
   }
 }

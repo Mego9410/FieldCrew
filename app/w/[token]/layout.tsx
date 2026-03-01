@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/server";
 import { resolveWorkerToken } from "@/lib/workerToken";
 import { InvalidTokenScreen } from "./InvalidTokenScreen";
 import { WorkerHeader } from "./WorkerHeader";
@@ -10,7 +11,8 @@ export default async function WorkerLayout({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const result = await resolveWorkerToken(token);
+  const supabase = await createClient();
+  const result = await resolveWorkerToken(token, supabase);
 
   if (!result.valid) {
     return <InvalidTokenScreen />;

@@ -1,7 +1,16 @@
 /**
  * Seed Supabase with test data up to the current date.
  * Run: npm run db:seed  (or npx tsx scripts/seed-supabase.ts)
- * Requires: .env.local with NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+ *
+ * Requires .env.local:
+ *   - NEXT_PUBLIC_SUPABASE_URL
+ *   - NEXT_PUBLIC_SUPABASE_ANON_KEY (or SUPABASE_SERVICE_ROLE_KEY for seeding with RLS)
+ *
+ * With Row Level Security (RLS) enabled, inserts are restricted to the authenticated user's
+ * data. To seed successfully you must either:
+ *   1. Use SUPABASE_SERVICE_ROLE_KEY (bypasses RLS) — recommended for local/dev seeding, or
+ *   2. Run seeding in a context where an authenticated owner user session is available.
+ * If you use only the anon key with no session, seed inserts will fail with RLS errors.
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -9,11 +18,21 @@ import { config } from "dotenv";
 config({ path: ".env.local" });
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const key = serviceRoleKey ?? anonKey;
 
 if (!url || !key) {
-  console.error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local");
+  console.error(
+    "Missing NEXT_PUBLIC_SUPABASE_URL or keys in .env.local. Need NEXT_PUBLIC_SUPABASE_ANON_KEY, or SUPABASE_SERVICE_ROLE_KEY for RLS bypass when seeding."
+  );
   process.exit(1);
+}
+
+if (!serviceRoleKey && anonKey) {
+  console.warn(
+    "Seeding with anon key: with RLS enabled, inserts may fail. Set SUPABASE_SERVICE_ROLE_KEY in .env.local to seed successfully."
+  );
 }
 
 const supabase = createClient(url, key);

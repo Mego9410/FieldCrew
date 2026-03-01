@@ -46,12 +46,13 @@ Add these environment variables in your Vercel project settings:
 **Supabase:**
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` — also used for local seeding when Row Level Security (RLS) is enabled; see `scripts/seed-supabase.ts`
 
-**Twilio (SMS magic links):**
+**Twilio (SMS magic links / onboarding invites):**
 - `TWILIO_ACCOUNT_SID`
 - `TWILIO_AUTH_TOKEN`
 - `TWILIO_PHONE_NUMBER`
+- See [docs/ONBOARDING_SMS.md](docs/ONBOARDING_SMS.md) to configure real SMS for first-time onboarding invites (stub used if unset).
 
 **Auth:**
 - `AUTH_SECRET`
@@ -71,7 +72,9 @@ When **pulling** or **force-pulling** from git, **do not overwrite or delete `.e
 
 ```
 ├── app/              # Next.js app router pages
+│   └── onboarding/  # First-time setup wizard
 ├── components/       # React components
+│   ├── onboarding/  # Onboarding step components
 │   └── landing/     # Landing page components
 ├── docs/             # Project documentation
 └── public/           # Static assets

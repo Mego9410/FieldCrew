@@ -14,7 +14,7 @@ export function Footer() {
     ],
     Company: [
       { label: "About", href: "#" },
-      { label: "Blog", href: "#" },
+      { label: "Blog", href: "/blog" },
       { label: "Careers", href: "#" },
     ],
     Resources: [

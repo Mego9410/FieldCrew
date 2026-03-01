@@ -12,6 +12,7 @@ export const routes = {
   /** Owner: business owner app (dashboard, jobs, workers, timesheets, payroll, settings) */
   owner: {
     home: "/app",
+    onboarding: "/onboarding",
     jobs: "/app/jobs",
     job: (jobId: string) => `/app/jobs/${jobId}`,
     workers: "/app/workers",

@@ -5,11 +5,15 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
 
-const mobileNavLinks = [
-  { href: "#features", label: "Product" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "/login", label: "Log in" },
-];
+function getMobileNavLinks(pathname: string) {
+  const isHome = pathname === "/";
+  return [
+    { href: isHome ? "#features" : "/#features", label: "Product" },
+    { href: "/blog", label: "Blog" },
+    { href: isHome ? "#pricing" : "/#pricing", label: "Pricing" },
+    { href: "/login", label: "Log in" },
+  ];
+}
 
 export function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -42,6 +46,10 @@ export function Nav() {
   const linkClass =
     "block min-h-[44px] min-w-[44px] cursor-pointer items-center rounded-md px-4 py-3 text-base font-medium text-fc-brand transition-colors hover:bg-fc-surface-muted hover:text-fc-accent focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 flex";
 
+  const isHome = pathname === "/";
+  const featuresHref = isHome ? "#features" : "/#features";
+  const pricingHref = isHome ? "#pricing" : "/#pricing";
+
   return (
     <header className="sticky top-0 z-50 border-b border-fc-border bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/95">
       <nav
@@ -58,13 +66,19 @@ export function Nav() {
         {/* Desktop nav: visible from sm up */}
         <div className="hidden sm:flex items-center gap-6">
           <Link
-            href="#features"
+            href={featuresHref}
             className="text-sm font-medium text-fc-muted transition-colors duration-200 hover:text-fc-brand focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
           >
             Product
           </Link>
           <Link
-            href="#pricing"
+            href="/blog"
+            className="text-sm font-medium text-fc-muted transition-colors duration-200 hover:text-fc-brand focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
+          >
+            Blog
+          </Link>
+          <Link
+            href={pricingHref}
             className="text-sm font-medium text-fc-muted transition-colors duration-200 hover:text-fc-brand focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
           >
             Pricing
@@ -76,7 +90,7 @@ export function Nav() {
             Log in
           </Link>
           <Link
-            href="#pricing"
+            href={pricingHref}
             className="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md bg-fc-brand px-6 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-fc-brand/90 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 shadow-fc-sm"
           >
             Get Started
@@ -115,9 +129,9 @@ export function Nav() {
             aria-label="Mobile menu"
           >
             <div className="flex flex-col gap-1 p-4 pt-16">
-              {mobileNavLinks.map(({ href, label }) => (
+              {getMobileNavLinks(pathname).map(({ href, label }) => (
                 <Link
-                  key={href}
+                  key={`${href}-${label}`}
                   href={href}
                   className={linkClass}
                   onClick={() => setMobileOpen(false)}
@@ -126,7 +140,7 @@ export function Nav() {
                 </Link>
               ))}
               <Link
-                href="#pricing"
+                href={pricingHref}
                 onClick={() => setMobileOpen(false)}
                 className="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md bg-fc-brand px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-fc-brand/90 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 mt-2"
               >

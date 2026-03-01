@@ -3,6 +3,13 @@
 import { useEffect } from "react";
 import Link from "next/link";
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object" && error !== null && "message" in error)
+    return String((error as { message: unknown }).message);
+  return "Something went wrong";
+}
+
 export default function AppError({
   error,
   reset,
@@ -10,6 +17,7 @@ export default function AppError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const message = getErrorMessage(error);
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -20,7 +28,7 @@ export default function AppError({
         Something went wrong
       </h1>
       <p className="mt-2 text-sm text-fc-muted">
-        We couldn’t load this page. Please try again.
+        {message === "[object Event]" ? "We couldn't load this page. Please try again." : message}
       </p>
       <div className="mt-6 flex gap-4">
         <button

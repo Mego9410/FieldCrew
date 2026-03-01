@@ -108,10 +108,40 @@ export async function updateSession(request: NextRequest) {
   }
 
   const isAppRoute = pathname.startsWith("/app");
+  const isOnboardingRoute = pathname === "/onboarding" || pathname.startsWith("/onboarding/");
+
+  if (isOnboardingRoute && !user) {
+    const loginUrl = new URL(routes.public.login, request.url);
+    loginUrl.searchParams.set("next", "/onboarding");
+    return NextResponse.redirect(loginUrl);
+  }
+
   if (isAppRoute && !user) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Logged-in user on /app: redirect to onboarding if company onboarding not complete
+  if (isAppRoute && user) {
+    const { data: ownerRow } = await supabase
+      .from("owner_users")
+      .select("company_id")
+      .eq("id", user.id)
+      .single();
+    const companyId = ownerRow?.company_id;
+    if (companyId) {
+      const { data: companyRow } = await supabase
+        .from("companies")
+        .select("onboarding_status")
+        .eq("id", companyId)
+        .single();
+      const status = companyRow?.onboarding_status;
+      if (status !== "complete" && status != null) {
+        const onboardingUrl = new URL(routes.owner.onboarding, request.url);
+        return NextResponse.redirect(onboardingUrl);
+      }
+    }
   }
 
   return supabaseResponse;
