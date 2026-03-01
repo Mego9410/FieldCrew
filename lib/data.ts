@@ -165,6 +165,16 @@ export async function getOwnerUsers(supabase?: SupabaseClient): Promise<OwnerUse
   return (data ?? []).map(toOwnerUser);
 }
 
+export async function getOwnerUserById(
+  id: string,
+  supabase?: SupabaseClient
+): Promise<OwnerUser | null> {
+  const db = supabase ?? createClient();
+  const { data, error } = await db.from("owner_users").select("*").eq("id", id).single();
+  if (error || !data) return null;
+  return toOwnerUser(data);
+}
+
 export async function addOwnerUser(input: OwnerUserInput, supabase?: SupabaseClient): Promise<OwnerUser> {
   const db = supabase ?? createClient();
   const user: OwnerUser = { ...input, id: uid() };
@@ -176,6 +186,74 @@ export async function addOwnerUser(input: OwnerUserInput, supabase?: SupabaseCli
   });
   if (error) throw error;
   return user;
+}
+
+/** Insert an owner user with a specific id (e.g. auth user id). Used when linking Supabase Auth to owner_users. */
+export async function addOwnerUserWithId(
+  id: string,
+  input: OwnerUserInput,
+  supabase?: SupabaseClient
+): Promise<OwnerUser> {
+  const db = supabase ?? createClient();
+  const user: OwnerUser = { ...input, id };
+  const { error } = await db.from("owner_users").insert({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    company_id: user.companyId,
+  });
+  if (error) throw error;
+  return user;
+}
+
+/** Auth user shape we need (from Supabase Auth). */
+type AuthUserLike = {
+  id: string;
+  email?: string | null;
+  user_metadata?: Record<string, unknown> & { full_name?: string; name?: string };
+};
+
+/**
+ * Ensures an auth user has a company and an owner_users row (for new signups).
+ * Pass the user from the session (e.g. session.user after exchangeCodeForSession) when in the
+ * auth callback, since cookies may not be available in the same request.
+ */
+export async function ensureOwnerUserForAuthUser(
+  supabase: SupabaseClient,
+  authUserOrNull?: AuthUserLike | null
+): Promise<OwnerUser | null> {
+  let authUser: AuthUserLike | null = authUserOrNull ?? null;
+  if (!authUser) {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError || !user) return null;
+    authUser = user;
+  }
+
+  const existing = await getOwnerUserById(authUser.id, supabase);
+  if (existing) return existing;
+
+  const company = await addCompany(
+    { name: "My Company", address: undefined },
+    supabase
+  );
+  const name =
+    authUser.user_metadata?.full_name ??
+    authUser.user_metadata?.name ??
+    authUser.email?.split("@")[0] ??
+    "Owner";
+  const ownerUser = await addOwnerUserWithId(
+    authUser.id,
+    {
+      email: authUser.email ?? "",
+      name: String(name),
+      companyId: company.id,
+    },
+    supabase
+  );
+  return ownerUser;
 }
 
 export async function updateOwnerUser(id: string, input: Partial<OwnerUserInput>, supabase?: SupabaseClient): Promise<OwnerUser | null> {

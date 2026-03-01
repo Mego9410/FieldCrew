@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -13,11 +13,37 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState<"email" | "google" | null>(null);
+  const rawError = searchParams.get("error");
   const [error, setError] = useState<string | null>(
-    searchParams.get("error")
-      ? decodeURIComponent(searchParams.get("error") ?? "")
+    rawError
+      ? rawError === "oauth_exchange_failed"
+        ? "Google sign-in failed (exchange error). In Google Cloud, set Authorized redirect URIs to exactly your Supabase callback URL (Supabase → Auth → Providers → Google shows it). In Supabase, re-paste the Google Client Secret. See docs/GOOGLE_AUTH_SETUP.md."
+        : decodeURIComponent(rawError)
       : null
   );
+
+  // Supabase OAuth errors are sometimes in the URL hash (not sent to server).
+  // Read hash on mount so we show the real error instead of generic "no_code".
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.location.hash) return;
+    const hashParams = new URLSearchParams(
+      window.location.hash.slice(1).replace(/^#/, "")
+    );
+    const desc = hashParams.get("error_description");
+    if (desc) {
+      const decoded = decodeURIComponent(desc.replace(/\+/g, " "));
+      setError(
+        decoded.startsWith("Unable to exchange external code")
+          ? "Google sign-in failed (exchange error). Check that Google and Supabase are configured for this URL — see docs/GOOGLE_AUTH_SETUP.md."
+          : decoded
+      );
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search
+      );
+    }
+  }, []);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +61,8 @@ export default function LoginPage() {
       setError(signInError.message);
       return;
     }
-    router.push(routes.owner.home);
+    const next = searchParams.get("next");
+    router.push(next?.startsWith("/") && !next.startsWith("//") ? next : routes.owner.home);
     router.refresh();
   };
 
@@ -46,7 +73,9 @@ export default function LoginPage() {
     const supabase = createClient();
     const origin =
       typeof window !== "undefined" ? window.location.origin : "";
-    const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(routes.owner.home)}`;
+    const next = searchParams.get("next");
+    const nextPath = next?.startsWith("/") && !next.startsWith("//") ? next : routes.owner.home;
+    const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
 
     const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -178,15 +207,7 @@ export default function LoginPage() {
           )}
         </button>
 
-        <p className="mt-6 text-center">
-          <Link
-            href={routes.owner.home}
-            className="text-sm font-medium text-fc-muted underline underline-offset-2 hover:text-fc-brand"
-          >
-            Bypass → Dashboard
-          </Link>
-        </p>
-        <p className="mt-4 text-center text-sm text-fc-muted">
+        <p className="mt-6 text-center text-sm text-fc-muted">
           Don&apos;t have an account?{" "}
           <Link
             href={routes.public.signup}

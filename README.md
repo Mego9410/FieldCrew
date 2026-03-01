@@ -63,6 +63,10 @@ If needed, you can customize the deployment in `vercel.json`. The default config
 - Uses Next.js framework detection
 - Deploys to `iad1` region (Washington, D.C.)
 
+## Git: Preserving Local Config
+
+When **pulling** or **force-pulling** from git, **do not overwrite or delete `.env.local`**. This is the only file that must not be changed by pull operations. It holds your local environment variables (API keys, secrets) and should stay as-is on your machine.
+
 ## Project Structure
 
 ```

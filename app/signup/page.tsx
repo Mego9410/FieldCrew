@@ -199,15 +199,7 @@ export default function SignUpPage() {
           )}
         </button>
 
-        <p className="mt-6 text-center">
-          <Link
-            href={routes.owner.home}
-            className="text-sm font-medium text-fc-muted underline underline-offset-2 hover:text-fc-brand"
-          >
-            Bypass → Dashboard
-          </Link>
-        </p>
-        <p className="mt-4 text-center text-sm text-fc-muted">
+        <p className="mt-6 text-center text-sm text-fc-muted">
           Already have an account?{" "}
           <Link
             href={routes.public.login}
