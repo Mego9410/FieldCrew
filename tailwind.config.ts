@@ -45,6 +45,7 @@ const config: Config = {
         "fc-sm": "var(--fc-shadow-sm)",
         "fc-md": "var(--fc-shadow-md)",
         "fc-lg": "var(--fc-shadow-lg)",
+        "fc-hero": "var(--fc-shadow-hero)",
       },
       borderRadius: {
         "fc": "var(--fc-radius)",

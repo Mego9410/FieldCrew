@@ -1,18 +1,18 @@
 const steps = [
   {
-    label: "Centralize",
-    title: "Job-coded time at the point of work",
-    desc: "No job. No clock-in. Every hour is tied to a real install, service call, or maintenance job.",
+    label: "1",
+    title: "Clock into jobs only",
+    desc: "No job = no clock. Techs must select a job before starting time. No generic shifts, no uncoded hours.",
   },
   {
-    label: "Enforce",
-    title: "Mandatory job selection — no generic shifts",
-    desc: "Workers must choose a job before clocking in. No \"8-hour day\" entries. No clean-up at payroll. The data is correct from the start.",
+    label: "2",
+    title: "Hours attach to revenue",
+    desc: "Every hour is tied to a job code. Labour cost rolls up per job so you see true margin by install, service call, or maintenance.",
   },
   {
-    label: "Consolidate",
-    title: "Export payroll with job context",
-    desc: "Run payroll with: Worker, Hours, Job, Labour cost per job. Export directly to QuickBooks-ready CSV. Your payroll becomes job-aware.",
+    label: "3",
+    title: "Monthly labour profit report",
+    desc: "Overtime by tech, job overruns, margin by service type, and recoverable leakage. One report. No guesswork.",
   },
 ];
 
@@ -20,46 +20,40 @@ export function Solution() {
   return (
     <section
       id="how-it-works"
-      className="relative border-b border-fc-border bg-white py-12 sm:py-24 lg:py-28"
+      className="relative border-b border-fc-border bg-white py-14 sm:py-24 lg:py-28"
       aria-labelledby="solution-heading"
     >
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <span className="fc-accent-stripe mx-auto mb-3 block" aria-hidden />
+          <span className="fc-accent-stripe mx-auto mb-4 block" aria-hidden />
           <h2
             id="solution-heading"
-            className="font-display text-3xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
+            className="font-display font-bold text-fc-brand fc-section-h2"
           >
-            FieldCrew fixes the root cause
+            Control. Enforce. Recover.
           </h2>
-          <p className="mx-auto mt-6 max-w-2xl text-xl text-fc-muted">
-            We don&apos;t improve time tracking.
-          </p>
-          <p className="mx-auto mt-1 max-w-2xl text-xl font-medium text-fc-brand">
-            We enforce job-based payroll intelligence.
-          </p>
         </div>
-        <div className="mt-16 text-center">
-          <p className="font-display text-sm font-semibold uppercase tracking-wider text-fc-accent">
-            How it works
-          </p>
-        </div>
-        <div className="mt-12 flex flex-col items-stretch gap-12 sm:flex-row sm:justify-center sm:items-start sm:gap-6 lg:gap-10">
+        {/* Horizontal process: 1 → 2 → 3 with connecting progression */}
+        <div className="mt-14 flex flex-col items-center gap-12 sm:flex-row sm:justify-center sm:items-start sm:gap-2 lg:gap-6">
           {steps.map((step, i) => (
-            <div key={step.label} className="flex flex-col items-center text-center sm:max-w-xs">
-              <div className="flex items-center">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-fc-accent text-white shadow-fc-sm">
-                  <span className="font-display text-xl font-bold">{i + 1}</span>
+            <div key={step.label} className="flex items-start gap-2 lg:gap-4">
+              {i > 0 && (
+                <span className="hidden pt-8 text-2xl font-bold text-fc-accent/50 sm:inline" aria-hidden>
+                  →
+                </span>
+              )}
+              <div
+                className="flex flex-col items-center rounded-[var(--fc-radius)] bg-white p-6 shadow-fc-sm sm:max-w-[260px] lg:max-w-[280px]"
+                style={i === 1 ? { transform: "translateY(8px)" } : undefined}
+              >
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[var(--fc-radius)] bg-fc-accent text-xl font-extrabold text-white shadow-fc-md">
+                  {step.label}
                 </div>
-                {i < steps.length - 1 && (
-                  <span className="mx-2 hidden text-fc-accent/70 sm:inline" aria-hidden>→</span>
-                )}
+                <h3 className="mt-5 font-display text-lg font-bold text-fc-brand">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-sm text-fc-muted fc-body-air">{step.desc}</p>
               </div>
-              <h3 className="mt-5 font-display text-2xl font-bold text-fc-brand">
-                {step.label}
-              </h3>
-              <p className="mt-2 font-semibold text-fc-brand">{step.title}</p>
-              <p className="mt-2 text-base text-fc-muted">{step.desc}</p>
             </div>
           ))}
         </div>

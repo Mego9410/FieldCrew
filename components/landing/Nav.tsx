@@ -8,7 +8,7 @@ import { Menu, X } from "lucide-react";
 function getMobileNavLinks(pathname: string) {
   const isHome = pathname === "/";
   return [
-    { href: isHome ? "#features" : "/#features", label: "Product" },
+    { href: isHome ? "#how-it-works" : "/#how-it-works", label: "Product" },
     { href: "/blog", label: "Blog" },
     { href: isHome ? "#pricing" : "/#pricing", label: "Pricing" },
     { href: "/login", label: "Log in" },
@@ -47,7 +47,7 @@ export function Nav() {
     "block min-h-[44px] min-w-[44px] cursor-pointer items-center rounded-md px-4 py-3 text-base font-medium text-fc-brand transition-colors hover:bg-fc-surface-muted hover:text-fc-accent focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 flex";
 
   const isHome = pathname === "/";
-  const featuresHref = isHome ? "#features" : "/#features";
+  const productHref = isHome ? "#how-it-works" : "/#how-it-works";
   const pricingHref = isHome ? "#pricing" : "/#pricing";
 
   return (
@@ -66,7 +66,7 @@ export function Nav() {
         {/* Desktop nav: visible from sm up */}
         <div className="hidden sm:flex items-center gap-6">
           <Link
-            href={featuresHref}
+            href={productHref}
             className="text-sm font-medium text-fc-muted transition-colors duration-200 hover:text-fc-brand focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
           >
             Product

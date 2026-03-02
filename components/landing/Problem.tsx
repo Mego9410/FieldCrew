@@ -1,110 +1,73 @@
-const problems = [
+const painRows = [
   {
-    title: "Untracked or mis-attributed hours",
-    body: [
-      "Techs forget to clock in. Managers enter generic shifts. Paper notes get cleaned up at payroll.",
-      "Those small gaps add up to thousands in hidden leakage every year.",
-      "If a tech works 20 minutes extra on three jobs per week and it isn't attributed properly — you never see the true cost of those jobs.",
-    ],
+    youThink: "Payroll is the problem.",
+    reality: "Hours are uncoded, overtime spikes unseen, job costs are guesswork.",
+    result: "Margin leaks every month. You find out at month-end.",
   },
   {
-    title: "Overtime that only shows up on payday",
-    body: [
-      "Emergency calls. Callbacks. Late finishes.",
-      "Overtime changes daily in HVAC. If your system doesn't flag it in real time, you only discover it when payroll spikes.",
-      "By then, the margin is already gone.",
-    ],
+    youThink: "We just need better time tracking.",
+    reality: "Generic time apps don't tie hours to jobs or revenue.",
+    result: "Payroll runs clean. Profitability stays invisible.",
   },
   {
-    title: "Revenue per job… but no labour cost per job",
-    body: [
-      "You know what you invoiced. But did that install actually make money?",
-      "Without job-level labour data, you can't answer:",
-      null, // bullet list placeholder
-    ],
-    bullets: [
-      "Which installs are underpriced?",
-      "Which service calls are bleeding margin?",
-      "Which techs are consistently overrunning jobs?",
-      "Whether your 45% gross margin is real — or just assumed",
-    ],
-    closing: "Every unassigned hour is a blind spot.",
-  },
-  {
-    title: "Payroll run without job context",
-    body: [
-      "Most small HVAC shops still:",
-      null,
-    ],
-    bullets: [
-      "Copy times into spreadsheets",
-      "Export generic payroll reports",
-      "Manually reconcile QuickBooks",
-    ],
-    closing: "Time data lives in one place. Payroll in another. Profitability nowhere. Manual workflows are slow, error-prone, and impossible to scale.",
+    youThink: "Our margins are fine.",
+    reality: "Without job-level labour data, you're assuming — not measuring.",
+    result: "Underpriced jobs and overruns eat profit. You don't see which ones.",
   },
 ];
 
 export function Problem() {
   return (
     <section
-      id="problem"
-      className="border-b border-fc-border bg-white py-12 sm:py-16 lg:py-20"
-      aria-labelledby="problem-heading"
+      id="pain"
+      className="border-b border-fc-border bg-white py-14 sm:py-20 lg:py-24"
+      aria-labelledby="pain-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <span className="fc-accent-stripe mx-auto mb-3 block" aria-hidden />
-          <p className="font-display text-sm font-semibold uppercase tracking-wider text-fc-accent">
-            The problem
-          </p>
+          <span className="fc-accent-stripe mx-auto mb-4 block" aria-hidden />
           <h2
-            id="problem-heading"
-            className="mt-2 font-display text-3xl font-bold text-fc-brand sm:text-5xl lg:text-6xl"
+            id="pain-heading"
+            className="font-display font-bold text-fc-brand fc-section-h2"
           >
-            Small HVAC businesses lose money silently
+            Payroll isn&apos;t your problem. Uncontrolled labour is.
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-xl text-fc-muted">
-            You know what you charged.
-          </p>
-          <p className="mx-auto mt-1 max-w-2xl text-xl text-fc-muted">
-            You don&apos;t know what you actually spent on labour.
-          </p>
-          <p className="mx-auto mt-1 max-w-2xl text-xl text-fc-muted">
-            And that makes margin control impossible.
-          </p>
-          <p className="mx-auto mt-4 max-w-2xl text-lg font-medium text-fc-brand">
-            Most HVAC businesses with 3–15 techs are flying blind on their biggest cost: labour.
-          </p>
         </div>
-        <ul className="mt-14 grid gap-8 sm:grid-cols-2">
-          {problems.map((item, i) => (
-            <li
-              key={i}
-              className="group relative overflow-hidden rounded-lg border border-fc-border bg-white p-6 shadow-fc-sm transition-all duration-200 hover:border-fc-accent/40"
-            >
-              <span className="absolute left-0 top-0 h-full w-0.5 bg-fc-accent" aria-hidden />
-              <h3 className="font-display text-lg font-bold text-fc-brand">
-                {i + 1}. {item.title}
+        {/* Three columns with vertical dividers — no card borders; middle column darker for tension */}
+        <div className="mt-14 overflow-x-auto">
+          <div className="grid min-w-[280px] grid-cols-3 gap-0 bg-white">
+            <div className="px-6 py-8 text-center sm:px-8">
+              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-fc-muted">
+                You think
               </h3>
-              <div className="mt-4 space-y-2 text-base leading-relaxed text-fc-muted">
-                {item.body.filter(Boolean).map((p, j) => (
-                  <p key={j}>{p}</p>
+              <ul className="mt-5 space-y-3 text-left text-sm text-fc-brand fc-body-air">
+                {painRows.map((row, i) => (
+                  <li key={i} className="font-medium">{row.youThink}</li>
                 ))}
-                {item.bullets && (
-                  <ul className="list-inside list-disc space-y-1 pt-1">
-                    {item.bullets.map((b, j) => (
-                      <li key={j}>{b}</li>
-                    ))}
-                  </ul>
-                )}
-                {item.closing && (
-                  <p className="pt-2 font-medium text-fc-brand">{item.closing}</p>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
+              </ul>
+            </div>
+            <div className="border-x border-fc-border bg-slate-100/80 px-6 py-8 text-center sm:px-8">
+              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-fc-accent">
+                Reality
+              </h3>
+              <ul className="mt-5 space-y-3 text-left text-sm text-fc-muted fc-body-air">
+                {painRows.map((row, i) => (
+                  <li key={i}>{row.reality}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="px-6 py-8 text-center sm:px-8">
+              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-fc-muted">
+                Result
+              </h3>
+              <ul className="mt-5 space-y-3 text-left text-sm text-fc-brand fc-body-air">
+                {painRows.map((row, i) => (
+                  <li key={i} className="font-medium">{row.result}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
