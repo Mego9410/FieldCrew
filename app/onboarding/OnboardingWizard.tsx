@@ -59,7 +59,7 @@ export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = f
         if (payload.workType != null) setStep1Data((d) => ({ ...d, workType: payload.workType as OperationSnapshotData["workType"] }));
         if (payload.expectedTeamSize != null) setCompany((c) => ({ ...c, expectedTeamSize: payload.expectedTeamSize as number }));
         if (payload.currentTrackingMethod != null) setCompany((c) => ({ ...c, currentTrackingMethod: payload.currentTrackingMethod as Company["currentTrackingMethod"] }));
-        if (payload.settings != null) setCompany((c) => ({ ...c, settings: { ...c.settings, ...payload.settings } }));
+        if (payload.settings != null) setCompany((c) => ({ ...c, settings: { ...(c.settings ?? {}), ...(payload.settings as Record<string, unknown>) } }));
         return;
       }
       setSaving(true);
