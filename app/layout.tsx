@@ -31,9 +31,9 @@ const shareTechMono = Share_Tech_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FieldCrew — Labour cost per job for HVAC crews",
+  title: "FieldCrew — Recover Hidden Labour Profit | HVAC Payroll & Margin",
   description:
-    "Job-based payroll intelligence for small US HVAC crews. See which jobs make money and stop payroll leakage.",
+    "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labour inefficiency. FieldCrew shows you exactly where. Built for 5–20 tech owners in Texas, Florida & Arizona.",
 };
 
 export const viewport = {

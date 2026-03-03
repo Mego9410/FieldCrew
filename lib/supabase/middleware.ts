@@ -110,10 +110,9 @@ export async function updateSession(request: NextRequest) {
   const isAppRoute = pathname.startsWith("/app");
   const isOnboardingRoute = pathname === "/onboarding" || pathname.startsWith("/onboarding/");
 
+  // Allow unauthenticated access to /onboarding (preview / force onboarding from login page)
   if (isOnboardingRoute && !user) {
-    const loginUrl = new URL(routes.public.login, request.url);
-    loginUrl.searchParams.set("next", "/onboarding");
-    return NextResponse.redirect(loginUrl);
+    return supabaseResponse;
   }
 
   if (isAppRoute && !user) {
