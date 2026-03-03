@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { StepLayout } from "@/components/onboarding/StepLayout";
 import { OperationSnapshot } from "@/components/onboarding/OperationSnapshot";
 import type { OperationSnapshotData } from "@/components/onboarding/OperationSnapshot";
@@ -20,9 +21,10 @@ const TOTAL_STEPS = 5;
 interface OnboardingWizardProps {
   initialCompany: Company;
   initialWorkers: Worker[];
+  isPreview?: boolean;
 }
 
-export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingWizardProps) {
+export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = false }: OnboardingWizardProps) {
   const router = useRouter();
   const savedStep = initialCompany.settings?.onboardingStep ?? 0;
   const [step, setStep] = useState(Math.min(savedStep + 1, 6));
@@ -38,16 +40,28 @@ export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingW
   const [payRulesData, setPayRulesData] = useState<Partial<CompanySettings>>(company.settings ?? {});
 
   const refetchWorkers = useCallback(async () => {
+    if (isPreview) return;
     const res = await fetch("/api/onboarding/workers");
     if (res.ok) {
       const data = await res.json();
       setWorkers(data.workers ?? []);
     }
-  }, []);
+  }, [isPreview]);
 
   const saveStep = useCallback(
     async (payload: Record<string, unknown>, stepOverride?: number) => {
       const stepToSave = stepOverride ?? step;
+      if (isPreview) {
+        if (payload.companyName != null) {
+          setCompany((c) => ({ ...c, name: payload.companyName as string }));
+          setStep1Data((d) => ({ ...d, companyName: payload.companyName as string }));
+        }
+        if (payload.workType != null) setStep1Data((d) => ({ ...d, workType: payload.workType as OperationSnapshotData["workType"] }));
+        if (payload.expectedTeamSize != null) setCompany((c) => ({ ...c, expectedTeamSize: payload.expectedTeamSize as number }));
+        if (payload.currentTrackingMethod != null) setCompany((c) => ({ ...c, currentTrackingMethod: payload.currentTrackingMethod as Company["currentTrackingMethod"] }));
+        if (payload.settings != null) setCompany((c) => ({ ...c, settings: { ...c.settings, ...payload.settings } }));
+        return;
+      }
       setSaving(true);
       try {
         const res = await fetch("/api/onboarding/save", {
@@ -62,7 +76,7 @@ export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingW
         setSaving(false);
       }
     },
-    [step]
+    [step, isPreview]
   );
 
   const handleStep1Next = async (data: { companyName: string; workType: string; expectedTeamSize: number; currentTrackingMethod: string }) => {
@@ -109,6 +123,10 @@ export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingW
   };
 
   const handleLaunch = async () => {
+    if (isPreview) {
+      router.push(routes.public.login + "?next=" + encodeURIComponent(routes.owner.home));
+      return;
+    }
     setSaving(true);
     try {
       const res = await fetch("/api/onboarding/complete", { method: "POST" });
@@ -120,9 +138,24 @@ export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingW
     }
   };
 
+  const previewBanner = isPreview ? (
+    <div className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-center text-sm text-amber-800">
+      You&apos;re viewing a preview.{" "}
+      <Link
+        href={routes.public.login + "?next=" + encodeURIComponent(routes.owner.onboarding)}
+        className="font-medium underline underline-offset-2 hover:text-amber-900"
+      >
+        Sign in
+      </Link>{" "}
+      to save your progress.
+    </div>
+  ) : null;
+
   if (step === 6) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-12">
+      <>
+        {previewBanner}
+        <div className="mx-auto max-w-3xl px-4 py-12">
         <div className="rounded-xl border border-fc-accent bg-fc-accent/5 p-8 text-center">
           <h1 className="font-display text-2xl font-bold text-fc-brand">
             Launch Command Dashboard
@@ -140,12 +173,15 @@ export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingW
           </Button>
         </div>
       </div>
+      </>
     );
   }
 
   if (step === 1) {
     return (
-      <StepLayout
+      <>
+        {previewBanner}
+        <StepLayout
         step={1}
         totalSteps={TOTAL_STEPS}
         title="Operation Snapshot"
@@ -161,12 +197,15 @@ export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingW
           onChange={setStep1Data}
         />
       </StepLayout>
+      </>
     );
   }
 
   if (step === 2) {
     return (
-      <StepLayout
+      <>
+        {previewBanner}
+        <StepLayout
         step={2}
         totalSteps={TOTAL_STEPS}
         title="Build Your Active Crew"
@@ -186,12 +225,15 @@ export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingW
           onWorkersChange={refetchWorkers}
         />
       </StepLayout>
+      </>
     );
   }
 
   if (step === 3) {
     return (
-      <StepLayout
+      <>
+        {previewBanner}
+        <StepLayout
         step={3}
         totalSteps={TOTAL_STEPS}
         title="Worker Experience Preview"
@@ -206,12 +248,15 @@ export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingW
       >
         <WorkerPreview />
       </StepLayout>
+      </>
     );
   }
 
   if (step === 4) {
     return (
-      <StepLayout
+      <>
+        {previewBanner}
+        <StepLayout
         step={4}
         totalSteps={TOTAL_STEPS}
         title="Turn Your Crew Live"
@@ -230,12 +275,15 @@ export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingW
           onContinue={() => setStep(5)}
         />
       </StepLayout>
+      </>
     );
   }
 
   if (step === 5) {
     return (
-      <StepLayout
+      <>
+        {previewBanner}
+        <StepLayout
         step={5}
         totalSteps={TOTAL_STEPS}
         title="Pay Rules & Tracking Preferences"
@@ -252,6 +300,7 @@ export function OnboardingWizard({ initialCompany, initialWorkers }: OnboardingW
           onChange={setPayRulesData}
         />
       </StepLayout>
+      </>
     );
   }
 

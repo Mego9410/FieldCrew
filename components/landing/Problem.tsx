@@ -1,3 +1,8 @@
+"use client";
+
+import { motion, useReducedMotion } from "framer-motion";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+
 const painRows = [
   {
     youThink: "Payroll is the problem.",
@@ -16,7 +21,15 @@ const painRows = [
   },
 ];
 
+const colVariants = {
+  hidden: { opacity: 0, x: -12 },
+  visible: { opacity: 1, x: 0 },
+};
+const transition = { duration: 0.35, ease: [0.2, 0.8, 0.2, 1] as const };
+
 export function Problem() {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section
       id="pain"
@@ -24,7 +37,7 @@ export function Problem() {
       aria-labelledby="pain-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
+        <ScrollReveal className="text-center">
           <span className="fc-accent-stripe mx-auto mb-4 block" aria-hidden />
           <h2
             id="pain-heading"
@@ -32,42 +45,66 @@ export function Problem() {
           >
             Payroll isn&apos;t your problem. Uncontrolled labour is.
           </h2>
-        </div>
-        {/* Three columns with vertical dividers — no card borders; middle column darker for tension */}
-        <div className="mt-14 overflow-x-auto">
-          <div className="grid min-w-[280px] grid-cols-3 gap-0 bg-white">
-            <div className="px-6 py-8 text-center sm:px-8">
-              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-fc-muted">
-                You think
-              </h3>
-              <ul className="mt-5 space-y-3 text-left text-sm text-fc-brand fc-body-air">
-                {painRows.map((row, i) => (
-                  <li key={i} className="font-medium">{row.youThink}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="border-x border-fc-border bg-slate-100/80 px-6 py-8 text-center sm:px-8">
-              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-fc-accent">
-                Reality
-              </h3>
-              <ul className="mt-5 space-y-3 text-left text-sm text-fc-muted fc-body-air">
-                {painRows.map((row, i) => (
-                  <li key={i}>{row.reality}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="px-6 py-8 text-center sm:px-8">
-              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-fc-muted">
-                Result
-              </h3>
-              <ul className="mt-5 space-y-3 text-left text-sm text-fc-brand fc-body-air">
-                {painRows.map((row, i) => (
-                  <li key={i} className="font-medium">{row.result}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
+        </ScrollReveal>
+
+        <motion.div
+          className="mt-14 grid min-w-[280px] grid-cols-3 gap-0 overflow-x-auto bg-white"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ amount: 0.1, once: true }}
+          variants={reduceMotion ? {} : { visible: { transition: { staggerChildren: 0.1 } } }}
+        >
+          <motion.div
+            className="px-6 py-8 text-center sm:px-8"
+            variants={reduceMotion ? {} : colVariants}
+            transition={transition}
+          >
+            <h3 className="font-display text-xs font-bold uppercase tracking-wider text-fc-muted">
+              You think
+            </h3>
+            <ul className="mt-5 space-y-3 text-left text-sm text-fc-brand fc-body-air">
+              {painRows.map((row, i) => (
+                <li key={i} className="font-medium">
+                  {row.youThink}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+          <motion.div
+            className="border-x border-fc-border bg-fc-surface-muted px-6 py-8 text-center sm:px-8"
+            variants={reduceMotion ? {} : colVariants}
+            transition={transition}
+          >
+            <h3 className="font-display text-xs font-bold uppercase tracking-wider text-fc-accent">
+              Reality
+            </h3>
+            <span
+              className="mx-auto mt-3 block h-0.5 w-12 bg-fc-accent"
+              aria-hidden
+            />
+            <ul className="mt-5 space-y-3 text-left text-sm text-fc-muted fc-body-air">
+              {painRows.map((row, i) => (
+                <li key={i}>{row.reality}</li>
+              ))}
+            </ul>
+          </motion.div>
+          <motion.div
+            className="px-6 py-8 text-center sm:px-8"
+            variants={reduceMotion ? {} : colVariants}
+            transition={transition}
+          >
+            <h3 className="font-display text-xs font-bold uppercase tracking-wider text-fc-muted">
+              Result
+            </h3>
+            <ul className="mt-5 space-y-3 text-left text-sm text-fc-brand fc-body-air">
+              {painRows.map((row, i) => (
+                <li key={i} className="font-medium">
+                  {row.result}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

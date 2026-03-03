@@ -10,10 +10,8 @@ export default async function OnboardingLayout({
 }) {
   const supabase = await createClient();
   const company = await getCompanyForCurrentUser(supabase);
-  if (!company) {
-    redirect(routes.public.login);
-  }
-  if (company.onboardingStatus === "complete") {
+  // Allow unauthenticated / no-company access for "force onboarding" preview from login page
+  if (company?.onboardingStatus === "complete") {
     redirect(routes.owner.home);
   }
   return (

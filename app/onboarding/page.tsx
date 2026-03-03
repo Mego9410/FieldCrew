@@ -1,16 +1,29 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCompanyForCurrentUser, getWorkers } from "@/lib/data";
 import { OnboardingWizard } from "./OnboardingWizard";
+import type { Company } from "@/lib/entities";
+
+const DEMO_COMPANY: Company = {
+  id: "demo",
+  name: "",
+  workType: "mixed",
+  expectedTeamSize: 5,
+  currentTrackingMethod: "none",
+  onboardingStatus: undefined,
+  settings: {},
+};
 
 export default async function OnboardingPage() {
   const supabase = await createClient();
   const company = await getCompanyForCurrentUser(supabase);
   const workers = company ? await getWorkers(company.id, supabase) : [];
-  if (!company) return null;
+  const initialCompany = company ?? DEMO_COMPANY;
+  const isPreview = !company;
   return (
     <OnboardingWizard
-      initialCompany={company}
+      initialCompany={initialCompany}
       initialWorkers={workers}
+      isPreview={isPreview}
     />
   );
 }

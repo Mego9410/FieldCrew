@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Industrial Modern — deep navy + burnt orange */
+    /* Labour Command Center — navy + steel + burnt orange */
     --fc-brand: #0f172a;
     --fc-accent: #f97316;
     --fc-accent-dark: #ea580c;
@@ -14,22 +14,36 @@
     --fc-gradient-mid: #ea580c;
     --fc-gradient-end: #c2410c;
 
+    /* Navy scale — dark backgrounds & panels */
+    --fc-navy-950: #030712;
+    --fc-navy-900: #0f172a;
+    --fc-navy-800: #1e293b;
+    /* Steel — neutral accent & borders */
+    --fc-steel-500: #64748b;
+    --fc-steel-600: #475569;
+    /* Orange (alias for accent) */
+    --fc-orange-500: #f97316;
+    --fc-orange-600: #ea580c;
+
     /* Background layering — soft off-white, no pastel */
     --fc-bg-page: #f8fafc;
     --fc-surface: #ffffff;
     --fc-surface-muted: #f1f5f9;
 
-    /* Border & shadow — reduced softness, operational */
+    /* Border & shadow — directional, layered panels, edge glow */
     --fc-border: #e2e8f0;
     --fc-border-subtle: #f1f5f9;
     --fc-shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.04);
     --fc-shadow-md: 0 2px 4px -1px rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.04);
     --fc-shadow-lg: 0 4px 12px -2px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.04);
     --fc-shadow-hero: 0 24px 48px -12px rgb(15 23 42 / 0.18), 0 12px 24px -8px rgb(15 23 42 / 0.1);
+    /* Panel: directional + subtle edge glow */
+    --fc-shadow-panel: 0 8px 24px -4px rgb(3 7 18 / 0.4), 0 0 0 1px rgb(249 115 22 / 0.06);
+    --fc-shadow-panel-lg: 0 16px 40px -8px rgb(3 7 18 / 0.5), 0 0 0 1px rgb(249 115 22 / 0.08);
 
-    /* Radius — slightly sharper, operational */
-    --fc-radius: 0.25rem;
-    --fc-radius-lg: 0.375rem;
+    /* Radius — sharper, engineered */
+    --fc-radius: 0.2rem;
+    --fc-radius-lg: 0.3rem;
 
     /* Typography scale */
     --fc-text-page-title: 1.25rem;
@@ -186,6 +200,56 @@
   .fc-money-accent {
     font-weight: 800;
     color: var(--fc-accent);
+  }
+
+  /* Display number — KPIs, counts */
+  .fc-display-number {
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  /* Blueprint grid texture — 3–6% opacity for hero/CTA */
+  .fc-blueprint-grid {
+    background-image:
+      linear-gradient(to right, currentColor 1px, transparent 1px),
+      linear-gradient(to bottom, currentColor 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.04;
+  }
+
+  /* Final CTA button — periodic light sweep (stops on hover) */
+  .cta-sweep::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 0%,
+      transparent 40%,
+      rgba(255, 255, 255, 0.12) 50%,
+      transparent 60%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-position: 150% 0;
+    animation: cta-sweep 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .cta-sweep:hover::before,
+  .cta-sweep:focus-visible::before {
+    animation-play-state: paused;
+  }
+  @keyframes cta-sweep {
+    0%, 100% { background-position: 150% 0; }
+    50% { background-position: -50% 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cta-sweep::before {
+      animation: none;
+      opacity: 0;
+    }
   }
 
   /* Hidden profit CTA — ensure button is visible even if Tailwind overrides */

@@ -223,6 +223,15 @@ export default function LoginPage() {
             Back to home
           </Link>
         </p>
+
+        <p className="mt-3 text-center">
+          <Link
+            href={routes.owner.onboarding}
+            className="text-xs text-fc-muted underline underline-offset-2 hover:text-fc-accent"
+          >
+            Go to onboarding (no sign-in)
+          </Link>
+        </p>
       </div>
     </div>
   );
