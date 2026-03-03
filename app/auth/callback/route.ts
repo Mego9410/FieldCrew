@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
 import { ensureOwnerUserForAuthUser } from "@/lib/data";
 import { NextResponse } from "next/server";
@@ -31,15 +31,26 @@ export async function GET(request: Request) {
   }
 
   // Ensure the signed-in user has a company and owner_users row (new signups).
-  // Pass session.user so we don't rely on cookies in the same request.
+  // Use service-role client so inserts succeed regardless of session/cookie timing; we pass
+  // session.user so we only create rows for the user we just authenticated.
   try {
     if (data?.session?.user) {
-      await ensureOwnerUserForAuthUser(supabase, data.session.user);
+      const serviceSupabase = createServiceRoleClient();
+      await ensureOwnerUserForAuthUser(
+        serviceSupabase ?? supabase,
+        data.session.user
+      );
     }
   } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
     console.error("[auth/callback] ensureOwnerUserForAuthUser failed:", err);
+    // Surface the real error so we can fix RLS/config (e.g. "new row violates row-level security policy").
+    const userMessage =
+      process.env.NODE_ENV === "development"
+        ? `Account setup failed: ${message}`
+        : "Account setup failed. Please try again.";
     return NextResponse.redirect(
-      `${origin}${routes.public.login}?error=${encodeURIComponent("Account setup failed. Please try again.")}`
+      `${origin}${routes.public.login}?error=${encodeURIComponent(userMessage)}`
     );
   }
 

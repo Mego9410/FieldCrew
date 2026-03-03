@@ -121,7 +121,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Logged-in user on /app: redirect to onboarding if company onboarding not complete
+  // Logged-in user on /app: redirect to onboarding if no company yet (new user) or onboarding not complete
   if (isAppRoute && user) {
     const { data: ownerRow } = await supabase
       .from("owner_users")
@@ -129,17 +129,20 @@ export async function updateSession(request: NextRequest) {
       .eq("id", user.id)
       .single();
     const companyId = ownerRow?.company_id;
-    if (companyId) {
-      const { data: companyRow } = await supabase
-        .from("companies")
-        .select("onboarding_status")
-        .eq("id", companyId)
-        .single();
-      const status = companyRow?.onboarding_status;
-      if (status !== "complete" && status != null) {
-        const onboardingUrl = new URL(routes.owner.onboarding, request.url);
-        return NextResponse.redirect(onboardingUrl);
-      }
+    // New user: no owner_users row yet (created in app layout or onboarding); send to onboarding first
+    if (!companyId) {
+      const onboardingUrl = new URL(routes.owner.onboarding, request.url);
+      return NextResponse.redirect(onboardingUrl);
+    }
+    const { data: companyRow } = await supabase
+      .from("companies")
+      .select("onboarding_status")
+      .eq("id", companyId)
+      .single();
+    const status = companyRow?.onboarding_status;
+    if (status !== "complete" && status != null) {
+      const onboardingUrl = new URL(routes.owner.onboarding, request.url);
+      return NextResponse.redirect(onboardingUrl);
     }
   }
 

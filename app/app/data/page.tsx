@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Building2, User, Users, ClipboardList, Clock, ChevronRight } from "lucide-react";
 import { routes } from "@/lib/routes";
 import {
@@ -32,8 +33,21 @@ const tabs = [
   { id: "timeentry", label: "Time entry", icon: Clock },
 ] as const;
 
+const tabIds = tabs.map((t) => t.id);
+type TabId = (typeof tabs)[number]["id"];
+
+function isValidTabId(value: string | null): value is TabId {
+  return value !== null && tabIds.includes(value as TabId);
+}
+
 export default function DataPage() {
-  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]["id"]>("company");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState<TabId>(isValidTabId(tabParam) ? tabParam : "company");
+
+  useEffect(() => {
+    if (isValidTabId(tabParam)) setActiveTab(tabParam);
+  }, [tabParam]);
 
   const { items: companies, refetch: refetchCompanies } = useCompanies();
   const { items: ownerUsers, refetch: refetchOwnerUsers } = useOwnerUsers();
@@ -76,7 +90,12 @@ export default function DataPage() {
             <button
               key={id}
               type="button"
-              onClick={() => setActiveTab(id)}
+              onClick={() => {
+                setActiveTab(id);
+                const url = new URL(window.location.href);
+                url.searchParams.set("tab", id);
+                window.history.replaceState(null, "", url.pathname + url.search);
+              }}
               className={`flex min-h-[44px] min-w-[44px] items-center gap-3 border-l-4 px-3 py-2.5 text-left text-sm font-semibold transition-colors ${
                 activeTab === id
                   ? "border-l-fc-accent bg-fc-surface-muted text-fc-brand"
@@ -95,8 +114,20 @@ export default function DataPage() {
               Create {tabs.find((t) => t.id === activeTab)?.label}
             </h2>
           <Card variant="default" className="p-5">
-            {activeTab === "company" && <CompanyForm onSuccess={handleSuccess} />}
-            {activeTab === "owner" && <OwnerUserForm onSuccess={handleSuccess} />}
+            {activeTab === "company" && (
+              <CompanyForm
+                key={companies[0]?.id ?? "create"}
+                company={companies[0] ?? null}
+                onSuccess={handleSuccess}
+              />
+            )}
+            {activeTab === "owner" && (
+              <OwnerUserForm
+                key={ownerUsers[0]?.id ?? "create"}
+                ownerUser={ownerUsers[0] ?? null}
+                onSuccess={handleSuccess}
+              />
+            )}
             {activeTab === "project" && <ProjectForm onSuccess={handleSuccess} />}
             {activeTab === "worker" && <WorkerForm onSuccess={handleSuccess} />}
             {activeTab === "job" && <JobForm onSuccess={handleSuccess} />}

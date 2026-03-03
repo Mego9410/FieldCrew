@@ -2,10 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useProjects } from "@/lib/hooks/useData";
-import { Home, Briefcase, Users, Clock, Banknote, FolderOpen, Database, BarChart3, Settings, X } from "lucide-react";
+import { Home, Briefcase, Users, Clock, Banknote, FolderOpen, BarChart3, Settings, X, ChevronRight } from "lucide-react";
 import { routes } from "@/lib/routes";
+
+const createOptions = [
+  { tab: "project", label: "Project" },
+  { tab: "worker", label: "Worker" },
+  { tab: "job", label: "Job" },
+  { tab: "timeentry", label: "Time Entry" },
+] as const;
 
 const primaryNav = [
   { href: routes.owner.home, label: "Home", icon: Home },
@@ -17,7 +24,6 @@ const primaryNav = [
 
 const secondaryNav = [
   { href: routes.owner.projects, label: "Projects", icon: FolderOpen },
-  { href: routes.owner.data, label: "Data", icon: Database },
   { href: routes.owner.reporting, label: "Reporting", icon: BarChart3 },
   { href: routes.owner.settings, label: "Settings", icon: Settings },
 ];
@@ -31,10 +37,23 @@ export function AppSidebar({
 }) {
   const pathname = usePathname();
   const { items: projects } = useProjects();
+  const [createOpen, setCreateOpen] = useState(false);
+  const createRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     onNavigate?.();
   }, [pathname, onNavigate]);
+
+  useEffect(() => {
+    if (!createOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (createRef.current && !createRef.current.contains(e.target as Node)) {
+        setCreateOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [createOpen]);
 
   const isActive = (href: string) => {
     if (href === routes.owner.home) return pathname === href;
@@ -68,6 +87,41 @@ export function AppSidebar({
       </div>
 
       <nav className="flex min-h-0 flex-1 flex-col overflow-auto px-2 pb-4" aria-label="Main navigation">
+        <div className="relative mb-2" ref={createRef}>
+          <button
+            type="button"
+            onClick={() => setCreateOpen((o) => !o)}
+            className="flex w-full items-center justify-center gap-1 rounded-lg bg-[#1e3a5f] px-3 py-2.5 text-sm font-medium text-white hover:bg-[#152d47] focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-surface"
+            aria-expanded={createOpen}
+            aria-haspopup="true"
+            aria-label="Create new"
+          >
+            Create +
+            <ChevronRight
+              className={`h-4 w-4 shrink-0 transition-transform ${createOpen ? "rotate-90" : ""}`}
+              aria-hidden
+            />
+          </button>
+          {createOpen && (
+            <div
+              className="absolute left-full top-0 z-50 ml-1 min-w-[160px] rounded-lg border border-fc-border bg-fc-surface py-1 shadow-fc-md"
+              role="menu"
+            >
+              {createOptions.map(({ tab, label }) => (
+                <Link
+                  key={tab}
+                  href={`${routes.owner.data}?tab=${tab}`}
+                  role="menuitem"
+                  onClick={() => setCreateOpen(false)}
+                  className="block px-3 py-2 text-sm text-fc-brand hover:bg-fc-surface-muted"
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="space-y-0.5">
           {primaryNav.map(({ href, label, icon: Icon }) => {
             const active = isActive(href);

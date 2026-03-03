@@ -57,6 +57,18 @@ Add these environment variables in your Vercel project settings:
 **Auth:**
 - `AUTH_SECRET`
 
+If users get “Invalid login credentials” after signing up, Supabase may require email confirmation. They must click the confirmation link sent to their email before they can sign in. On the login page they can use “Resend confirmation email” to get a new link. To skip confirmation (e.g. for development), in Supabase Dashboard go to **Authentication → Providers → Email** and turn off **Confirm email**.
+
+### Database and row-level security (RLS)
+
+Apply Supabase migrations so each owner only sees their own data (companies, jobs, workers, time entries, etc.):
+
+```bash
+npx supabase db push
+```
+
+Or run the SQL in `supabase/migrations/` in order in the Supabase Dashboard → SQL Editor. The migration `20250303100000_enforce_owner_rls.sql` enforces owner-only access; run it if users can still see other users’ data.
+
 ### Manual Configuration
 
 If needed, you can customize the deployment in `vercel.json`. The default configuration:

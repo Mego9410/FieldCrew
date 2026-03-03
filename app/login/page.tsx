@@ -21,6 +21,7 @@ export default function LoginPage() {
         : decodeURIComponent(rawError)
       : null
   );
+  const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   // Supabase OAuth errors are sometimes in the URL hash (not sent to server).
   // Read hash on mount so we show the real error instead of generic "no_code".
@@ -48,6 +49,7 @@ export default function LoginPage() {
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setResendStatus("idle");
     setLoading("email");
 
     const supabase = createClient();
@@ -64,6 +66,22 @@ export default function LoginPage() {
     const next = searchParams.get("next");
     router.push(next?.startsWith("/") && !next.startsWith("//") ? next : routes.owner.home);
     router.refresh();
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email?.trim()) return;
+    setResendStatus("sending");
+    const supabase = createClient();
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email: email.trim(),
+    });
+    if (resendError) {
+      setResendStatus("error");
+      setError(resendError.message);
+      return;
+    }
+    setResendStatus("sent");
   };
 
   const handleGoogleSignIn = async () => {
@@ -106,7 +124,28 @@ export default function LoginPage() {
             className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
             role="alert"
           >
-            {error}
+            <p>{error}</p>
+            {error === "Invalid login credentials" && (
+              <>
+                <p className="mt-2 text-red-700">
+                  If you just signed up, confirm your email first: check your inbox for a link from FieldCrew, then try again.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  disabled={resendStatus === "sending" || !email?.trim()}
+                  className="mt-2 font-medium underline underline-offset-2 hover:no-underline disabled:opacity-50"
+                >
+                  {resendStatus === "sending"
+                    ? "Sending…"
+                    : resendStatus === "sent"
+                      ? "Confirmation email sent — check your inbox"
+                      : resendStatus === "error"
+                        ? "Resend failed — try again"
+                        : "Resend confirmation email"}
+                </button>
+              </>
+            )}
           </div>
         )}
 

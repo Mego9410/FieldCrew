@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { getJobs, getWorkers, getTimeEntries, getJobTypes } from "@/lib/data";
 import { buildLabourCostTrendPayload } from "@/lib/labour-cost-trend";
 
@@ -7,6 +8,7 @@ const ALLOWED_RANGES = [30, 90, 180, 365];
 
 export async function GET(request: NextRequest) {
   try {
+    const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const rangeDaysParam = searchParams.get("rangeDays");
     const rangeDays = rangeDaysParam
@@ -21,10 +23,10 @@ export async function GET(request: NextRequest) {
       : undefined;
 
     const [jobs, workers, timeEntries, jobTypes] = await Promise.all([
-      getJobs(),
-      getWorkers(),
-      getTimeEntries(),
-      getJobTypes(),
+      getJobs(undefined, undefined, supabase),
+      getWorkers(undefined, supabase),
+      getTimeEntries(undefined, undefined, supabase),
+      getJobTypes(undefined, supabase),
     ]);
 
     const payload = buildLabourCostTrendPayload(
