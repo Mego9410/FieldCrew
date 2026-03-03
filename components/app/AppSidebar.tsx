@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useProjects } from "@/lib/hooks/useData";
 import { Home, Briefcase, Users, Clock, Banknote, FolderOpen, BarChart3, Settings, X, ChevronRight } from "lucide-react";
 import { routes } from "@/lib/routes";
@@ -39,17 +40,34 @@ export function AppSidebar({
   const { items: projects } = useProjects();
   const [createOpen, setCreateOpen] = useState(false);
   const createRef = useRef<HTMLDivElement>(null);
+  const [dropdownRect, setDropdownRect] = useState<{ top: number; left: number; width: number } | null>(null);
 
   useEffect(() => {
     onNavigate?.();
   }, [pathname, onNavigate]);
 
   useEffect(() => {
-    if (!createOpen) return;
+    if (!createOpen || !createRef.current) return;
+    const el = createRef.current;
+    const rect = el.getBoundingClientRect();
+    setDropdownRect({
+      top: rect.bottom + 4,
+      left: rect.left,
+      width: rect.width,
+    });
+  }, [createOpen]);
+
+  useEffect(() => {
+    if (!createOpen) {
+      setDropdownRect(null);
+      return;
+    }
     const handleClickOutside = (e: MouseEvent) => {
-      if (createRef.current && !createRef.current.contains(e.target as Node)) {
-        setCreateOpen(false);
-      }
+      const target = e.target as Node;
+      if (createRef.current?.contains(target)) return;
+      const menu = document.getElementById("create-dropdown-menu");
+      if (menu?.contains(target)) return;
+      setCreateOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -87,7 +105,7 @@ export function AppSidebar({
       </div>
 
       <nav className="flex min-h-0 flex-1 flex-col overflow-auto px-2 pb-4" aria-label="Main navigation">
-        <div className="relative mb-2" ref={createRef}>
+        <div className="relative mb-2 pt-2" ref={createRef}>
           <button
             type="button"
             onClick={() => setCreateOpen((o) => !o)}
@@ -102,10 +120,19 @@ export function AppSidebar({
               aria-hidden
             />
           </button>
-          {createOpen && (
+        </div>
+
+        {createOpen && dropdownRect && typeof document !== "undefined" &&
+          createPortal(
             <div
-              className="absolute left-full top-0 z-50 ml-1 min-w-[160px] rounded-lg border border-fc-border bg-fc-surface py-1 shadow-fc-md"
+              id="create-dropdown-menu"
               role="menu"
+              className="fixed z-[100] min-w-[160px] rounded-lg border border-fc-border bg-fc-surface py-1 shadow-fc-md"
+              style={{
+                top: dropdownRect.top,
+                left: dropdownRect.left,
+                width: dropdownRect.width,
+              }}
             >
               {createOptions.map(({ tab, label }) => (
                 <Link
@@ -118,9 +145,9 @@ export function AppSidebar({
                   {label}
                 </Link>
               ))}
-            </div>
+            </div>,
+            document.body
           )}
-        </div>
 
         <div className="space-y-0.5">
           {primaryNav.map(({ href, label, icon: Icon }) => {
