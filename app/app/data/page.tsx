@@ -3,19 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Building2, User, Users, ClipboardList, Clock, ChevronRight } from "lucide-react";
+import { Users, ClipboardList, Clock, ChevronRight } from "lucide-react";
 import { routes } from "@/lib/routes";
 import {
-  CompanyForm,
-  OwnerUserForm,
   WorkerForm,
   JobForm,
   TimeEntryForm,
   ProjectForm,
 } from "@/components/forms";
 import {
-  useCompanies,
-  useOwnerUsers,
   useWorkers,
   useJobs,
   useTimeEntries,
@@ -25,8 +21,6 @@ import { Folder } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 
 const tabs = [
-  { id: "company", label: "Company", icon: Building2 },
-  { id: "owner", label: "Owner user", icon: User },
   { id: "project", label: "Project", icon: Folder },
   { id: "worker", label: "Worker", icon: Users },
   { id: "job", label: "Job", icon: ClipboardList },
@@ -43,22 +37,18 @@ function isValidTabId(value: string | null): value is TabId {
 export default function DataPage() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<TabId>(isValidTabId(tabParam) ? tabParam : "company");
+  const [activeTab, setActiveTab] = useState<TabId>(isValidTabId(tabParam) ? tabParam : "project");
 
   useEffect(() => {
     if (isValidTabId(tabParam)) setActiveTab(tabParam);
   }, [tabParam]);
 
-  const { items: companies, refetch: refetchCompanies } = useCompanies();
-  const { items: ownerUsers, refetch: refetchOwnerUsers } = useOwnerUsers();
   const { items: projects, refetch: refetchProjects } = useProjects();
   const { items: workers, refetch: refetchWorkers } = useWorkers();
   const { items: jobs, refetch: refetchJobs } = useJobs();
   const { items: timeEntries, refetch: refetchTimeEntries } = useTimeEntries();
 
   const handleSuccess = () => {
-    refetchCompanies();
-    refetchOwnerUsers();
     refetchProjects();
     refetchWorkers();
     refetchJobs();
@@ -68,9 +58,9 @@ export default function DataPage() {
   return (
     <div className="px-4 py-6 sm:px-6">
       <div className="mb-6">
-        <h1 className="font-display text-xl font-bold text-fc-brand">Entity setup</h1>
+        <h1 className="font-display text-xl font-bold text-fc-brand">Create</h1>
         <p className="mt-0.5 text-sm text-fc-muted">
-          Define entities and fields. Data is stored in Supabase.
+          Add a project, worker, job, or time entry to organise work and track labour.
         </p>
         <Link
           href={routes.owner.home}
@@ -84,7 +74,7 @@ export default function DataPage() {
       <div className="flex flex-col gap-6 lg:flex-row">
         <nav
           className="flex shrink-0 flex-col gap-0 border border-fc-border bg-fc-surface lg:w-48"
-          aria-label="Entity types"
+          aria-label="Create options"
         >
           {tabs.map(({ id, label, icon: Icon }) => (
             <button
@@ -114,20 +104,6 @@ export default function DataPage() {
               Create {tabs.find((t) => t.id === activeTab)?.label}
             </h2>
           <Card variant="default" className="p-5">
-            {activeTab === "company" && (
-              <CompanyForm
-                key={companies[0]?.id ?? "create"}
-                company={companies[0] ?? null}
-                onSuccess={handleSuccess}
-              />
-            )}
-            {activeTab === "owner" && (
-              <OwnerUserForm
-                key={ownerUsers[0]?.id ?? "create"}
-                ownerUser={ownerUsers[0] ?? null}
-                onSuccess={handleSuccess}
-              />
-            )}
             {activeTab === "project" && <ProjectForm onSuccess={handleSuccess} />}
             {activeTab === "worker" && <WorkerForm onSuccess={handleSuccess} />}
             {activeTab === "job" && <JobForm onSuccess={handleSuccess} />}
@@ -141,14 +117,6 @@ export default function DataPage() {
             </h2>
           <Card variant="muted" className="p-5">
             <dl className="space-y-3 text-sm">
-              <div>
-                <dt className="font-medium text-fc-muted">Companies</dt>
-                <dd className="mt-0.5 text-fc-brand">{companies.length}</dd>
-              </div>
-              <div>
-                <dt className="font-medium text-fc-muted">Owner users</dt>
-                <dd className="mt-0.5 text-fc-brand">{ownerUsers.length}</dd>
-              </div>
               <div>
                 <dt className="font-medium text-fc-muted">Projects</dt>
                 <dd className="mt-0.5 text-fc-brand">{projects.length}</dd>

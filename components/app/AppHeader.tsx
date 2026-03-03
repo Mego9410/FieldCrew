@@ -13,7 +13,7 @@ const PAGE_TITLES: Record<string, string> = {
   [routes.owner.timesheets]: "Timesheets",
   [routes.owner.payrollExport]: "Payroll",
   [routes.owner.projects]: "Projects",
-  [routes.owner.data]: "Data",
+  [routes.owner.data]: "Create",
   [routes.owner.reporting]: "Reporting",
   [routes.owner.settings]: "Settings",
   [routes.owner.settingsProfile]: "Profile",
