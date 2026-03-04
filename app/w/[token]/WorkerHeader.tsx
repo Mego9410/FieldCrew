@@ -5,14 +5,12 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import { routes } from "@/lib/routes";
-import { useWorkerByToken } from "@/lib/hooks/useData";
 
-export function WorkerHeader({ token }: { token: string }) {
+export function WorkerHeader({ token, workerName }: { token: string; workerName: string | null }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
-  const { item: worker } = useWorkerByToken(token);
-  const firstName = worker?.name?.trim().split(/\s+/)[0] ?? worker?.name ?? "";
+  const firstName = workerName?.trim().split(/\s+/)[0] ?? workerName ?? "";
 
   useEffect(() => {
     setMenuOpen(false);
@@ -51,7 +49,7 @@ export function WorkerHeader({ token }: { token: string }) {
             FieldCrew
           </Link>
           {firstName ? (
-            <span className="text-sm font-medium text-fc-muted" aria-label={`Signed in as ${worker?.name ?? firstName}`}>
+            <span className="text-sm font-medium text-fc-muted" aria-label={workerName ? `Signed in as ${workerName}` : undefined}>
               Hi, {firstName}
             </span>
           ) : null}

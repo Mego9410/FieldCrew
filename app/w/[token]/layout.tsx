@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { resolveWorkerToken } from "@/lib/workerToken";
+import { getWorkerByInviteToken } from "@/lib/data";
 import { InvalidTokenScreen } from "./InvalidTokenScreen";
 import { WorkerHeader } from "./WorkerHeader";
 
@@ -18,9 +19,12 @@ export default async function WorkerLayout({
     return <InvalidTokenScreen />;
   }
 
+  const worker = await getWorkerByInviteToken(token, supabase);
+  const workerName = worker?.name ?? null;
+
   return (
     <div className="min-h-screen bg-fc-page">
-      <WorkerHeader token={token} />
+      <WorkerHeader token={token} workerName={workerName} />
       <main>{children}</main>
     </div>
   );
