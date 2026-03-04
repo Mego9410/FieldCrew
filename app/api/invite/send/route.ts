@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Worker not found" }, { status: 404 });
   }
 
-  let invites = await getWorkerInvitesByCompany(company.id, supabase);
+  const invites = await getWorkerInvitesByCompany(company.id, supabase);
   let invite = invites.find((i) => i.workerId === body.workerId && new Date(i.expiresAt) > new Date());
   if (!invite) {
     const expiresAt = new Date();
