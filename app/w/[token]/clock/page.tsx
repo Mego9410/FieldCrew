@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, use, useCallback, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Clock,
   Play,
@@ -12,13 +12,12 @@ import {
   Users,
   Edit3,
 } from "lucide-react";
-import { addTimeEntry } from "@/lib/data";
+import { addTimeEntryForWorkerByToken } from "@/lib/data";
 import {
   useWorkerByToken,
   useJobsForWorkerByToken,
   useTimeEntriesByToken,
 } from "@/lib/hooks/useData";
-import type { TimeEntryInput } from "@/lib/entities";
 import {
   getActiveSession,
   saveSession,
@@ -32,6 +31,7 @@ import {
   type Session,
 } from "@/lib/workerClockUtils";
 import { FormField, FormInput, FormTextarea } from "@/components/forms/FormField";
+import { routes } from "@/lib/routes";
 
 function formatTime(date: Date) {
   return date.toLocaleTimeString("en-US", {
@@ -72,6 +72,7 @@ export default function WorkerClockPage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = use(params);
+  const router = useRouter();
   const searchParams = useSearchParams();
   const jobIdFromUrl = searchParams.get("jobId") ?? undefined;
 
@@ -82,6 +83,8 @@ export default function WorkerClockPage({
   const [showCompleteForm, setShowCompleteForm] = useState(false);
   const [breaks, setBreaks] = useState("0");
   const [notes, setNotes] = useState("");
+  const [clockOutSubmitting, setClockOutSubmitting] = useState(false);
+  const [clockOutError, setClockOutError] = useState<string | null>(null);
   const { item: worker } = useWorkerByToken(token);
   const workerId = worker?.id ?? "";
   const { items: jobsForWorker } = useJobsForWorkerByToken(token);
@@ -210,24 +213,31 @@ export default function WorkerClockPage({
   const handleCompleteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) return;
-    const breakMinsFinal = parseInt(breaks, 10) || session.breakTotalMinutes || 0;
-    const end = new Date();
-    const hours = calculateSessionDuration(session.start, end.toISOString(), breakMinsFinal);
-    const wasOT = isOvertimeToday(entries, workerId, hours) || isOvertimeWeek(entries, workerId, hours);
-    const input: TimeEntryInput = {
-      workerId: session.workerId,
-      jobId: session.jobId,
-      start: session.start,
-      end: end.toISOString(),
-      breaks: breakMinsFinal,
-      notes: notes.trim() || undefined,
-      isOvertime: wasOT,
-    };
-    await addTimeEntry(input);
-    setSessionState(null);
-    saveSession(null);
-    setShowCompleteForm(false);
-    refreshEntries();
+    setClockOutError(null);
+    setClockOutSubmitting(true);
+    try {
+      const breakMinsFinal = parseInt(breaks, 10) || session.breakTotalMinutes || 0;
+      const end = new Date();
+      const hours = calculateSessionDuration(session.start, end.toISOString(), breakMinsFinal);
+      const wasOT = isOvertimeToday(entries, workerId, hours) || isOvertimeWeek(entries, workerId, hours);
+      await addTimeEntryForWorkerByToken(token, {
+        jobId: session.jobId,
+        start: session.start,
+        end: end.toISOString(),
+        breaks: breakMinsFinal,
+        notes: notes.trim() || undefined,
+        isOvertime: wasOT,
+      });
+      setSessionState(null);
+      saveSession(null);
+      setShowCompleteForm(false);
+      refreshEntries();
+      router.push(routes.worker.jobs(token));
+    } catch (err) {
+      setClockOutError(err instanceof Error ? err.message : "Failed to clock out. Please try again.");
+    } finally {
+      setClockOutSubmitting(false);
+    }
   };
 
   const handleCompleteCancel = () => setShowCompleteForm(false);
@@ -439,17 +449,24 @@ export default function WorkerClockPage({
                   rows={3}
                 />
               </FormField>
+              {clockOutError ? (
+                <p className="text-sm text-fc-danger" role="alert">
+                  {clockOutError}
+                </p>
+              ) : null}
               <div className="flex gap-2 pt-2">
                 <button
                   type="submit"
-                  className="bg-fc-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-fc-accent-dark"
+                  disabled={clockOutSubmitting}
+                  className="bg-fc-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-fc-accent-dark disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Save & clock out
+                  {clockOutSubmitting ? "Saving…" : "Save & clock out"}
                 </button>
                 <button
                   type="button"
                   onClick={handleCompleteCancel}
-                  className="border border-fc-border bg-fc-surface px-4 py-2.5 text-sm font-semibold text-fc-brand hover:bg-fc-surface-muted"
+                  disabled={clockOutSubmitting}
+                  className="border border-fc-border bg-fc-surface px-4 py-2.5 text-sm font-semibold text-fc-brand hover:bg-fc-surface-muted disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>

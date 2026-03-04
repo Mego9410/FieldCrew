@@ -688,6 +688,29 @@ export async function addTimeEntry(input: TimeEntryInput, supabase?: SupabaseCli
   return entry;
 }
 
+/** Add a time entry as a worker using invite token (uses RPC; bypasses RLS). */
+export async function addTimeEntryForWorkerByToken(
+  token: string,
+  input: Omit<TimeEntryInput, "workerId">,
+  supabase?: SupabaseClient
+): Promise<TimeEntry> {
+  const db = supabase ?? createClient();
+  const { data, error } = await db.rpc("add_time_entry_for_worker_by_token", {
+    p_token: token,
+    p_job_id: input.jobId,
+    p_start: input.start,
+    p_end: input.end,
+    p_breaks: input.breaks ?? 0,
+    p_notes: input.notes ?? null,
+    p_is_overtime: input.isOvertime ?? false,
+    p_category: input.category ?? "billable",
+  });
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) throw new Error("No time entry returned");
+  return toTimeEntry(row as Record<string, unknown>);
+}
+
 export async function updateTimeEntry(id: string, input: Partial<TimeEntryInput>, supabase?: SupabaseClient): Promise<TimeEntry | null> {
   const db = supabase ?? createClient();
   const updates: Record<string, unknown> = {};

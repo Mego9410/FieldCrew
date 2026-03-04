@@ -13,8 +13,8 @@ export function InvalidTokenScreen() {
           This link is invalid or has expired
         </h1>
         <p className="mt-2 text-sm text-fc-muted">
-          The worker link you used may have expired or is no longer valid. Please
-          request a new link or contact your supervisor.
+          This link may have expired or is no longer valid. Please request a new
+          link or contact your supervisor.
         </p>
         <Link
           href={routes.public.home}

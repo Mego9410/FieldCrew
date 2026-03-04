@@ -5,11 +5,14 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import { routes } from "@/lib/routes";
+import { useWorkerByToken } from "@/lib/hooks/useData";
 
 export function WorkerHeader({ token }: { token: string }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const { item: worker } = useWorkerByToken(token);
+  const firstName = worker?.name?.trim().split(/\s+/)[0] ?? worker?.name ?? "";
 
   useEffect(() => {
     setMenuOpen(false);
@@ -40,12 +43,19 @@ export function WorkerHeader({ token }: { token: string }) {
   return (
     <header className="border-b border-fc-border bg-fc-surface">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link
-          href={routes.worker.home(token)}
-          className="font-display text-lg font-semibold text-fc-brand min-h-[44px] min-w-[44px] inline-flex items-center shrink-0"
-        >
-          FieldCrew — Worker
-        </Link>
+        <div className="flex min-h-[44px] items-center gap-3">
+          <Link
+            href={routes.worker.home(token)}
+            className="font-display text-lg font-semibold text-fc-brand min-w-[44px] inline-flex items-center shrink-0"
+          >
+            FieldCrew
+          </Link>
+          {firstName ? (
+            <span className="text-sm font-medium text-fc-muted" aria-label={`Signed in as ${worker?.name ?? firstName}`}>
+              Hi, {firstName}
+            </span>
+          ) : null}
+        </div>
 
         {/* Desktop nav: visible from md up */}
         <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
@@ -104,9 +114,14 @@ export function WorkerHeader({ token }: { token: string }) {
             ref={panelRef}
             className="fixed top-0 right-0 z-50 h-full w-full max-w-[280px] border-l border-fc-border bg-white shadow-fc-lg md:hidden"
             role="dialog"
-            aria-label="Worker menu"
+            aria-label="Main navigation"
           >
             <div className="flex flex-col gap-1 p-4 pt-20">
+              {firstName ? (
+                <p className="px-4 pb-2 text-sm font-medium text-fc-muted" aria-hidden>
+                  Hi, {firstName}
+                </p>
+              ) : null}
               <Link
                 href={routes.worker.dashboard(token)}
                 className={linkClass}
