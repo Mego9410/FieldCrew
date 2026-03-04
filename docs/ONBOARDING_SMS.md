@@ -51,12 +51,12 @@ When these are set, both the invite and job-reminder flows use the Twilio API. O
 **Where it’s used:**
 
 - **Cron API:** `app/api/cron/job-reminders/route.ts`  
-  - Runs on a schedule (e.g. every 15 minutes via Vercel Cron).  
+  - Runs on a schedule (once per day on Vercel free tier: 06:00 UTC).  
   - For each company with `jobReminderHours` > 0, finds jobs whose start is within the next `jobReminderHours`, then for each assigned worker: ensures an invite token exists, checks dedupe (one reminder per job+worker), sends SMS via `lib/twilio.ts`, and records the send in `job_reminder_sends`.
 - **Company setting:** Settings → Notifications → “Send job reminder SMS” dropdown (Off, 1, 2, 4, 8, 24 hours). Stored in `companies.settings.job_reminder_hours`.
 - **Dedupe:** Table `job_reminder_sends` (migration `20250304000000_job_reminder_sends.sql`) ensures at most one reminder per (job, worker).
 
-**Scheduler:** `vercel.json` defines a cron that hits `POST /api/cron/job-reminders` every 15 minutes. The route must be called with the correct secret (see below).
+**Scheduler:** `vercel.json` defines a cron that hits `POST /api/cron/job-reminders` once per day at 06:00 UTC (Vercel free tier allows only daily crons). Reminders are sent for jobs starting within the company’s “X hours before” window at that run time. The route must be called with the correct secret (see below).
 
 ---
 
