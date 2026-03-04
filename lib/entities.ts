@@ -19,6 +19,8 @@ export interface CompanySettings {
   requireGps?: boolean;
   requireNotesOnClockOut?: boolean;
   requirePhotoOnClockOut?: boolean;
+  /** Hours before job start to send reminder SMS (0 = disabled). */
+  jobReminderHours?: number;
 }
 
 export interface Company {

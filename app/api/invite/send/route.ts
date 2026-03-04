@@ -1,26 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
-import { getCompanyForCurrentUser, getWorker, getWorkerInvitesByCompany, updateWorkerInvite, updateWorker } from "@/lib/data";
+import { getCompanyForCurrentUser, getWorker, getWorkerInvitesByCompany, addWorkerInvite, updateWorkerInvite, updateWorker } from "@/lib/data";
+import { sendSms } from "@/lib/twilio";
 import { NextResponse } from "next/server";
 
-/** Stub: in production wire to Twilio. See docs/ONBOARDING_SMS.md */
-async function sendSmsStub(phone: string, message: string): Promise<boolean> {
-  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_PHONE_NUMBER) {
-    const res = await fetch("https://api.twilio.com/2010-04-01/Accounts/" + process.env.TWILIO_ACCOUNT_SID + "/Messages.json", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: "Basic " + Buffer.from(process.env.TWILIO_ACCOUNT_SID + ":" + process.env.TWILIO_AUTH_TOKEN).toString("base64"),
-      },
-      body: new URLSearchParams({
-        To: phone,
-        From: process.env.TWILIO_PHONE_NUMBER,
-        Body: message,
-      }),
-    });
-    return res.ok;
+function generateToken(): string {
+  const bytes = new Uint8Array(24);
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    crypto.getRandomValues(bytes);
   }
-  console.log("[invite/send] Stub SMS:", { phone, message: message.slice(0, 60) + "..." });
-  return true;
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 export async function POST(request: Request) {
@@ -42,10 +30,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Worker not found" }, { status: 404 });
   }
 
-  const invites = await getWorkerInvitesByCompany(company.id, supabase);
-  const invite = invites.find((i) => i.workerId === body.workerId);
+  let invites = await getWorkerInvitesByCompany(company.id, supabase);
+  let invite = invites.find((i) => i.workerId === body.workerId && new Date(i.expiresAt) > new Date());
   if (!invite) {
-    return NextResponse.json({ error: "Invite not found for this worker. Create tokens first." }, { status: 404 });
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 14);
+    invite = await addWorkerInvite(
+      {
+        workerId: body.workerId,
+        companyId: company.id,
+        token: generateToken(),
+        sentAt: null,
+        acceptedAt: null,
+        expiresAt: expiresAt.toISOString(),
+        channel: "sms",
+      },
+      supabase
+    );
   }
 
   const origin = request.headers.get("x-forwarded-host")
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
   const link = `${origin}/w/${invite.token}`;
   const message = `You're invited to FieldCrew. Open this link to get started: ${link}`;
 
-  const sent = await sendSmsStub(worker.phone, message);
+  const sent = await sendSms(worker.phone, message);
   if (!sent) {
     return NextResponse.json({ error: "Failed to send SMS" }, { status: 502 });
   }

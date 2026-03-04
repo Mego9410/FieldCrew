@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { SettingsPageShell } from "@/components/settings/SettingsPageShell";
 import { SettingsSectionCard } from "@/components/settings/SettingsSectionCard";
+import { FormField, FormSelect } from "@/components/forms/FormField";
 import { useToast } from "@/components/ui/Toast";
 import {
   getSettings,
@@ -42,12 +43,24 @@ function ToggleRow({
   );
 }
 
+const JOB_REMINDER_HOURS_OPTIONS = [
+  { value: 0, label: "Off" },
+  { value: 1, label: "1 hour before" },
+  { value: 2, label: "2 hours before" },
+  { value: 4, label: "4 hours before" },
+  { value: 8, label: "8 hours before" },
+  { value: 24, label: "24 hours before" },
+];
+
 export default function NotificationsSettingsPage() {
   const [prefs, setPrefs] = useState<NotificationPrefs>(
     getDefaultNotifications()
   );
   const [saved, setSaved] = useState<NotificationPrefs>(prefs);
   const [loading, setLoading] = useState(false);
+  const [jobReminderHours, setJobReminderHours] = useState<number>(0);
+  const [jobReminderSaved, setJobReminderSaved] = useState<number>(0);
+  const [jobReminderLoading, setJobReminderLoading] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
@@ -57,7 +70,19 @@ export default function NotificationsSettingsPage() {
     });
   }, []);
 
+  useEffect(() => {
+    fetch("/api/settings/job-reminder")
+      .then((r) => r.json())
+      .then((d) => {
+        const h = typeof d.jobReminderHours === "number" ? d.jobReminderHours : 0;
+        setJobReminderHours(h);
+        setJobReminderSaved(h);
+      })
+      .catch(() => {});
+  }, []);
+
   const isDirty = JSON.stringify(prefs) !== JSON.stringify(saved);
+  const jobReminderDirty = jobReminderHours !== jobReminderSaved;
 
   const update = (k: keyof NotificationPrefs, v: boolean) => {
     setPrefs((p) => ({ ...p, [k]: v }));
@@ -77,8 +102,32 @@ export default function NotificationsSettingsPage() {
     }
   };
 
+  const handleJobReminderSave = async () => {
+    if (!jobReminderDirty || jobReminderLoading) return;
+    setJobReminderLoading(true);
+    try {
+      const res = await fetch("/api/settings/job-reminder", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobReminderHours }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const d = await res.json();
+      setJobReminderSaved(d.jobReminderHours ?? jobReminderHours);
+      toast.success("Job reminder setting saved");
+    } catch {
+      toast.error("Failed to save job reminder setting");
+    } finally {
+      setJobReminderLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     setPrefs(saved);
+  };
+
+  const handleJobReminderCancel = () => {
+    setJobReminderHours(jobReminderSaved);
   };
 
   const handleResetDefaults = () => {
@@ -157,6 +206,47 @@ export default function NotificationsSettingsPage() {
               checked={prefs.shiftEditedEmail}
               onChange={(v) => update("shiftEditedEmail", v)}
             />
+          </div>
+        </SettingsSectionCard>
+
+        <SettingsSectionCard
+          title="Worker SMS"
+          description="Send job reminder SMS to workers with a direct link to the job and clock-in page."
+        >
+          <div className="space-y-4">
+            <FormField
+              label="Send job reminder SMS"
+              id="job-reminder-hours"
+              description="Hours before each job start to send an SMS with a link to the job and clock-in."
+            >
+              <FormSelect
+                id="job-reminder-hours"
+                value={String(jobReminderHours)}
+                onChange={(e) => setJobReminderHours(Number(e.target.value))}
+                options={JOB_REMINDER_HOURS_OPTIONS.map((o) => ({
+                  value: String(o.value),
+                  label: o.label,
+                }))}
+              />
+            </FormField>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={handleJobReminderSave}
+                disabled={!jobReminderDirty || jobReminderLoading}
+                className="rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-fc-brand/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {jobReminderLoading ? "Saving…" : "Save"}
+              </button>
+              <button
+                type="button"
+                onClick={handleJobReminderCancel}
+                disabled={!jobReminderDirty}
+                className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </SettingsSectionCard>
 

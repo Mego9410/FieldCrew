@@ -51,8 +51,33 @@ function toCompany(r: Record<string, unknown>): Company {
       requireGps: settings.require_gps as boolean | undefined,
       requireNotesOnClockOut: settings.require_notes_on_clock_out as boolean | undefined,
       requirePhotoOnClockOut: settings.require_photo_on_clock_out as boolean | undefined,
+      jobReminderHours: settings.job_reminder_hours != null ? Number(settings.job_reminder_hours) : undefined,
     } : undefined,
   };
+}
+
+/** Convert company settings to DB JSONB shape (snake_case) for merging/update. */
+function companySettingsToDb(s: Partial<Company["settings"]> | undefined): Record<string, unknown> {
+  if (!s) return {};
+  const out: Record<string, unknown> = {};
+  if (s.otAfterHoursPerDay != null) out.ot_after_hours_per_day = s.otAfterHoursPerDay;
+  if (s.otAfterHoursPerWeek != null) out.ot_after_hours_per_week = s.otAfterHoursPerWeek;
+  if (s.weekendMultiplier != null) out.weekend_multiplier = s.weekendMultiplier;
+  if (s.holidayMultiplier != null) out.holiday_multiplier = s.holidayMultiplier;
+  if (s.requireJobCode != null) out.require_job_code = s.requireJobCode;
+  if (s.requireGps != null) out.require_gps = s.requireGps;
+  if (s.requireNotesOnClockOut != null) out.require_notes_on_clock_out = s.requireNotesOnClockOut;
+  if (s.requirePhotoOnClockOut != null) out.require_photo_on_clock_out = s.requirePhotoOnClockOut;
+  if (s.jobReminderHours != null) out.job_reminder_hours = s.jobReminderHours;
+  return out;
+}
+
+/** Merge current company settings with a patch for DB update (e.g. only jobReminderHours). */
+export function mergeCompanySettingsForDb(
+  current: Company["settings"] | undefined,
+  patch: Partial<Company["settings"]>
+): Record<string, unknown> {
+  return { ...companySettingsToDb(current), ...companySettingsToDb(patch) };
 }
 
 function toOwnerUser(r: Record<string, unknown>): OwnerUser {
@@ -659,4 +684,37 @@ export async function deleteTimeEntry(id: string, supabase?: SupabaseClient): Pr
   const db = supabase ?? createClient();
   const { error } = await db.from("time_entries").delete().eq("id", id);
   return !error;
+}
+
+// ─── Job reminder sends (dedupe for cron) ───────────────────────────────────
+
+/** Returns true if a reminder was already sent for this job+worker. */
+export async function jobReminderAlreadySent(
+  jobId: string,
+  workerId: string,
+  supabase: SupabaseClient
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("job_reminder_sends")
+    .select("id")
+    .eq("job_id", jobId)
+    .eq("worker_id", workerId)
+    .limit(1);
+  if (error) throw error;
+  return (data?.length ?? 0) > 0;
+}
+
+/** Records that a reminder was sent for this job+worker. */
+export async function insertJobReminderSent(
+  jobId: string,
+  workerId: string,
+  supabase: SupabaseClient
+): Promise<void> {
+  const { error } = await supabase.from("job_reminder_sends").insert({
+    id: uid(),
+    job_id: jobId,
+    worker_id: workerId,
+    sent_at: new Date().toISOString(),
+  });
+  if (error) throw error;
 }

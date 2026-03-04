@@ -11,6 +11,7 @@ import {
   List,
   LayoutGrid,
   ExternalLink,
+  Send,
 } from "lucide-react";
 import { useWorkers } from "@/lib/hooks/useData";
 import { WorkerForm } from "@/components/forms";
@@ -18,12 +19,40 @@ import { routes } from "@/lib/routes";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
+import { useToast } from "@/components/ui/Toast";
 
 export default function WorkersPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "cards">("list");
+  const [sendingWorkerId, setSendingWorkerId] = useState<string | null>(null);
   const { items: workers, loading, refetch } = useWorkers();
+  const toast = useToast();
+
+  const handleSendProfileLink = useCallback(
+    async (workerId: string) => {
+      setSendingWorkerId(workerId);
+      try {
+        const res = await fetch("/api/invite/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ workerId }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          toast.error(data.error ?? "Failed to send profile link");
+          return;
+        }
+        toast.success("Profile link sent by SMS");
+        refetch();
+      } catch {
+        toast.error("Failed to send profile link");
+      } finally {
+        setSendingWorkerId(null);
+      }
+    },
+    [toast, refetch]
+  );
 
   const filtered = workers.filter(
     (w) =>
@@ -125,6 +154,7 @@ export default function WorkersPage() {
                   <TableHead className="px-4">Phone</TableHead>
                   <TableHead className="px-4">Hourly rate</TableHead>
                   <TableHead className="px-4">Worker app</TableHead>
+                  <TableHead className="px-4">Send profile link</TableHead>
                   <th className="w-10 px-2 py-3" aria-hidden />
                 </TableRow>
               </TableHeader>
@@ -164,6 +194,18 @@ export default function WorkersPage() {
                         <ExternalLink className="h-3.5 w-3.5" />
                         Open as worker
                       </Link>
+                    </TableCell>
+                    <TableCell>
+                      <button
+                        type="button"
+                        onClick={() => handleSendProfileLink(worker.id)}
+                        disabled={sendingWorkerId === worker.id}
+                        className="inline-flex items-center gap-1.5 rounded-fc border border-fc-border bg-fc-surface px-2.5 py-1.5 text-xs font-medium text-fc-brand transition-all duration-fc hover:border-fc-accent/50 hover:bg-fc-surface-muted disabled:opacity-50"
+                        title="Send SMS with profile link"
+                      >
+                        <Send className="h-3.5 w-3.5" />
+                        {sendingWorkerId === worker.id ? "Sending…" : "Send profile link"}
+                      </button>
                     </TableCell>
                     <TableCell className="px-2">
                       <button
@@ -219,15 +261,27 @@ export default function WorkersPage() {
                   ${worker.hourlyRate}/hr
                 </span>
               </div>
-              <a
-                href={routes.worker.home(worker.id)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 inline-flex w-full items-center justify-center gap-1.5 border border-fc-border bg-fc-surface py-2 text-xs font-semibold text-fc-brand hover:bg-fc-surface-muted"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                Open as worker
-              </a>
+              <div className="mt-2 flex gap-2">
+                <a
+                  href={routes.worker.home(worker.id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 border border-fc-border bg-fc-surface py-2 text-xs font-semibold text-fc-brand hover:bg-fc-surface-muted"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Open as worker
+                </a>
+                <button
+                  type="button"
+                  onClick={() => handleSendProfileLink(worker.id)}
+                  disabled={sendingWorkerId === worker.id}
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 border border-fc-border bg-fc-surface py-2 text-xs font-semibold text-fc-brand hover:bg-fc-surface-muted disabled:opacity-50"
+                  title="Send SMS with profile link"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  {sendingWorkerId === worker.id ? "Sending…" : "Send link"}
+                </button>
+              </div>
             </div>
           </div>
         ))}

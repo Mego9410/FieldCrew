@@ -19,6 +19,7 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
   const [name, setName] = useState(worker?.name ?? "");
   const [phone, setPhone] = useState(worker?.phone ?? "");
   const [hourlyRate, setHourlyRate] = useState(worker?.hourlyRate?.toString() ?? "");
+  const [sendProfileLink, setSendProfileLink] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +55,14 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
       if (worker) {
         await updateWorker(worker.id, input);
       } else {
-        await addWorker(input);
+        const created = await addWorker(input);
+        if (sendProfileLink) {
+          await fetch("/api/invite/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ workerId: created.id }),
+          });
+        }
       }
       onSuccess?.();
     } catch (err) {
@@ -94,6 +102,17 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
           placeholder="e.g. 40"
         />
       </FormField>
+      {!worker && (
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={sendProfileLink}
+            onChange={(e) => setSendProfileLink(e.target.checked)}
+            className="rounded border-fc-border text-fc-accent focus:ring-fc-accent"
+          />
+          <span className="text-sm text-fc-brand">Send profile link by SMS after adding</span>
+        </label>
+      )}
       {error && <p className="text-sm text-red-500">{error}</p>}
       <div className="flex gap-2 pt-2">
         <button
