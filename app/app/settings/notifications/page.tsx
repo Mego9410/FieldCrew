@@ -214,11 +214,10 @@ export default function NotificationsSettingsPage() {
           description="Send job reminder SMS to workers with a direct link to the job and clock-in page."
         >
           <div className="space-y-4">
-            <FormField
-              label="Send job reminder SMS"
-              id="job-reminder-hours"
-              description="Hours before each job start to send an SMS with a link to the job and clock-in."
-            >
+            <FormField label="Send job reminder SMS" id="job-reminder-hours">
+              <p className="text-xs text-fc-muted mt-0.5 mb-1">
+                Hours before each job start to send an SMS with a link to the job and clock-in.
+              </p>
               <FormSelect
                 id="job-reminder-hours"
                 value={String(jobReminderHours)}
