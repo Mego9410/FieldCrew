@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
 import {
   ChevronLeft,
@@ -12,10 +12,13 @@ import {
   DollarSign,
   Building2,
   Tag,
+  Send,
 } from "lucide-react";
 import { routes } from "@/lib/routes";
 import { useJob, useWorkers, useTimeEntries, useProjects, useJobTypes } from "@/lib/hooks/useData";
 import { getJobAnalytics } from "@/lib/jobAnalytics";
+import { useToast } from "@/components/ui/Toast";
+import { Button } from "@/components/ui/Button";
 
 const statusStyles: Record<string, string> = {
   scheduled: "bg-slate-100 text-slate-700",
@@ -64,6 +67,8 @@ export default function JobDetailPage({
   const { items: entries } = useTimeEntries(undefined, jobId);
   const { items: projects } = useProjects();
   const { items: jobTypes } = useJobTypes();
+  const toast = useToast();
+  const [sendingLink, setSendingLink] = useState(false);
 
   if (loading && !job) {
     return (
@@ -131,6 +136,38 @@ export default function JobDetailPage({
   const hasRevenue = (job.revenue ?? 0) > 0;
   const varianceWarning = snapshot.varianceHours > 0;
 
+  const handleSendLinkToCrew = async () => {
+    if (!job.workerIds?.length) {
+      toast.error("No workers assigned to this job");
+      return;
+    }
+    setSendingLink(true);
+    try {
+      const res = await fetch(`/api/jobs/${jobId}/send-link`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data.error ?? "Failed to send link");
+        return;
+      }
+      if (data.sent > 0) {
+        toast.success(
+          data.sent === 1
+            ? "Link sent to 1 worker"
+            : `Link sent to ${data.sent} workers`
+        );
+      }
+      if (data.skipped > 0 && data.sent === 0) {
+        toast.error(
+          "No links sent. Workers may need an invite or a valid phone number."
+        );
+      }
+    } catch {
+      toast.error("Failed to send link");
+    } finally {
+      setSendingLink(false);
+    }
+  };
+
   return (
     <div className="px-4 py-6 sm:px-6">
       <Link
@@ -154,11 +191,24 @@ export default function JobDetailPage({
                 </p>
               </div>
             </div>
-            <span
-              className={`inline-flex px-3 py-1 text-sm font-semibold capitalize ${statusStyles[status] ?? "bg-fc-neutral-bg text-fc-neutral"}`}
-            >
-              {status.replace("_", " ")}
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              {job.workerIds && job.workerIds.length > 0 && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleSendLinkToCrew}
+                  disabled={sendingLink}
+                >
+                  <Send className="h-4 w-4" />
+                  {sendingLink ? "Sending…" : "Send link to crew"}
+                </Button>
+              )}
+              <span
+                className={`inline-flex px-3 py-1 text-sm font-semibold capitalize ${statusStyles[status] ?? "bg-fc-neutral-bg text-fc-neutral"}`}
+              >
+                {status.replace("_", " ")}
+              </span>
+            </div>
           </div>
         </div>
 

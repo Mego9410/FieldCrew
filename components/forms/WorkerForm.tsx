@@ -63,6 +63,12 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
             body: JSON.stringify({ workerId: created.id }),
           });
         }
+        // Reset form so it can't be resubmitted; parent shows confirmation toast
+        setName("");
+        setPhone("");
+        setHourlyRate("");
+        setSendProfileLink(true);
+        setError(null);
       }
       onSuccess?.();
     } catch (err) {

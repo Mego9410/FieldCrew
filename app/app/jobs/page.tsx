@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
+import { useToast } from "@/components/ui/Toast";
 
 // Derive display data from entities
 function useJobsDisplay() {
@@ -103,6 +104,7 @@ export default function JobsPage() {
   const [formHasChanges, setFormHasChanges] = useState(false);
   const [search, setSearch] = useState("");
   const { display: jobsDisplay, refetch } = useJobsDisplay();
+  const toast = useToast();
 
   const handleCloseJobModal = () => {
     if (formHasChanges && !window.confirm("You have unsaved changes. Are you sure you want to close?")) return;
@@ -117,7 +119,8 @@ export default function JobsPage() {
   const handleJobSuccess = useCallback(() => {
     setShowAddModal(false);
     refetch();
-  }, [refetch]);
+    toast.success("Job created");
+  }, [refetch, toast]);
 
   return (
     <div className="px-4 py-6 sm:px-6">

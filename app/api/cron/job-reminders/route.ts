@@ -86,14 +86,14 @@ export async function POST(request: Request) {
           continue;
         }
 
-        const link = `${APP_ORIGIN}${routes.worker.clock(invite.token, job.id)}`;
+        const link = `${APP_ORIGIN}${routes.worker.job(invite.token, job.id)}`;
         const hoursUntil = Math.round(
           (jobStart.getTime() - now.getTime()) / (60 * 60 * 1000)
         );
         const message =
           hoursUntil <= 1
-            ? `FieldCrew: Job "${job.name}" at ${job.address} starts soon. Clock in: ${link}`
-            : `FieldCrew: Job "${job.name}" at ${job.address} starts in ${hoursUntil} hours. Clock in: ${link}`;
+            ? `FieldCrew: Job "${job.name}" at ${job.address} starts soon. Open job: ${link}`
+            : `FieldCrew: Job "${job.name}" at ${job.address} starts in ${hoursUntil} hours. Open job: ${link}`;
 
         const ok = await sendSms(worker.phone, message);
         if (ok) {

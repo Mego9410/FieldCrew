@@ -14,11 +14,9 @@ import {
 } from "lucide-react";
 import { addTimeEntry } from "@/lib/data";
 import {
-  useWorker,
-  useWorkers,
-  useJobsForWorker,
-  useJobs,
-  useTimeEntries,
+  useWorkerByToken,
+  useJobsForWorkerByToken,
+  useTimeEntriesByToken,
 } from "@/lib/hooks/useData";
 import type { TimeEntryInput } from "@/lib/entities";
 import {
@@ -75,7 +73,6 @@ export default function WorkerClockPage({
 }) {
   const { token } = use(params);
   const searchParams = useSearchParams();
-  const workerId = token;
   const jobIdFromUrl = searchParams.get("jobId") ?? undefined;
 
   const [ready, setReady] = useState(false);
@@ -85,21 +82,20 @@ export default function WorkerClockPage({
   const [showCompleteForm, setShowCompleteForm] = useState(false);
   const [breaks, setBreaks] = useState("0");
   const [notes, setNotes] = useState("");
-  const { item: worker } = useWorker(workerId);
-  const { items: workers } = useWorkers();
-  const { items: jobsForWorker } = useJobsForWorker(workerId);
-  const { items: allJobs } = useJobs();
-  const { items: entries, refetch: refetchEntries } = useTimeEntries(workerId);
+  const { item: worker } = useWorkerByToken(token);
+  const workerId = worker?.id ?? "";
+  const { items: jobsForWorker } = useJobsForWorkerByToken(token);
+  const { items: entries, refetch: refetchEntries } = useTimeEntriesByToken(token);
 
   const isClockedIn = session !== null && session.workerId === workerId;
   const clockInTime = useMemo(() => (session ? new Date(session.start) : null), [session]);
   const onBreak = Boolean(session?.breakStartedAt);
   const breakMins = session?.breakTotalMinutes ?? 0;
   const activeJob = isClockedIn && session
-    ? allJobs.find((j) => j.id === session.jobId)
+    ? jobsForWorker.find((j) => j.id === session.jobId)
     : null;
   const selectedJob = selectedJobId
-    ? allJobs.find((j) => j.id === selectedJobId)
+    ? jobsForWorker.find((j) => j.id === selectedJobId)
     : null;
 
   const refreshEntries = useCallback(() => {
@@ -326,10 +322,7 @@ export default function WorkerClockPage({
                       {selectedJob.workerIds && selectedJob.workerIds.length > 0 && (
                         <p className="mt-1 flex items-center gap-1.5 text-fc-muted">
                           <Users className="h-3.5 w-3.5" />
-                          {selectedJob.workerIds
-                            .map((id) => workers.find((w) => w.id === id)?.name)
-                            .filter(Boolean)
-                            .join(", ")}
+                          {selectedJob.workerIds.length} {selectedJob.workerIds.length === 1 ? "worker" : "workers"} assigned
                         </p>
                       )}
                     </div>
@@ -528,7 +521,7 @@ export default function WorkerClockPage({
               </div>
             )}
             {completedEntries.map((e) => {
-              const job = allJobs.find((j) => j.id === e.jobId);
+              const job = jobsForWorker.find((j) => j.id === e.jobId);
               const start = new Date(e.start);
               const end = new Date(e.end!);
               const hrs = hoursFromEntry(e.start, e.end!, e.breaks ?? 0);

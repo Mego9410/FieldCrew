@@ -8,7 +8,8 @@ import {
   Clock,
   AlertCircle,
 } from "lucide-react";
-import { getJobsForWorker } from "@/lib/data";
+import { createClient } from "@/lib/supabase/server";
+import { getJobsForWorkerByToken } from "@/lib/data";
 import { WorkerJobActions } from "./WorkerJobActions";
 import { routes } from "@/lib/routes";
 import type { Job } from "@/lib/entities";
@@ -65,7 +66,8 @@ export default async function WorkerJobsPage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const jobs = await getJobsForWorker(token ?? "");
+  const supabase = await createClient();
+  const jobs = await getJobsForWorkerByToken(token ?? "", supabase);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">

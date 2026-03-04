@@ -7,8 +7,9 @@ import {
   Clock,
   User,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
-import { getJob, getJobsForWorker } from "@/lib/data";
+import { getJobsForWorkerByToken } from "@/lib/data";
 import { WorkerJobActions } from "../WorkerJobActions";
 import type { Job } from "@/lib/entities";
 
@@ -53,8 +54,9 @@ export default async function WorkerJobDetailPage({
   params: Promise<{ token: string; jobId: string }>;
 }) {
   const { token, jobId } = await params;
-  const [job, myJobs] = await Promise.all([getJob(jobId), getJobsForWorker(token)]);
-  const isAssigned = myJobs.some((j) => j.id === jobId);
+  const supabase = await createClient();
+  const myJobs = await getJobsForWorkerByToken(token ?? "", supabase);
+  const job = myJobs.find((j) => j.id === jobId);
 
   if (!job) {
     return (
@@ -70,28 +72,7 @@ export default async function WorkerJobDetailPage({
           <ClipboardList className="mx-auto h-12 w-12 text-fc-muted" />
           <h2 className="mt-4 text-lg font-semibold text-fc-brand">Job not found</h2>
           <p className="mt-2 text-sm text-fc-muted">
-            This job may have been removed or the link is invalid.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAssigned) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        <Link
-          href={routes.worker.jobs(token)}
-          className="inline-flex items-center gap-1 text-sm font-medium text-fc-accent hover:underline"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back to jobs
-        </Link>
-        <div className="mt-8 border border-fc-border bg-fc-surface p-12 text-center">
-          <ClipboardList className="mx-auto h-12 w-12 text-fc-muted" />
-          <h2 className="mt-4 text-lg font-semibold text-fc-brand">Not assigned to this job</h2>
-          <p className="mt-2 text-sm text-fc-muted">
-            You don&apos;t have access to this job.
+            This job may have been removed, the link is invalid, or you&apos;re not assigned to it.
           </p>
         </div>
       </div>

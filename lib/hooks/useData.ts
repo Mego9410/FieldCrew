@@ -109,6 +109,37 @@ export function useWorker(id: string | null) {
   return { item, loading, error, refetch };
 }
 
+/** Worker for the given invite token (worker app; uses RPC so anon can read). */
+export function useWorkerByToken(token: string | null) {
+  const [item, setItem] = useState<Worker | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const refetch = useCallback(async () => {
+    if (!token) {
+      setItem(null);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const w = await data.getWorkerByInviteToken(token);
+      setItem(w);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e : new Error(String(e)));
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { item, loading, error, refetch };
+}
+
 export function useProjects(companyId?: string) {
   const [items, setItems] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -189,6 +220,37 @@ export function useJobsForWorker(workerId: string | null) {
   return { items, loading, error, refetch };
 }
 
+/** Jobs for the worker identified by invite token (worker app; uses RPC so anon can read). */
+export function useJobsForWorkerByToken(token: string | null) {
+  const [items, setItems] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const refetch = useCallback(async () => {
+    if (!token) {
+      setItems([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const list = await data.getJobsForWorkerByToken(token);
+      setItems(list);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e : new Error(String(e)));
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { items, loading, error, refetch };
+}
+
 export function useJob(id: string | null) {
   const [item, setItem] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
@@ -236,6 +298,38 @@ export function useTimeEntries(workerId?: string, jobId?: string) {
       setLoading(false);
     }
   }, [workerId, jobId]);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { items, loading, error, refetch };
+}
+
+/** Time entries for the worker identified by invite token (worker app; uses RPC so anon can read). */
+export function useTimeEntriesByToken(token: string | null, jobId?: string) {
+  const [items, setItems] = useState<TimeEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const refetch = useCallback(async () => {
+    if (!token) {
+      setItems([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const list = await data.getTimeEntriesForWorkerByToken(token);
+      const filtered = jobId ? list.filter((e) => e.jobId === jobId) : list;
+      setItems(filtered);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e : new Error(String(e)));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, jobId]);
 
   useEffect(() => {
     refetch();

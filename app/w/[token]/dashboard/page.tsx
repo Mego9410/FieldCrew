@@ -4,7 +4,7 @@ import { use } from "react";
 import Link from "next/link";
 import { ClipboardList, Clock, Calendar, CheckCircle2 } from "lucide-react";
 import { routes } from "@/lib/routes";
-import { useJobsForWorker, useTimeEntries, useJobs, useWorker } from "@/lib/hooks/useData";
+import { useWorkerByToken, useJobsForWorkerByToken, useTimeEntriesByToken } from "@/lib/hooks/useData";
 import type { Job } from "@/lib/entities";
 
 function formatDueDate(job: Job): string {
@@ -62,12 +62,9 @@ export default function WorkerDashboardPage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = use(params);
-  const workerId = token;
-
-  const { items: jobs } = useJobsForWorker(workerId);
-  const { items: entries } = useTimeEntries(workerId);
-  const { item: worker } = useWorker(workerId);
-  const { items: allJobs } = useJobs();
+  const { item: worker } = useWorkerByToken(token);
+  const { items: jobs } = useJobsForWorkerByToken(token);
+  const { items: entries } = useTimeEntriesByToken(token);
 
   const activeJobs = jobs.filter((j) => (j.status ?? "scheduled") === "in_progress").length;
   const completedJobs = jobs.filter((j) => (j.status ?? "scheduled") === "completed").length;
@@ -100,7 +97,7 @@ export default function WorkerDashboardPage({
     .sort((a, b) => new Date(b.end).getTime() - new Date(a.end).getTime())
     .slice(0, 5)
     .map((e) => {
-      const job = allJobs.find((j) => j.id === e.jobId);
+      const job = jobs.find((j) => j.id === e.jobId);
       const hrs = hoursBetween(e.start, e.end, e.breaks ?? 0);
       const amount = worker ? Math.round(hrs * worker.hourlyRate) : 0;
       return {

@@ -350,6 +350,14 @@ export async function getWorker(id: string, supabase?: SupabaseClient): Promise<
   return toWorker(data);
 }
 
+/** Worker row for the given invite token (for worker app with anon key; uses RPC). */
+export async function getWorkerByInviteToken(token: string, supabase?: SupabaseClient): Promise<Worker | null> {
+  const db = supabase ?? createClient();
+  const { data, error } = await db.rpc("get_worker_by_invite_token", { p_token: token });
+  if (error || !data?.length) return null;
+  return toWorker(data[0] as Record<string, unknown>);
+}
+
 export async function addWorker(input: WorkerInput, supabase?: SupabaseClient): Promise<Worker> {
   const db = supabase ?? createClient();
   const worker: Worker = { ...input, id: uid() };
@@ -563,6 +571,14 @@ export async function getJobsForWorker(workerId: string, supabase?: SupabaseClie
   return jobs.filter((j) => j.workerIds?.includes(workerId));
 }
 
+/** Jobs assigned to the worker identified by invite token (for worker app; uses RPC so anon can read). */
+export async function getJobsForWorkerByToken(token: string, supabase?: SupabaseClient): Promise<Job[]> {
+  const db = supabase ?? createClient();
+  const { data, error } = await db.rpc("get_jobs_for_worker_by_token", { p_token: token });
+  if (error) throw error;
+  return (data ?? []).map((r: Record<string, unknown>) => toJob(r));
+}
+
 export async function getJob(id: string, supabase?: SupabaseClient): Promise<Job | null> {
   const db = supabase ?? createClient();
   const { data, error } = await db.from("jobs").select("*").eq("id", id).single();
@@ -644,6 +660,14 @@ export async function getTimeEntries(workerId?: string, jobId?: string, supabase
   const { data, error } = await q;
   if (error) throw error;
   return (data ?? []).map(toTimeEntry);
+}
+
+/** Time entries for the worker identified by invite token (worker app with anon key; uses RPC). */
+export async function getTimeEntriesForWorkerByToken(token: string, supabase?: SupabaseClient): Promise<TimeEntry[]> {
+  const db = supabase ?? createClient();
+  const { data, error } = await db.rpc("get_time_entries_for_worker_by_token", { p_token: token });
+  if (error) throw error;
+  return (data ?? []).map((r: Record<string, unknown>) => toTimeEntry(r));
 }
 
 export async function addTimeEntry(input: TimeEntryInput, supabase?: SupabaseClient): Promise<TimeEntry> {

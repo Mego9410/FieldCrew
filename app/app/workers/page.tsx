@@ -63,7 +63,8 @@ export default function WorkersPage() {
   const handleWorkerSuccess = useCallback(() => {
     setShowAddModal(false);
     refetch();
-  }, [refetch]);
+    toast.success("Worker created");
+  }, [refetch, toast]);
 
   if (loading && workers.length === 0) {
     return (

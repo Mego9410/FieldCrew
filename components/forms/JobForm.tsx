@@ -141,6 +141,28 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel, on
         await updateJob(job.id, input);
       } else {
         await addJob(input);
+        // Reset form so it can't be resubmitted; parent shows confirmation toast
+        const todayVal = new Date().toISOString().slice(0, 10);
+        setName("");
+        setAddress("");
+        setProjectId(propProjectId ?? projects[0]?.id ?? "");
+        setIsMultiDay(false);
+        setStartDate(todayVal);
+        setEndDate(todayVal);
+        setDate(todayVal);
+        setTime("09:00");
+        setHoursPerDay("4");
+        setHoursExpected("");
+        setWorkerIds([]);
+        setWorkerSearch("");
+        setTypeId("");
+        setCustomerName("");
+        setRevenue("");
+        setStatus("scheduled");
+        setInstructions("");
+        setError(null);
+        dirtyRef.current = false;
+        onDirtyChange?.(false);
       }
       onSuccess?.();
     } catch (err) {
