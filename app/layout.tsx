@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, IBM_Plex_Sans, Oswald, Share_Tech_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const bricolage = Bricolage_Grotesque({
@@ -56,6 +57,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-fc-page font-body text-fc-brand">
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
