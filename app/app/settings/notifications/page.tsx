@@ -222,11 +222,13 @@ export default function NotificationsSettingsPage() {
                 id="job-reminder-hours"
                 value={String(jobReminderHours)}
                 onChange={(e) => setJobReminderHours(Number(e.target.value))}
-                options={JOB_REMINDER_HOURS_OPTIONS.map((o) => ({
-                  value: String(o.value),
-                  label: o.label,
-                }))}
-              />
+              >
+                {JOB_REMINDER_HOURS_OPTIONS.map((o) => (
+                  <option key={o.value} value={String(o.value)}>
+                    {o.label}
+                  </option>
+                ))}
+              </FormSelect>
             </FormField>
             <div className="flex flex-wrap gap-2">
               <button
