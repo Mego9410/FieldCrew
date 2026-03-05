@@ -42,6 +42,10 @@ function toCompany(r: Record<string, unknown>): Company {
     expectedTeamSize: r.expected_team_size != null ? Number(r.expected_team_size) : undefined,
     currentTrackingMethod: r.current_tracking_method as Company["currentTrackingMethod"],
     onboardingStatus: (r.onboarding_status as string) ?? undefined,
+    stripeCustomerId: (r.stripe_customer_id as string) ?? undefined,
+    stripeSubscriptionId: (r.stripe_subscription_id as string) ?? undefined,
+    subscriptionStatus: (r.subscription_status as string) ?? undefined,
+    workerLimit: r.worker_limit != null ? Number(r.worker_limit) : undefined,
     settings: settings ? {
       otAfterHoursPerDay: settings.ot_after_hours_per_day != null ? Number(settings.ot_after_hours_per_day) : undefined,
       otAfterHoursPerWeek: settings.ot_after_hours_per_week != null ? Number(settings.ot_after_hours_per_week) : undefined,
@@ -205,6 +209,10 @@ export async function updateCompany(id: string, input: Partial<CompanyInput>, su
   if ((input as { currentTrackingMethod?: string }).currentTrackingMethod !== undefined) updates.current_tracking_method = (input as { currentTrackingMethod?: string }).currentTrackingMethod;
   if ((input as { onboardingStatus?: string }).onboardingStatus !== undefined) updates.onboarding_status = (input as { onboardingStatus?: string }).onboardingStatus;
   if ((input as { settings?: Record<string, unknown> }).settings !== undefined) updates.settings = (input as { settings?: Record<string, unknown> }).settings;
+  if ((input as { stripeCustomerId?: string | null }).stripeCustomerId !== undefined) updates.stripe_customer_id = (input as { stripeCustomerId?: string | null }).stripeCustomerId;
+  if ((input as { stripeSubscriptionId?: string | null }).stripeSubscriptionId !== undefined) updates.stripe_subscription_id = (input as { stripeSubscriptionId?: string | null }).stripeSubscriptionId;
+  if ((input as { subscriptionStatus?: string | null }).subscriptionStatus !== undefined) updates.subscription_status = (input as { subscriptionStatus?: string | null }).subscriptionStatus;
+  if ((input as { workerLimit?: number }).workerLimit !== undefined) updates.worker_limit = (input as { workerLimit?: number }).workerLimit;
   const { data, error } = await db.from("companies").update(updates).eq("id", id).select().single();
   if (error || !data) return null;
   return toCompany(data);
@@ -358,8 +366,23 @@ export async function getWorkerByInviteToken(token: string, supabase?: SupabaseC
   return toWorker(data[0] as Record<string, unknown>);
 }
 
+/** Thrown when the company has reached its worker limit (subscription). */
+export class WorkerLimitError extends Error {
+  code = "WORKER_LIMIT_REACHED" as const;
+  constructor(public limit: number) {
+    super(`Worker limit reached (${limit}). Upgrade your plan to add more workers.`);
+    this.name = "WorkerLimitError";
+  }
+}
+
 export async function addWorker(input: WorkerInput, supabase?: SupabaseClient): Promise<Worker> {
   const db = supabase ?? createClient();
+  const company = await getCompany(input.companyId, db);
+  const limit = company?.workerLimit ?? 5;
+  const existing = await getWorkers(input.companyId, db);
+  if (existing.length >= limit) {
+    throw new WorkerLimitError(limit);
+  }
   const worker: Worker = { ...input, id: uid() };
   const { error } = await db.from("workers").insert({
     id: worker.id,
@@ -462,6 +485,32 @@ export async function getCompanyForCurrentUser(supabase?: SupabaseClient): Promi
   const owner = await getOwnerUserById(user.id, db);
   if (!owner) return null;
   return getCompany(owner.companyId, db);
+}
+
+/** Subscription status for middleware/gating. active and trialing count as having an active subscription. */
+export async function getSubscriptionStatusForUser(
+  userId: string,
+  supabase: SupabaseClient
+): Promise<{ hasActiveSubscription: boolean; companyId: string | null; workerLimit: number }> {
+  const { data: ownerRow } = await supabase
+    .from("owner_users")
+    .select("company_id")
+    .eq("id", userId)
+    .single();
+  const companyId = ownerRow?.company_id ?? null;
+  if (!companyId) {
+    return { hasActiveSubscription: false, companyId: null, workerLimit: 5 };
+  }
+  const { data: companyRow } = await supabase
+    .from("companies")
+    .select("subscription_status, worker_limit")
+    .eq("id", companyId)
+    .single();
+  const status = companyRow?.subscription_status ?? null;
+  const workerLimit = companyRow?.worker_limit != null ? Number(companyRow.worker_limit) : 5;
+  const hasActiveSubscription =
+    status === "active" || status === "trialing";
+  return { hasActiveSubscription, companyId, workerLimit };
 }
 
 // ─── Projects ───────────────────────────────────────────────────────────────

@@ -33,6 +33,11 @@ export interface Company {
   currentTrackingMethod?: TrackingMethod;
   onboardingStatus?: string;
   settings?: CompanySettings;
+  /** Stripe subscription fields */
+  stripeCustomerId?: string | null;
+  stripeSubscriptionId?: string | null;
+  subscriptionStatus?: string | null;
+  workerLimit?: number;
 }
 
 export interface OwnerUser {

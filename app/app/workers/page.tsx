@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import {
   Plus,
@@ -23,11 +23,20 @@ import { useToast } from "@/components/ui/Toast";
 
 export default function WorkersPage() {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [subscription, setSubscription] = useState<{ workerLimit: number; workersUsed: number } | null>(null);
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "cards">("list");
   const [sendingWorkerId, setSendingWorkerId] = useState<string | null>(null);
   const { items: workers, loading, refetch } = useWorkers();
   const toast = useToast();
+
+  useEffect(() => {
+    fetch("/api/subscription")
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => d && setSubscription({ workerLimit: d.workerLimit, workersUsed: d.workersUsed }))
+      .catch(() => {});
+  }, [workers.length]);
 
   const handleSendProfileLink = useCallback(
     async (workerId: string) => {
@@ -92,7 +101,17 @@ export default function WorkersPage() {
             Manage crew members and worker access.
           </p>
         </div>
-        <Button type="button" onClick={() => setShowAddModal(true)}>
+        <Button
+          type="button"
+          onClick={() => {
+            const atLimit = subscription && subscription.workersUsed >= subscription.workerLimit;
+            if (atLimit) {
+              setShowUpgradePrompt(true);
+            } else {
+              setShowAddModal(true);
+            }
+          }}
+        >
           <Plus className="h-4 w-4" />
           Invite worker
         </Button>
@@ -291,6 +310,16 @@ export default function WorkersPage() {
 
       </section>
 
+      {subscription && subscription.workersUsed >= subscription.workerLimit - 1 && subscription.workersUsed < subscription.workerLimit && (
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          You&apos;re at {subscription.workersUsed} of {subscription.workerLimit} workers.{" "}
+          <Link href={routes.owner.settingsBilling} className="font-medium text-fc-accent hover:underline">
+            Upgrade
+          </Link>{" "}
+          to add more.
+        </div>
+      )}
+
       {showAddModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
@@ -303,6 +332,32 @@ export default function WorkersPage() {
               Add worker
             </h2>
             <WorkerForm onSuccess={handleWorkerSuccess} onCancel={() => setShowAddModal(false)} />
+          </div>
+        </div>
+      )}
+
+      {showUpgradePrompt && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="upgrade-prompt-title"
+        >
+          <div className="w-full max-w-md border border-fc-border bg-fc-surface p-6">
+            <h2 id="upgrade-prompt-title" className="mb-2 font-display text-lg font-bold text-fc-brand">
+              Worker limit reached
+            </h2>
+            <p className="mb-4 text-sm text-fc-muted">
+              You&apos;ve reached your plan limit ({subscription?.workerLimit ?? 0} workers). Upgrade to add more workers.
+            </p>
+            <div className="flex gap-2">
+              <Link href={routes.owner.settingsBilling}>
+                <Button type="button">Upgrade plan</Button>
+              </Link>
+              <Button type="button" variant="outline" onClick={() => setShowUpgradePrompt(false)}>
+                Close
+              </Button>
+            </div>
           </div>
         </div>
       )}

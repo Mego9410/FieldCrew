@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { addWorker, updateWorker } from "@/lib/data";
+import Link from "next/link";
+import { addWorker, updateWorker, WorkerLimitError } from "@/lib/data";
 import { useCompanies } from "@/lib/hooks/useData";
+import { routes } from "@/lib/routes";
 import type { Worker, WorkerInput } from "@/lib/entities";
 import { FormField, FormInput } from "./FormField";
 
@@ -72,6 +74,12 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
       }
       onSuccess?.();
     } catch (err) {
+      if (err instanceof WorkerLimitError) {
+        setError(
+          `You've reached your plan limit (${err.limit} workers). Upgrade to add more workers.`
+        );
+        return;
+      }
       setError(err instanceof Error ? err.message : "Failed to save worker");
     }
   };
@@ -119,7 +127,19 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
           <span className="text-sm text-fc-brand">Send profile link by SMS after adding</span>
         </label>
       )}
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && (
+        <div className="text-sm">
+          <p className="text-red-500">{error}</p>
+          {error.includes("plan limit") && (
+            <Link
+              href={routes.owner.settingsBilling}
+              className="mt-2 inline-block font-medium text-fc-accent hover:underline"
+            >
+              Upgrade plan
+            </Link>
+          )}
+        </div>
+      )}
       <div className="flex gap-2 pt-2">
         <button
           type="submit"

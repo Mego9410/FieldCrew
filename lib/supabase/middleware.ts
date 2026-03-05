@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { ensureOwnerUserForAuthUser } from "@/lib/data";
+import { ensureOwnerUserForAuthUser, getSubscriptionStatusForUser } from "@/lib/data";
 import { routes } from "@/lib/routes";
 
 function getSupabaseAnonKey() {
@@ -109,10 +109,18 @@ export async function updateSession(request: NextRequest) {
 
   const isAppRoute = pathname.startsWith("/app");
   const isOnboardingRoute = pathname === "/onboarding" || pathname.startsWith("/onboarding/");
+  const isSubscribeRoute = pathname === "/subscribe";
 
   // Allow unauthenticated access to /onboarding (preview / force onboarding from login page)
   if (isOnboardingRoute && !user) {
     return supabaseResponse;
+  }
+
+  // Subscribe page: require login
+  if (isSubscribeRoute && !user) {
+    const loginUrl = new URL(routes.public.login, request.url);
+    loginUrl.searchParams.set("next", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   if (isAppRoute && !user) {
@@ -121,26 +129,21 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Logged-in user on /app: redirect to onboarding if no company yet (new user) or onboarding not complete
+  // Logged-in user on /app: require active subscription first, then onboarding complete
   if (isAppRoute && user) {
-    const { data: ownerRow } = await supabase
-      .from("owner_users")
-      .select("company_id")
-      .eq("id", user.id)
-      .single();
-    const companyId = ownerRow?.company_id;
-    // New user: no owner_users row yet (created in app layout or onboarding); send to onboarding first
-    if (!companyId) {
-      const onboardingUrl = new URL(routes.owner.onboarding, request.url);
-      return NextResponse.redirect(onboardingUrl);
+    const sub = await getSubscriptionStatusForUser(user.id, supabase);
+    // No company or no active subscription → send to subscribe
+    if (!sub.companyId || !sub.hasActiveSubscription) {
+      const subscribeUrl = new URL(routes.owner.subscribe, request.url);
+      return NextResponse.redirect(subscribeUrl);
     }
     const { data: companyRow } = await supabase
       .from("companies")
       .select("onboarding_status")
-      .eq("id", companyId)
+      .eq("id", sub.companyId)
       .single();
-    const status = companyRow?.onboarding_status;
-    if (status !== "complete" && status != null) {
+    const onboardingStatus = companyRow?.onboarding_status;
+    if (onboardingStatus !== "complete" && onboardingStatus != null) {
       const onboardingUrl = new URL(routes.owner.onboarding, request.url);
       return NextResponse.redirect(onboardingUrl);
     }

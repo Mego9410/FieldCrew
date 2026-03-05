@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useProjects } from "@/lib/hooks/useData";
-import { Home, Briefcase, Users, Clock, Banknote, FolderOpen, BarChart3, Settings, X, ChevronRight } from "lucide-react";
+import { Home, Briefcase, Users, Clock, Banknote, FolderOpen, BarChart3, Settings, X, ChevronRight, CreditCard } from "lucide-react";
 import { routes } from "@/lib/routes";
 
 const createOptions = [
@@ -41,6 +41,14 @@ export function AppSidebar({
   const [createOpen, setCreateOpen] = useState(false);
   const createRef = useRef<HTMLDivElement>(null);
   const [dropdownRect, setDropdownRect] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [subscription, setSubscription] = useState<{ planName: string; workerLimit: number; workersUsed: number } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/subscription")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setSubscription({ planName: d.planName, workerLimit: d.workerLimit, workersUsed: d.workersUsed }))
+      .catch(() => {});
+  }, [pathname]);
 
   useEffect(() => {
     onNavigate?.();
@@ -230,9 +238,23 @@ export function AppSidebar({
       </nav>
 
       <div className="border-t border-fc-border px-3 py-4">
+        {subscription && (
+          <>
+            <p className="text-[11px] font-medium text-fc-muted">
+              {subscription.planName} • {subscription.workersUsed}/{subscription.workerLimit} workers
+            </p>
+            <Link
+              href={routes.owner.settingsBilling}
+              className="mt-1.5 flex items-center gap-1.5 text-xs text-fc-muted hover:text-fc-brand"
+            >
+              <CreditCard className="h-3.5 w-3.5" />
+              Billing
+            </Link>
+          </>
+        )}
         <Link
           href={routes.owner.settings}
-          className="block text-sm font-medium text-fc-muted hover:text-fc-brand"
+          className={`block text-sm font-medium text-fc-muted hover:text-fc-brand ${subscription ? "mt-3" : ""}`}
         >
           Account
         </Link>

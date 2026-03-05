@@ -4,27 +4,12 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { routes } from "@/lib/routes";
 
 const tiers = [
-  {
-    name: "Starter",
-    price: 49,
-    workers: "Up to 5 workers",
-    highlighted: false,
-  },
-  {
-    name: "Growth",
-    price: 89,
-    workers: "Up to 15 workers",
-    highlighted: true,
-    badge: "Most companies choose this",
-  },
-  {
-    name: "Pro",
-    price: 149,
-    workers: "Up to 30 workers",
-    highlighted: false,
-  },
+  { id: "starter" as const, name: "Starter", price: 49, workers: "Up to 5 workers", highlighted: false },
+  { id: "growth" as const, name: "Growth", price: 89, workers: "Up to 15 workers", highlighted: true, badge: "Most companies choose this" },
+  { id: "pro" as const, name: "Pro", price: 149, workers: "Up to 30 workers", highlighted: false },
 ];
 
 export function Pricing() {
@@ -101,12 +86,12 @@ export function Pricing() {
                 </p>
                 <div className="mt-6">
                   {tier.highlighted ? (
-                    <MagneticButton href="/sample-report" variant="primary">
+                    <MagneticButton href={`${routes.owner.subscribe}?plan=${tier.id}`} variant="primary">
                       Get {tier.name}
                     </MagneticButton>
                   ) : (
                     <Link
-                      href="/sample-report"
+                      href={`${routes.owner.subscribe}?plan=${tier.id}`}
                       className="inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-[var(--fc-radius-lg)] bg-fc-brand px-6 py-3 text-center font-bold text-white transition-all duration-200 hover:bg-fc-brand/90 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
                     >
                       Get {tier.name}
