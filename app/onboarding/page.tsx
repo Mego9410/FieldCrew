@@ -26,10 +26,12 @@ export default async function OnboardingPage(props: PageProps) {
   const workers = company ? await getWorkers(company.id, supabase) : [];
   const initialCompany = company ?? DEMO_COMPANY;
   const isPreview = !company;
+  const workerLimit = company?.workerLimit ?? 5;
   return (
     <OnboardingWizard
       initialCompany={initialCompany}
       initialWorkers={workers}
+      workerLimit={workerLimit}
       isPreview={isPreview}
       showPaymentSuccess={showPaymentSuccess}
     />

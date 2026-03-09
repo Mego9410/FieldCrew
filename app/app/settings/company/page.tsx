@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { SettingsPageShell } from "@/components/settings/SettingsPageShell";
 import { SettingsSectionCard } from "@/components/settings/SettingsSectionCard";
 import { FormField, FormInput, FormSelect } from "@/components/forms/FormField";
+import { PhoneInput } from "@/components/forms/PhoneInput";
 import { useToast } from "@/components/ui/Toast";
 import {
   getSettings,
@@ -118,17 +119,12 @@ export default function CompanySettingsPage() {
                 placeholder="billing@company.com"
               />
             </FormField>
-            <FormField label="Phone" id="company-phone">
-              <FormInput
-                id="company-phone"
-                type="tel"
-                value={company.phone}
-                onChange={(e) =>
-                  setCompany((c) => ({ ...c, phone: e.target.value }))
-                }
-                placeholder="(555) 000-0000"
-              />
-            </FormField>
+            <PhoneInput
+              id="company-phone"
+              value={company.phone}
+              onChange={(v) => setCompany((c) => ({ ...c, phone: v }))}
+              label="Phone"
+            />
             <FormField label="Tax ID / EIN" id="company-tax-id">
               <FormInput
                 id="company-tax-id"

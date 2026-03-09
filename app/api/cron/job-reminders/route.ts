@@ -7,6 +7,7 @@ import {
   jobReminderAlreadySent,
   insertJobReminderSent,
 } from "@/lib/data";
+import { createShortLink } from "@/lib/shortLink";
 import { sendSms } from "@/lib/twilio";
 import { routes } from "@/lib/routes";
 import { NextResponse } from "next/server";
@@ -86,7 +87,9 @@ export async function POST(request: Request) {
           continue;
         }
 
-        const link = `${APP_ORIGIN}${routes.worker.job(invite.token, job.id)}`;
+        const fullPath = routes.worker.job(invite.token, job.id);
+        const shortCode = await createShortLink(supabase, fullPath);
+        const link = `${APP_ORIGIN}/s/${shortCode}`;
         const hoursUntil = Math.round(
           (jobStart.getTime() - now.getTime()) / (60 * 60 * 1000)
         );

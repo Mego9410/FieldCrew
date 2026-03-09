@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { FormField, FormInput, FormSelect } from "@/components/forms/FormField";
+import { PhoneInput } from "@/components/forms/PhoneInput";
 import { addWorker, updateWorker, deleteWorker } from "@/lib/data";
 import type { Worker, WorkerInput, WorkerRole } from "@/lib/entities";
 import { UserPlus, Pencil, Trash2 } from "lucide-react";
@@ -211,15 +212,13 @@ export function CrewBuilder({
                     placeholder="e.g. Jamie Martinez"
                   />
                 </FormField>
-                <FormField label="Mobile (E.164)" id="worker-phone" required>
-                  <FormInput
-                    id="worker-phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+1 555 123 4567"
-                  />
-                </FormField>
+                <PhoneInput
+                  id="worker-phone"
+                  value={phone}
+                  onChange={setPhone}
+                  label="Mobile"
+                  required
+                />
                 <FormField label="Role" id="worker-role">
                   <FormSelect
                     id="worker-role"

@@ -16,7 +16,6 @@ export function PayRules({ initial, onChange }: PayRulesProps) {
   const [weekendMult, setWeekendMult] = useState(String(initial?.weekendMultiplier ?? 1));
   const [holidayMult, setHolidayMult] = useState(String(initial?.holidayMultiplier ?? 1));
   const [requireJobCode, setRequireJobCode] = useState(initial?.requireJobCode ?? true);
-  const [requireGps, setRequireGps] = useState(initial?.requireGps ?? false);
   const [requireNotes, setRequireNotes] = useState(initial?.requireNotesOnClockOut ?? false);
   const [requirePhoto, setRequirePhoto] = useState(initial?.requirePhotoOnClockOut ?? false);
 
@@ -27,7 +26,6 @@ export function PayRules({ initial, onChange }: PayRulesProps) {
       weekendMultiplier: parseFloat(weekendMult) || 1,
       holidayMultiplier: parseFloat(holidayMult) || 1,
       requireJobCode,
-      requireGps,
       requireNotesOnClockOut: requireNotes,
       requirePhotoOnClockOut: requirePhoto,
     });
@@ -41,14 +39,9 @@ export function PayRules({ initial, onChange }: PayRulesProps) {
       weekendMultiplier: parseFloat(weekendMult) || 1,
       holidayMultiplier: parseFloat(holidayMult) || 1,
       requireJobCode: v,
-      requireGps,
       requireNotesOnClockOut: requireNotes,
       requirePhotoOnClockOut: requirePhoto,
     });
-  };
-  const setGps = (v: boolean) => {
-    setRequireGps(v);
-    emit();
   };
   const setNotes = (v: boolean) => {
     setRequireNotes(v);
@@ -128,15 +121,6 @@ export function PayRules({ initial, onChange }: PayRulesProps) {
               className="h-4 w-4 rounded border-fc-border accent-fc-accent"
             />
             <span className="text-sm text-fc-brand">Require job code on clock-in</span>
-          </label>
-          <label className="flex cursor-pointer items-center gap-3">
-            <input
-              type="checkbox"
-              checked={requireGps}
-              onChange={(e) => setGps(e.target.checked)}
-              className="h-4 w-4 rounded border-fc-border accent-fc-accent"
-            />
-            <span className="text-sm text-fc-brand">Require GPS location</span>
           </label>
           <label className="flex cursor-pointer items-center gap-3">
             <input

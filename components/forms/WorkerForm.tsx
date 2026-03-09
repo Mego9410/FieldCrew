@@ -7,6 +7,7 @@ import { useCompanies } from "@/lib/hooks/useData";
 import { routes } from "@/lib/routes";
 import type { Worker, WorkerInput } from "@/lib/entities";
 import { FormField, FormInput } from "./FormField";
+import { PhoneInput } from "./PhoneInput";
 
 interface WorkerFormProps {
   worker?: Worker | null;
@@ -96,15 +97,13 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
           autoFocus
         />
       </FormField>
-      <FormField label="Phone" id="worker-phone" required>
-        <FormInput
-          id="worker-phone"
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="e.g. (555) 123-4567"
-        />
-      </FormField>
+      <PhoneInput
+        id="worker-phone"
+        value={phone}
+        onChange={setPhone}
+        label="Phone"
+        required
+      />
       <FormField label="Hourly rate ($)" id="worker-hourly-rate" required>
         <FormInput
           id="worker-hourly-rate"

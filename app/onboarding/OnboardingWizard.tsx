@@ -21,21 +21,24 @@ const TOTAL_STEPS = 5;
 interface OnboardingWizardProps {
   initialCompany: Company;
   initialWorkers: Worker[];
+  /** Max workers allowed by current plan (Starter 5, Growth 15, Pro unlimited). */
+  workerLimit?: number;
   isPreview?: boolean;
   showPaymentSuccess?: boolean;
 }
 
-export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = false, showPaymentSuccess = false }: OnboardingWizardProps) {
+export function OnboardingWizard({ initialCompany, initialWorkers, workerLimit: planWorkerLimit = 5, isPreview = false, showPaymentSuccess = false }: OnboardingWizardProps) {
   const router = useRouter();
   const savedStep = initialCompany.settings?.onboardingStep ?? 0;
   const [step, setStep] = useState(Math.min(savedStep + 1, 6));
   const [company, setCompany] = useState(initialCompany);
   const [workers, setWorkers] = useState(initialWorkers);
   const [saving, setSaving] = useState(false);
+  const step1MaxWorkers = planWorkerLimit >= 30 ? 50 : planWorkerLimit;
   const [step1Data, setStep1Data] = useState<OperationSnapshotData>({
     companyName: company.name,
     workType: (company.workType as OperationSnapshotData["workType"]) ?? "mixed",
-    expectedTeamSize: company.expectedTeamSize ?? 5,
+    expectedTeamSize: Math.min(Math.max(1, company.expectedTeamSize ?? 5), step1MaxWorkers),
     currentTrackingMethod: (company.currentTrackingMethod as OperationSnapshotData["currentTrackingMethod"]) ?? "none",
   });
   const [payRulesData, setPayRulesData] = useState<Partial<CompanySettings>>(company.settings ?? {});
@@ -203,6 +206,7 @@ export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = f
       >
         <OperationSnapshot
           initial={step1Data}
+          maxWorkers={planWorkerLimit}
           onChange={setStep1Data}
         />
       </StepLayout>

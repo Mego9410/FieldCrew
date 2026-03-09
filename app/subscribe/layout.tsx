@@ -27,17 +27,20 @@ export default async function SubscribeLayout({
       }
     }
     const sub = await getSubscriptionStatusForUser(user.id, supabase);
-    if (sub.hasActiveSubscription && sub.companyId) {
+    if (sub.companyId) {
       const { data: companyRow } = await supabase
         .from("companies")
         .select("onboarding_status")
         .eq("id", sub.companyId)
         .single();
       const status = companyRow?.onboarding_status;
+      // If onboarding complete, go to dashboard; if subscribed but not complete, go to onboarding
       if (status === "complete") {
         redirect(routes.owner.home);
       }
-      redirect(routes.owner.onboarding);
+      if (sub.hasActiveSubscription) {
+        redirect(routes.owner.onboarding);
+      }
     }
   }
 

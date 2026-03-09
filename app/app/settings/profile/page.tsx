@@ -5,6 +5,7 @@ import { SettingsPageShell } from "@/components/settings/SettingsPageShell";
 import { SettingsSectionCard } from "@/components/settings/SettingsSectionCard";
 import { AvatarUploader } from "@/components/settings/AvatarUploader";
 import { FormField, FormInput, FormSelect } from "@/components/forms/FormField";
+import { PhoneInput } from "@/components/forms/PhoneInput";
 import { useToast } from "@/components/ui/Toast";
 import { getSettings, saveSettings, type ProfileSettings } from "@/lib/settings.mock";
 
@@ -132,18 +133,13 @@ export default function ProfileSettingsPage() {
                 autoComplete="email"
               />
             </FormField>
-            <FormField label="Phone" id="profile-phone">
-              <FormInput
-                id="profile-phone"
-                type="tel"
-                value={profile.phone}
-                onChange={(e) =>
-                  setProfile((p) => ({ ...p, phone: e.target.value }))
-                }
-                placeholder="(555) 000-0000"
-                autoComplete="tel"
-              />
-            </FormField>
+            <PhoneInput
+              id="profile-phone"
+              value={profile.phone}
+              onChange={(v) => setProfile((p) => ({ ...p, phone: v }))}
+              label="Phone"
+              autoComplete="tel"
+            />
             <FormField label="Timezone" id="profile-timezone">
               <FormSelect
                 id="profile-timezone"

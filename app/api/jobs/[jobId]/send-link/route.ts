@@ -5,6 +5,7 @@ import {
   getWorker,
   getWorkerInvitesByCompany,
 } from "@/lib/data";
+import { createShortLink } from "@/lib/shortLink";
 import { sendSms } from "@/lib/twilio";
 import { routes } from "@/lib/routes";
 import { NextResponse } from "next/server";
@@ -57,7 +58,9 @@ export async function POST(
       continue;
     }
 
-    const link = `${APP_ORIGIN}${routes.worker.job(invite.token, job.id)}`;
+    const fullPath = routes.worker.job(invite.token, job.id);
+    const shortCode = await createShortLink(supabase, fullPath);
+    const link = `${APP_ORIGIN}/s/${shortCode}`;
     const message = `FieldCrew: Job "${job.name}" at ${job.address}. Open job: ${link}`;
 
     const ok = await sendSms(worker.phone, message);

@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { FormField, FormInput } from "@/components/forms/FormField";
 import type { WorkType, TrackingMethod } from "@/lib/entities";
+import { routes } from "@/lib/routes";
+
+/** Pro plan is treated as unlimited for the slider (cap at 50). */
+const PRO_UNLIMITED_SLIDER_MAX = 50;
 
 const WORK_TYPES: { value: WorkType; label: string }[] = [
   { value: "residential", label: "Residential" },
@@ -25,15 +30,31 @@ export interface OperationSnapshotData {
   currentTrackingMethod: TrackingMethod;
 }
 
+const PLAN_LABEL: Record<number, string> = {
+  5: "Starter",
+  15: "Growth",
+  30: "Pro",
+};
+
 interface OperationSnapshotProps {
   initial?: Partial<OperationSnapshotData>;
+  /** Max workers allowed by current plan (Starter 5, Growth 15, Pro 30/unlimited). */
+  maxWorkers: number;
   onChange: (data: OperationSnapshotData) => void;
 }
 
-export function OperationSnapshot({ initial, onChange }: OperationSnapshotProps) {
+export function OperationSnapshot({ initial, maxWorkers, onChange }: OperationSnapshotProps) {
+  const sliderMax = maxWorkers >= 30 ? PRO_UNLIMITED_SLIDER_MAX : maxWorkers;
+  const isUnlimited = maxWorkers >= 30;
+  const planName = PLAN_LABEL[maxWorkers] ?? "Starter";
+  const clampedInitial = useMemo(
+    () => Math.min(Math.max(1, initial?.expectedTeamSize ?? 5), sliderMax),
+    [initial?.expectedTeamSize, sliderMax]
+  );
+
   const [companyName, setCompanyName] = useState(initial?.companyName ?? "");
   const [workType, setWorkType] = useState<WorkType>(initial?.workType ?? "mixed");
-  const [expectedTeamSize, setExpectedTeamSize] = useState(initial?.expectedTeamSize ?? 5);
+  const [expectedTeamSize, setExpectedTeamSize] = useState(clampedInitial);
   const [currentTrackingMethod, setCurrentTrackingMethod] = useState<TrackingMethod>(
     initial?.currentTrackingMethod ?? "none"
   );
@@ -92,10 +113,10 @@ export function OperationSnapshot({ initial, onChange }: OperationSnapshotProps)
           <input
             type="range"
             min={1}
-            max={25}
+            max={sliderMax}
             value={expectedTeamSize}
             onChange={(e) => {
-              const v = Number(e.target.value);
+              const v = Math.min(sliderMax, Math.max(1, Number(e.target.value)));
               setExpectedTeamSize(v);
               onChange({ companyName: companyName.trim(), workType, expectedTeamSize: v, currentTrackingMethod });
             }}
@@ -105,6 +126,17 @@ export function OperationSnapshot({ initial, onChange }: OperationSnapshotProps)
             {expectedTeamSize}
           </span>
         </div>
+        {!isUnlimited && (
+          <p className="mt-2 text-xs text-fc-muted">
+            Your {planName} plan allows up to {maxWorkers} workers.{" "}
+            <Link
+              href={routes.owner.settingsBilling}
+              className="font-medium text-fc-accent hover:underline"
+            >
+              Upgrade to add more
+            </Link>
+          </p>
+        )}
       </Card>
 
       <div>

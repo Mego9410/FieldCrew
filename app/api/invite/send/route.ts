@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCompanyForCurrentUser, getWorker, getWorkerInvitesByCompany, addWorkerInvite, updateWorkerInvite, updateWorker } from "@/lib/data";
+import { createShortLink } from "@/lib/shortLink";
 import { sendSms } from "@/lib/twilio";
 import { NextResponse } from "next/server";
 
@@ -52,7 +53,9 @@ export async function POST(request: Request) {
   const origin = request.headers.get("x-forwarded-host")
     ? `https://${request.headers.get("x-forwarded-host")}`
     : request.headers.get("origin") ?? "https://fieldcrew.app";
-  const link = `${origin}/w/${invite.token}`;
+  const fullPath = `/w/${invite.token}`;
+  const shortCode = await createShortLink(supabase, fullPath);
+  const link = `${origin}/s/${shortCode}`;
   const message = `You're invited to FieldCrew. Open this link to get started: ${link}`;
 
   const sent = await sendSms(worker.phone, message);

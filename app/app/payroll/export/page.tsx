@@ -2,8 +2,6 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { Calendar, Download, FileSpreadsheet, FileText } from "lucide-react";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
 import { routes } from "@/lib/routes";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -87,7 +85,11 @@ export default function PayrollExportPage() {
   }, []);
 
   const buildPDF = useCallback(
-    (rows: PayrollRow[]) => {
+    async (rows: PayrollRow[]) => {
+      const [{ jsPDF }, { default: autoTable }] = await Promise.all([
+        import("jspdf"),
+        import("jspdf-autotable"),
+      ]);
       const doc = new jsPDF();
       doc.setFontSize(16);
       doc.text("Payroll export", 14, 20);
@@ -112,7 +114,7 @@ export default function PayrollExportPage() {
     [dateFrom, dateTo]
   );
 
-  const handleExport = useCallback(() => {
+  const handleExport = useCallback(async () => {
     setError(null);
     if (!isValidRange) {
       setError("Please select a valid date range (From must be on or before To).");
@@ -129,7 +131,7 @@ export default function PayrollExportPage() {
         const blob = buildCSV(payrollRows);
         triggerDownload(blob, `${filename}.csv`);
       } else {
-        const blob = buildPDF(payrollRows);
+        const blob = await buildPDF(payrollRows);
         triggerDownload(blob, `${filename}.pdf`);
       }
     } catch (e) {

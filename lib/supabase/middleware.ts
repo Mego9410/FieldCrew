@@ -124,11 +124,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Logged-in user on /app: require active subscription first, then onboarding complete
+  // Logged-in user on /app: allow if they have a company and (active subscription OR completed onboarding)
   if (isAppRoute && user) {
     const sub = await getSubscriptionStatusForUser(user.id, supabase);
-    // No company or no active subscription → send to subscribe
-    if (!sub.companyId || !sub.hasActiveSubscription) {
+    if (!sub.companyId) {
       const subscribeUrl = new URL(routes.owner.subscribe, request.url);
       return NextResponse.redirect(subscribeUrl);
     }
@@ -138,6 +137,11 @@ export async function updateSession(request: NextRequest) {
       .eq("id", sub.companyId)
       .single();
     const onboardingStatus = companyRow?.onboarding_status;
+    // Require subscription only if onboarding is not yet complete (so completed onboarding → dashboard)
+    if (!sub.hasActiveSubscription && onboardingStatus !== "complete") {
+      const subscribeUrl = new URL(routes.owner.subscribe, request.url);
+      return NextResponse.redirect(subscribeUrl);
+    }
     if (onboardingStatus !== "complete" && onboardingStatus != null) {
       const onboardingUrl = new URL(routes.owner.onboarding, request.url);
       return NextResponse.redirect(onboardingUrl);
