@@ -13,20 +13,14 @@ function randomShortCode(): string {
   return Array.from(bytes, (b) => ALPHABET[b % ALPHABET.length]).join("");
 }
 
-/** Any Supabase client with from().insert() and from().select() (server or service role). */
-type SupabaseClient = {
-  from: (table: string) => {
-    insert: (row: Record<string, unknown>) => Promise<{ error: { code?: string } | null }>;
-    select: (cols: string) => { eq: (col: string, value: string) => { single: () => Promise<{ data: unknown; error: unknown }> } };
-  };
-};
-
 /**
  * Create a short link for the given path. Returns the short code (e.g. "a1b2c3d4").
  * Path should be relative, e.g. "/w/abc123.../jobs/jobId".
+ * Accepts any Supabase client (server or service role).
  */
 export async function createShortLink(
-  supabase: SupabaseClient,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   targetPath: string
 ): Promise<string> {
   const path = targetPath.startsWith("/") ? targetPath : `/${targetPath}`;
@@ -46,7 +40,8 @@ export async function createShortLink(
  * Resolve a short code to the target path for redirect. Returns null if not found.
  */
 export async function getShortLinkTarget(
-  supabase: SupabaseClient,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   code: string
 ): Promise<string | null> {
   const { data, error } = await supabase

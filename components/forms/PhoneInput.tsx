@@ -121,7 +121,6 @@ export function PhoneInput({
 
   const handleNationalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, "");
-    const country = COUNTRY_CODES.find((c) => c.dial === dial) ?? DEFAULT_COUNTRY;
     const maxLen = dial === "1" ? 10 : 15;
     const limited = raw.slice(0, maxLen);
     const formatted = formatNational(dial, limited);
