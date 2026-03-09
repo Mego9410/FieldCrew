@@ -7,7 +7,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 
-const features = [
+export const FEATURES_LIST = [
   {
     icon: ClipboardCheck,
     title: "Mandatory job selection",
@@ -73,7 +73,7 @@ export function Features() {
           </p>
         </div>
         <ul className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map(({ icon: Icon, title, description }) => (
+          {FEATURES_LIST.map(({ icon: Icon, title, description }) => (
             <li
               key={title}
               className="group relative cursor-pointer overflow-hidden rounded-lg border border-fc-border bg-white p-6 shadow-fc-sm transition-all duration-200 hover:border-fc-accent/40"

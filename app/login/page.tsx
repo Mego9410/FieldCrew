@@ -249,7 +249,7 @@ export default function LoginPage() {
         <p className="mt-6 text-center text-sm text-fc-muted">
           Don&apos;t have an account?{" "}
           <Link
-            href={routes.public.signup}
+            href={routes.owner.subscribe}
             className="font-medium text-fc-accent underline underline-offset-2 hover:text-fc-accent-dark"
           >
             Sign up

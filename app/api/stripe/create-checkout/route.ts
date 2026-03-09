@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@/lib/supabase/server";
 import { getCompanyForCurrentUser, getOwnerUserById } from "@/lib/data";
+import { routes } from "@/lib/routes";
 
 const PLAN_CONFIG: Record<"starter" | "growth" | "pro", { priceId: string; workerLimit: number; planName: string }> = {
   starter: {
@@ -91,9 +92,10 @@ export async function POST(request: Request) {
     mode: "subscription",
     customer: customerId,
     line_items: [{ price: config.priceId, quantity: 1 }],
-    success_url: `${baseUrl}/onboarding`,
-    cancel_url: `${baseUrl}/subscribe`,
+    success_url: `${baseUrl}${routes.owner.onboarding}?payment=success`,
+    cancel_url: `${baseUrl}${routes.owner.subscribe}`,
     client_reference_id: company.id,
+    allow_promotion_codes: true,
     subscription_data: {
       metadata: {
         company_id: company.id,

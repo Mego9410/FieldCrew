@@ -109,19 +109,14 @@ export async function updateSession(request: NextRequest) {
 
   const isAppRoute = pathname.startsWith("/app");
   const isOnboardingRoute = pathname === "/onboarding" || pathname.startsWith("/onboarding/");
-  const isSubscribeRoute = pathname === "/subscribe";
 
   // Allow unauthenticated access to /onboarding (preview / force onboarding from login page)
   if (isOnboardingRoute && !user) {
     return supabaseResponse;
   }
 
-  // Subscribe page: require login
-  if (isSubscribeRoute && !user) {
-    const loginUrl = new URL(routes.public.login, request.url);
-    loginUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
+  // Subscribe page is public (first step of onboarding); layout handles redirects for logged-in users
+  // No middleware redirect for /subscribe
 
   if (isAppRoute && !user) {
     const loginUrl = new URL("/login", request.url);

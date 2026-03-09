@@ -87,14 +87,14 @@ export function Pricing() {
                 <div className="mt-6">
                   {tier.highlighted ? (
                     <MagneticButton href={`${routes.owner.subscribe}?plan=${tier.id}`} variant="primary">
-                      Get {tier.name}
+                      Start with {tier.name}
                     </MagneticButton>
                   ) : (
                     <Link
                       href={`${routes.owner.subscribe}?plan=${tier.id}`}
                       className="inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-[var(--fc-radius-lg)] bg-fc-brand px-6 py-3 text-center font-bold text-white transition-all duration-200 hover:bg-fc-brand/90 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
                     >
-                      Get {tier.name}
+                      Start with {tier.name}
                     </Link>
                   )}
                 </div>

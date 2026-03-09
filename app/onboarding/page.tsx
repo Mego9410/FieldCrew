@@ -13,7 +13,12 @@ const DEMO_COMPANY: Company = {
   settings: {},
 };
 
-export default async function OnboardingPage() {
+type PageProps = { searchParams?: Promise<{ payment?: string }> };
+
+export default async function OnboardingPage(props: PageProps) {
+  const searchParams = await (props.searchParams ?? Promise.resolve({}));
+  const showPaymentSuccess = searchParams.payment === "success";
+
   const supabase = await createClient();
   const company = await getCompanyForCurrentUser(supabase);
   const workers = company ? await getWorkers(company.id, supabase) : [];
@@ -24,6 +29,7 @@ export default async function OnboardingPage() {
       initialCompany={initialCompany}
       initialWorkers={workers}
       isPreview={isPreview}
+      showPaymentSuccess={showPaymentSuccess}
     />
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
+import { routes } from "@/lib/routes";
 
 function getMobileNavLinks(pathname: string) {
   const isHome = pathname === "/";
@@ -132,7 +133,7 @@ export function Nav() {
             Log in
           </Link>
           <Link
-            href={pricingHref}
+            href={routes.owner.subscribe}
             className={`inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md px-6 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 shadow-fc-sm ${
               darkNav
                 ? "bg-fc-orange-500 text-fc-navy-950 hover:bg-fc-orange-600 focus:ring-offset-fc-navy-950"
@@ -190,7 +191,7 @@ export function Nav() {
                 </Link>
               ))}
               <Link
-                href={pricingHref}
+                href={routes.owner.subscribe}
                 onClick={() => setMobileOpen(false)}
                 className="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md bg-fc-brand px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-fc-brand/90 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 mt-2"
               >

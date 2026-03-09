@@ -7,9 +7,18 @@ import { createClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
 import { Mail, Lock, Loader2 } from "lucide-react";
 
+function getNextRedirect(searchParams: URLSearchParams): string {
+  const next = searchParams.get("next");
+  if (next?.startsWith("/") && !next.startsWith("//")) return next;
+  const plan = searchParams.get("plan");
+  if (plan) return `${routes.owner.subscribe}?plan=${plan}`;
+  return routes.owner.home;
+}
+
 export default function SignUpPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const nextRedirect = getNextRedirect(searchParams);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState<"email" | "google" | null>(null);
@@ -26,11 +35,14 @@ export default function SignUpPage() {
     setSuccessMessage(null);
     setLoading("email");
 
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const callbackNext = `${origin}/auth/callback?next=${encodeURIComponent(nextRedirect)}`;
+
     const supabase = createClient();
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/auth/callback?next=${routes.owner.home}` },
+      options: { emailRedirectTo: callbackNext },
     });
 
     setLoading(null);
@@ -42,7 +54,7 @@ export default function SignUpPage() {
     // Supabase may require email confirmation; check session
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      router.push(routes.owner.home);
+      router.push(nextRedirect);
       router.refresh();
     } else {
       setError(null);
@@ -60,7 +72,7 @@ export default function SignUpPage() {
     const supabase = createClient();
     const origin =
       typeof window !== "undefined" ? window.location.origin : "";
-    const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(routes.owner.home)}`;
+    const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextRedirect)}`;
 
     const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider: "google",

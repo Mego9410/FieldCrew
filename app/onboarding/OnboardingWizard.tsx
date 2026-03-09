@@ -22,9 +22,10 @@ interface OnboardingWizardProps {
   initialCompany: Company;
   initialWorkers: Worker[];
   isPreview?: boolean;
+  showPaymentSuccess?: boolean;
 }
 
-export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = false }: OnboardingWizardProps) {
+export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = false, showPaymentSuccess = false }: OnboardingWizardProps) {
   const router = useRouter();
   const savedStep = initialCompany.settings?.onboardingStep ?? 0;
   const [step, setStep] = useState(Math.min(savedStep + 1, 6));
@@ -151,9 +152,16 @@ export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = f
     </div>
   ) : null;
 
+  const paymentSuccessBanner = showPaymentSuccess ? (
+    <div className="border-b border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm font-medium text-emerald-800">
+      Thanks for subscribing. Let&apos;s get you set up — complete the steps below to start using FieldCrew.
+    </div>
+  ) : null;
+
   if (step === 6) {
     return (
       <>
+        {paymentSuccessBanner}
         {previewBanner}
         <div className="mx-auto max-w-3xl px-4 py-12">
         <div className="rounded-xl border border-fc-accent bg-fc-accent/5 p-8 text-center">
@@ -180,6 +188,7 @@ export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = f
   if (step === 1) {
     return (
       <>
+        {paymentSuccessBanner}
         {previewBanner}
         <StepLayout
         step={1}
@@ -204,6 +213,7 @@ export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = f
   if (step === 2) {
     return (
       <>
+        {paymentSuccessBanner}
         {previewBanner}
         <StepLayout
         step={2}
@@ -232,6 +242,7 @@ export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = f
   if (step === 3) {
     return (
       <>
+        {paymentSuccessBanner}
         {previewBanner}
         <StepLayout
         step={3}
@@ -255,6 +266,7 @@ export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = f
   if (step === 4) {
     return (
       <>
+        {paymentSuccessBanner}
         {previewBanner}
         <StepLayout
         step={4}
@@ -282,6 +294,7 @@ export function OnboardingWizard({ initialCompany, initialWorkers, isPreview = f
   if (step === 5) {
     return (
       <>
+        {paymentSuccessBanner}
         {previewBanner}
         <StepLayout
         step={5}
