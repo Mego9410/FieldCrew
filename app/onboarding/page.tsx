@@ -13,10 +13,12 @@ const DEMO_COMPANY: Company = {
   settings: {},
 };
 
-type PageProps = { searchParams?: Promise<{ payment?: string }> };
+type SearchParams = { payment?: string };
+
+type PageProps = { searchParams?: Promise<SearchParams> };
 
 export default async function OnboardingPage(props: PageProps) {
-  const searchParams = await (props.searchParams ?? Promise.resolve({}));
+  const searchParams: SearchParams = await (props.searchParams ?? Promise.resolve({}));
   const showPaymentSuccess = searchParams.payment === "success";
 
   const supabase = await createClient();
