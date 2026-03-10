@@ -1,3 +1,5 @@
+@import url("https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -66,6 +68,33 @@
 
     /* Sidebar — deeper navy (control board) */
     --fc-nav-sidebar: #0a0f1a;
+
+    /* Landing — cinematic product site (Legend-style) */
+    --landing-bg: #0b0f14;
+    --landing-surface: #11161d;
+    --landing-text: #ffffff;
+    --landing-text-muted: #8a93a2;
+    --landing-accent: #ff6b35;
+
+    /* Legend-style marketing theme (futuristic fintech) */
+    --legend-bg: #0a0a0a;
+    --legend-bg-secondary: #111111;
+    --legend-bg-tertiary: #151515;
+    --legend-accent-start: #5b7cff;
+    --legend-accent-end: #9d6cff;
+    --legend-accent-secondary-start: #2de2e6;
+    --legend-accent-secondary-end: #6c5bff;
+    --legend-glass: rgba(255, 255, 255, 0.05);
+    --legend-glass-border: rgba(255, 255, 255, 0.08);
+    --legend-glass-blur: 20px;
+    --legend-text: #ffffff;
+    --legend-text-muted: #a1a1aa;
+    --legend-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --legend-section-py: 160px;
+    --legend-container-max: 1280px;
+    --legend-shadow-panel: 0 20px 80px rgba(0, 0, 0, 0.4);
+    --font-legend-display: "Satoshi", var(--font-display), system-ui, sans-serif;
+    --font-legend-body: var(--font-legend-body-fallback, var(--font-body));
   }
 
   /* Fallbacks so page and links look right even if Tailwind fails to load */
@@ -412,6 +441,29 @@
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+  }
+
+  /* Landing — subtle technical grid */
+  .landing-grid {
+    background-image: radial-gradient(#1a1f26 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: 0 0;
+  }
+
+  /* Hide scrollbars on marketing landing page */
+  [data-landing] {
+    scrollbar-width: none;
+  }
+  [data-landing]::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Utility: hide scrollbar but keep scroll (e.g. overflow areas) */
+  .scrollbar-hidden {
+    scrollbar-width: none;
+  }
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
   }
 }
 

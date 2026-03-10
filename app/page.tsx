@@ -1,33 +1,33 @@
-import { Nav } from "@/components/landing/Nav";
-import { Hero } from "@/components/landing/Hero";
-import { Problem } from "@/components/landing/Problem";
-import { RealScenario } from "@/components/landing/RealScenario";
-import { Solution } from "@/components/landing/Solution";
-import { Differentiation } from "@/components/landing/Differentiation";
-import { ProofTrust } from "@/components/landing/ProofTrust";
-import { Pricing } from "@/components/landing/Pricing";
-import { FinalCta } from "@/components/landing/FinalCta";
-import { Footer } from "@/components/landing/Footer";
+import { MarketingNav } from "@/components/sections/MarketingNav";
+import { Hero } from "@/components/sections/Hero";
+import { Problem } from "@/components/sections/Problem";
+import { RealScenario } from "@/components/sections/RealScenario";
+import { Features } from "@/components/sections/Features";
+import { Differentiation } from "@/components/sections/Differentiation";
+import { ProofTrust } from "@/components/sections/ProofTrust";
+import { Pricing } from "@/components/sections/Pricing";
+import { CTA } from "@/components/sections/CTA";
+import { Footer } from "@/components/sections/Footer";
 
 export default function Home() {
   return (
     <>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-fc-accent focus:px-4 focus:py-2 focus:text-white focus:outline-none"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-[#0a0a0a] focus:outline-none"
       >
         Skip to main content
       </a>
-      <Nav />
-      <main id="main">
+      <MarketingNav />
+      <main id="main" className="bg-[#0a0a0a]">
         <Hero />
         <Problem />
         <RealScenario />
-        <Solution />
+        <Features />
         <Differentiation />
         <ProofTrust />
         <Pricing />
-        <FinalCta />
+        <CTA />
       </main>
       <Footer />
     </>

@@ -7,17 +7,19 @@ const rows = [
   { others: "Generic reporting", fieldcrew: "HVAC-specific insight" },
 ];
 
+const borderClass = "border-[rgba(255,255,255,0.08)]";
+
 export function ComparisonTable() {
   return (
     <>
-      <div className="hidden overflow-x-auto rounded-[var(--fc-radius)] border border-fc-navy-800 sm:block">
+      <div className="hidden overflow-x-auto sm:block">
         <table className="w-full min-w-[400px] border-collapse text-left">
           <thead>
-            <tr className="border-b border-fc-navy-800 bg-fc-navy-900/90">
-              <th className="px-6 py-4 font-display text-xs font-bold uppercase tracking-wider text-fc-steel-500">
+            <tr className={`border-b ${borderClass} bg-[rgba(0,0,0,0.2)]`}>
+              <th className="px-6 py-5 font-legend-display text-xs font-bold uppercase tracking-wider text-[#a1a1aa]">
                 Generic Field Software
               </th>
-              <th className="border-l border-fc-navy-800 px-6 py-4 font-display text-xs font-bold uppercase tracking-wider text-fc-orange-500">
+              <th className={`border-l ${borderClass} px-6 py-5 font-legend-display text-xs font-bold uppercase tracking-wider text-[#5b7cff]`}>
                 FieldCrew
               </th>
             </tr>
@@ -26,12 +28,12 @@ export function ComparisonTable() {
             {rows.map((row, i) => (
               <tr
                 key={i}
-                className="border-b border-fc-navy-800/80 last:border-b-0 transition-colors duration-200 hover:bg-fc-orange-500/10"
+                className={`border-b ${borderClass} transition-colors last:border-b-0 hover:bg-[rgba(255,255,255,0.03)] [&:last-child_td]:pb-6`}
               >
-                <td className="px-6 py-5 text-sm text-fc-steel-500">
+                <td className={`px-6 py-5 text-base text-[#a1a1aa] ${i === 0 ? "pt-5" : ""}`}>
                   {row.others}
                 </td>
-                <td className="border-l border-fc-navy-800 px-6 py-5 text-sm font-semibold text-slate-200">
+                <td className={`border-l ${borderClass} px-6 py-5 font-legend-body text-base font-semibold text-white ${i === 0 ? "pt-5" : ""}`}>
                   {row.fieldcrew}
                 </td>
               </tr>
@@ -39,20 +41,20 @@ export function ComparisonTable() {
           </tbody>
         </table>
       </div>
-      <div className="space-y-4 sm:hidden">
+      <div className="space-y-3 sm:hidden p-4 pt-4 pb-5">
         {rows.map((row, i) => (
           <div
             key={i}
-            className="rounded-[var(--fc-radius)] border border-fc-navy-800 bg-fc-navy-900/80 p-5"
+            className="rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] p-5"
           >
-            <p className="text-xs font-semibold uppercase tracking-wider text-fc-steel-500">
+            <p className="font-legend-display text-xs font-semibold uppercase tracking-wider text-[#a1a1aa]">
               Generic Field Software
             </p>
-            <p className="mt-1 text-sm text-fc-steel-500">{row.others}</p>
-            <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-fc-orange-500">
+            <p className="mt-1 font-legend-body text-sm text-[#a1a1aa]">{row.others}</p>
+            <p className="mt-4 font-legend-display text-xs font-semibold uppercase tracking-wider text-[#5b7cff]">
               FieldCrew
             </p>
-            <p className="mt-1 text-sm font-semibold text-slate-200">
+            <p className="mt-1 font-legend-body text-sm font-semibold text-white">
               {row.fieldcrew}
             </p>
           </div>

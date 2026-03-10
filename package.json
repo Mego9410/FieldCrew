@@ -12,14 +12,22 @@
     "db:seed": "tsx scripts/seed-supabase.ts"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "@studio-freight/lenis": "^1.0.42",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.3",
     "@tailwindcss/typography": "^0.5.19",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^1.3.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^17.3.1",
     "framer-motion": "^12.34.4",
     "gray-matter": "^4.0.3",
+    "gsap": "^3.14.2",
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.460.0",
@@ -31,7 +39,8 @@
     "reading-time": "^1.5.0",
     "recharts": "^3.7.0",
     "remark-gfm": "^4.0.1",
-    "stripe": "^20.4.0"
+    "stripe": "^20.4.0",
+    "three": "^0.183.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",

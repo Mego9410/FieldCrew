@@ -9,6 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        landing: {
+          bg: "var(--landing-bg)",
+          surface: "var(--landing-surface)",
+          white: "var(--landing-text)",
+          muted: "var(--landing-text-muted)",
+          accent: "var(--landing-accent)",
+        },
         fc: {
           brand: "var(--fc-brand)",
           accent: "var(--fc-accent)",
@@ -69,12 +76,42 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
         body: ["var(--font-body)", "system-ui", "sans-serif"],
+        "legend-display": ["var(--font-legend-display)", "var(--font-display)", "system-ui", "sans-serif"],
+        "legend-body": ["var(--font-legend-body)", "system-ui", "sans-serif"],
         "console-display": ["var(--font-console-display)", "Oswald", "ui-monospace", "monospace"],
         "console-mono": ["var(--font-console-mono)", "ui-monospace", "monospace"],
       },
       transitionDuration: {
         "fc": "150ms",
         "fc-slow": "200ms",
+        "legend-short": "300ms",
+        "legend-medium": "600ms",
+        "legend-large": "1200ms",
+      },
+      transitionTimingFunction: {
+        legend: "var(--legend-ease)",
+      },
+      backgroundImage: {
+        "legend-gradient-primary": "linear-gradient(135deg, var(--legend-accent-start) 0%, var(--legend-accent-end) 100%)",
+        "legend-gradient-secondary": "linear-gradient(135deg, var(--legend-accent-secondary-start) 0%, var(--legend-accent-secondary-end) 100%)",
+      },
+      boxShadow: {
+        "legend-panel": "var(--legend-shadow-panel)",
+        "legend-glow": "0 0 60px rgba(91, 124, 255, 0.25)",
+      },
+      animation: {
+        "legend-float": "legend-float 8s ease-in-out infinite",
+        "legend-glow-pulse": "legend-glow-pulse 4s ease-in-out infinite",
+      },
+      keyframes: {
+        "legend-float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
+        "legend-glow-pulse": {
+          "0%, 100%": { opacity: "0.6" },
+          "50%": { opacity: "1" },
+        },
       },
     },
   },

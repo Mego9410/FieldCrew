@@ -65,7 +65,7 @@ function dateOffset(days: number): string {
 }
 
 /** Seed data used when storage is empty */
-const SEED = {
+export const SEED = {
   companies: [
     { id: "c1", name: "Field Crew HVAC", address: "100 Business Ave, City" },
   ] as Company[],

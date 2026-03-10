@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, IBM_Plex_Sans, Oswald, Share_Tech_Mono } from "next/font/google";
+import { Bricolage_Grotesque, IBM_Plex_Sans, Inter, Oswald, Share_Tech_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SmoothScrollGate } from "@/lib/smooth-scroll-gate";
+import { LandingScrollbarControl } from "@/components/LandingScrollbarControl";
 import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-legend-body-fallback",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-display",
@@ -52,10 +61,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${bricolage.variable} ${ibmPlexSans.variable} ${oswald.variable} ${shareTechMono.variable} antialiased`}
+      className={`${inter.variable} ${bricolage.variable} ${ibmPlexSans.variable} ${oswald.variable} ${shareTechMono.variable} antialiased`}
     >
       <body className="min-h-screen bg-fc-page font-body text-fc-brand">
-        {children}
+        <LandingScrollbarControl />
+        <SmoothScrollGate>{children}</SmoothScrollGate>
         <Analytics />
         <SpeedInsights />
       </body>
