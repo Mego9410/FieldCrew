@@ -12,7 +12,7 @@ const borderClass = "border-[rgba(255,255,255,0.08)]";
 export function ComparisonTable() {
   return (
     <>
-      <div className="hidden overflow-x-auto sm:block">
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full min-w-[400px] border-collapse text-left">
           <thead>
             <tr className={`border-b ${borderClass} bg-[rgba(0,0,0,0.2)]`}>
@@ -41,7 +41,7 @@ export function ComparisonTable() {
           </tbody>
         </table>
       </div>
-      <div className="space-y-3 sm:hidden p-4 pt-4 pb-5">
+      <div className="space-y-3 p-4 pt-4 pb-5 md:hidden">
         {rows.map((row, i) => (
           <div
             key={i}

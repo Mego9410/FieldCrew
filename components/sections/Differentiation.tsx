@@ -29,7 +29,7 @@ export function Differentiation() {
         }}
       />
 
-      <div className="relative mx-auto max-w-4xl px-6 md:px-8">
+      <div className="relative mx-auto max-w-4xl px-4 sm:px-6 md:px-8">
         <motion.div
           className="text-center"
           initial={{ opacity: 0, y: 40 }}

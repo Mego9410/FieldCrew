@@ -36,7 +36,7 @@ export function Footer() {
       className="border-t border-[rgba(255,255,255,0.06)] bg-[#111111] py-14 text-[#a1a1aa] sm:py-16"
       role="contentinfo"
     >
-      <div className="mx-auto max-w-[1280px] px-6 md:px-8">
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8">
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
           <div className="col-span-2 lg:col-span-1">
             <p className="font-legend-display text-lg font-semibold text-white">

@@ -22,7 +22,7 @@ export function ProofTrust() {
       className="bg-[#0a0a0a] py-[var(--legend-section-py)] md:py-32"
       aria-labelledby="proof-heading"
     >
-      <div className="mx-auto max-w-[1280px] px-6 md:px-8">
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8">
         <motion.div
           className="text-center"
           initial={{ opacity: 0, scale: 0.98 }}
@@ -34,7 +34,7 @@ export function ProofTrust() {
           </span>
           <h2
             id="proof-heading"
-            className="font-legend-display text-4xl font-semibold tracking-tight text-white md:text-5xl"
+            className="font-legend-display text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl"
           >
             We found{" "}
             <span className="font-legend-display tabular-nums text-[#5b7cff]">

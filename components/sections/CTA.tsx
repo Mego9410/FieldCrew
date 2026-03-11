@@ -22,7 +22,7 @@ export function CTA() {
         }}
       />
       <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E')] opacity-[0.03]" />
-      <div className="relative mx-auto max-w-[1280px] px-6 text-center md:px-8">
+      <div className="relative mx-auto max-w-[1280px] px-4 text-center sm:px-6 md:px-8">
         <motion.span
           className="mb-4 block font-legend-body text-xs font-medium uppercase tracking-widest text-[#a1a1aa]"
           initial={{ opacity: 0 }}
@@ -41,7 +41,7 @@ export function CTA() {
           Stop guessing payroll. Start controlling it.
         </motion.h2>
         <motion.p
-          className="mx-auto mt-8 max-w-2xl font-legend-body text-xl text-[#a1a1aa] leading-relaxed md:text-2xl"
+          className="mx-auto mt-6 max-w-2xl font-legend-body text-lg text-[#a1a1aa] leading-relaxed sm:mt-8 sm:text-xl md:text-2xl"
           initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}

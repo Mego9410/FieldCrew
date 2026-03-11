@@ -29,7 +29,7 @@ export function RealScenario() {
       className="bg-[#0a0a0a] py-[var(--legend-section-py)] md:py-32"
       aria-labelledby="scenario-heading"
     >
-      <div className="mx-auto max-w-[1280px] px-6 md:px-8">
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8">
         <motion.div
           className="text-center"
           initial={{ opacity: 0, y: 40 }}
@@ -48,7 +48,7 @@ export function RealScenario() {
         </motion.div>
 
         <motion.div
-          className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-5"
+          className="mt-16 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
           variants={{ visible: { transition: { staggerChildren: 0.08 } } }}

@@ -59,7 +59,7 @@ function PainCard({
     >
       {accent && (
         <div
-          className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-[#5b7cff]/10 blur-3xl"
+          className="pointer-events-none absolute -right-20 -top-20 hidden h-40 w-40 rounded-full bg-[#5b7cff]/10 blur-3xl sm:block"
           aria-hidden
         />
       )}
@@ -104,7 +104,7 @@ export function Problem() {
         }}
       />
 
-      <div className="relative mx-auto max-w-[1280px] px-6 md:px-8">
+      <div className="relative mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8">
         <motion.div
           className="text-center"
           initial={{ opacity: 0, y: 40 }}

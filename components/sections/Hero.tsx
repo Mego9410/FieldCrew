@@ -40,7 +40,7 @@ export function Hero() {
     >
       <HeroGradientMesh />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-[1280px] grid-cols-12 gap-8 px-6 py-20 md:gap-12 md:px-8 lg:grid-cols-12 lg:items-center lg:gap-16">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1280px] grid-cols-12 gap-6 px-4 py-12 sm:gap-8 sm:px-6 sm:py-16 md:gap-12 md:px-8 md:py-20 lg:grid-cols-12 lg:items-center lg:gap-16">
         <div className="col-span-12 lg:col-span-6">
           <motion.div
             variants={reduceMotion ? undefined : stagger}
@@ -56,7 +56,7 @@ export function Hero() {
               01
             </motion.span>
             <motion.h1
-              className="font-legend-display text-5xl font-bold leading-[1.05] tracking-[-0.04em] text-white md:text-6xl lg:text-7xl"
+              className="font-legend-display text-4xl font-bold leading-[1.05] tracking-[-0.04em] text-white sm:text-5xl md:text-6xl lg:text-7xl"
               variants={reduceMotion ? undefined : item}
               transition={transition}
             >
@@ -76,19 +76,19 @@ export function Hero() {
               /month in hidden labour inefficiency. FieldCrew shows you exactly where.
             </motion.p>
             <motion.div
-              className="mt-10 flex flex-wrap gap-4"
+              className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap"
               variants={reduceMotion ? undefined : item}
               transition={transition}
             >
               <Link
                 href="/sample-report"
-                className="group relative inline-flex items-center justify-center rounded-xl bg-white px-8 py-4 font-legend-body text-sm font-semibold text-[#0a0a0a] transition-all duration-300 ease-[var(--legend-ease)] hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(91,124,255,0.35)] focus-visible:outline focus-visible:ring-2 focus-visible:ring-white/50"
+                className="group relative inline-flex min-h-[48px] items-center justify-center rounded-xl bg-white px-8 py-4 font-legend-body text-sm font-semibold text-[#0a0a0a] transition-all duration-300 ease-[var(--legend-ease)] hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(91,124,255,0.35)] focus-visible:outline focus-visible:ring-2 focus-visible:ring-white/50"
               >
                 See a Real Labour Profit Report
               </Link>
               <Link
                 href="/demo"
-                className="inline-flex items-center justify-center rounded-xl border border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.05)] px-8 py-4 font-legend-body text-sm font-semibold text-white backdrop-blur-[20px] transition-all duration-300 ease-[var(--legend-ease)] hover:scale-[1.02] hover:border-white/25 hover:bg-white/10 focus-visible:outline focus-visible:ring-2 focus-visible:ring-white/30"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.05)] px-8 py-4 font-legend-body text-sm font-semibold text-white backdrop-blur-[20px] transition-all duration-300 ease-[var(--legend-ease)] hover:scale-[1.02] hover:border-white/25 hover:bg-white/10 focus-visible:outline focus-visible:ring-2 focus-visible:ring-white/30"
               >
                 Watch 2-Minute Demo
               </Link>

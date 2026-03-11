@@ -31,7 +31,7 @@ export function Features() {
       className="bg-[#0a0a0a] py-[var(--legend-section-py)] md:py-32"
       aria-labelledby="solution-heading"
     >
-      <div className="mx-auto max-w-[1280px] px-6 md:px-8">
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8">
         <motion.div
           className="text-center"
           initial={{ opacity: 0, y: 40 }}
@@ -43,13 +43,13 @@ export function Features() {
           </span>
           <h2
             id="solution-heading"
-            className="font-legend-display text-4xl font-semibold tracking-tight text-white md:text-5xl"
+            className="font-legend-display text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl"
           >
             Control. Enforce. Recover.
           </h2>
         </motion.div>
 
-        <div className="relative mt-20 flex flex-col items-center gap-12 sm:flex-row sm:justify-center sm:items-stretch sm:gap-6 lg:gap-8">
+        <div className="relative mt-16 flex flex-col items-center gap-8 sm:mt-20 sm:flex-row sm:justify-center sm:items-stretch sm:gap-6 lg:gap-8">
           <div
             className="absolute left-1/2 top-24 hidden h-0.5 w-[min(100%,32rem)] -translate-x-1/2 sm:block"
             aria-hidden

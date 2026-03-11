@@ -36,8 +36,8 @@ function FloatingCard({
 
 export function FloatingHeroCards() {
   return (
-    <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:gap-8">
-      <FloatingCard yOffset={0.5} className="min-w-[220px]">
+    <div className="relative flex min-w-0 flex-col gap-6 md:max-w-[520px] md:flex-row md:items-center md:gap-8 lg:max-w-none">
+      <FloatingCard yOffset={0.5} className="min-w-0 w-full shrink-0 md:min-w-[220px] md:w-auto">
         <div className="mb-3 flex items-center gap-2 text-[#a1a1aa]">
           <DollarSign className="h-4 w-4" />
           <span className="text-xs font-medium uppercase tracking-wider">Recoverable</span>
@@ -51,7 +51,7 @@ export function FloatingHeroCards() {
         </div>
       </FloatingCard>
 
-      <FloatingCard yOffset={-0.3} className="min-w-[240px]">
+      <FloatingCard yOffset={-0.3} className="min-w-0 w-full shrink-0 md:min-w-[240px] md:w-auto">
         <div className="mb-3 flex items-center gap-2 text-[#a1a1aa]">
           <Clock className="h-4 w-4" />
           <span className="text-xs font-medium uppercase tracking-wider">Overtime</span>
@@ -72,7 +72,7 @@ export function FloatingHeroCards() {
         </div>
       </FloatingCard>
 
-      <FloatingCard yOffset={0.2} className="min-w-[200px]">
+      <FloatingCard yOffset={0.2} className="min-w-0 w-full shrink-0 md:min-w-[200px] md:w-auto">
         <div className="mb-3 flex items-center gap-2 text-[#a1a1aa]">
           <TrendingDown className="h-4 w-4" />
           <span className="text-xs font-medium uppercase tracking-wider">Jobs</span>

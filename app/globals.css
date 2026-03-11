@@ -90,11 +90,23 @@
     --legend-text: #ffffff;
     --legend-text-muted: #a1a1aa;
     --legend-ease: cubic-bezier(0.16, 1, 0.3, 1);
-    --legend-section-py: 160px;
+    --legend-section-py: 96px;
     --legend-container-max: 1280px;
     --legend-shadow-panel: 0 20px 80px rgba(0, 0, 0, 0.4);
     --font-legend-display: "Satoshi", var(--font-display), system-ui, sans-serif;
     --font-legend-body: var(--font-legend-body-fallback, var(--font-body));
+  }
+
+  @media (min-width: 640px) {
+    :root {
+      --legend-section-py: 120px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --legend-section-py: 160px;
+    }
   }
 
   /* Fallbacks so page and links look right even if Tailwind fails to load */

@@ -41,7 +41,7 @@ export function Pricing() {
       className="border-y border-[rgba(255,255,255,0.06)] bg-[#111111] py-[var(--legend-section-py)] md:py-32"
       aria-labelledby="pricing-heading"
     >
-      <div className="mx-auto max-w-[1280px] px-6 md:px-8">
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8">
         <motion.div
           className="text-center"
           initial={{ opacity: 0, y: 40 }}
@@ -53,7 +53,7 @@ export function Pricing() {
           </span>
           <h2
             id="pricing-heading"
-            className="font-legend-display text-4xl font-semibold tracking-tight text-white md:text-5xl"
+            className="font-legend-display text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl"
           >
             Recover $6,000. Pay $149.
           </h2>
@@ -62,13 +62,13 @@ export function Pricing() {
           </p>
         </motion.div>
 
-        <div className="mt-20 grid gap-6 sm:grid-cols-3 sm:items-stretch">
+        <div className="mt-20 grid gap-6 md:grid-cols-3 md:items-stretch">
           {tiers.map((tier) => (
             <motion.div
               key={tier.name}
               className={`relative flex flex-col overflow-hidden rounded-[20px] border bg-[rgba(255,255,255,0.04)] backdrop-blur-[30px] transition-all duration-300 ${
                 tier.highlighted
-                  ? "z-10 border-[#5b7cff] ring-1 ring-[#5b7cff]/20 sm:-mt-2 sm:scale-[1.02]"
+                  ? "z-10 border-[#5b7cff] ring-1 ring-[#5b7cff]/20 md:-mt-2 md:scale-[1.02]"
                   : "border-[rgba(255,255,255,0.08)] hover:-translate-y-1 hover:border-white/15"
               }`}
               initial={{ opacity: 0, y: 30 }}

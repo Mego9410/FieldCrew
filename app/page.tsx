@@ -19,7 +19,7 @@ export default function Home() {
         Skip to main content
       </a>
       <MarketingNav />
-      <main id="main" className="bg-[#0a0a0a]">
+      <main id="main" className="overflow-x-hidden bg-[#0a0a0a]">
         <Hero />
         <Problem />
         <RealScenario />
