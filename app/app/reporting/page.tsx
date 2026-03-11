@@ -540,7 +540,7 @@ function KpiCard({
   primaryValue: string;
   secondaryValue: string;
   trend?: { value: number; label?: string };
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   warning?: boolean;
   href?: string;
   tooltip?: string;
