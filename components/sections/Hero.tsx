@@ -17,9 +17,18 @@ const HeroGradientMesh = dynamic(() => import("./HeroGradientMesh").then((m) => 
   ),
 });
 
-const stagger = { staggerChildren: 0.08, delayChildren: 0.2 };
-const item = { opacity: 0, y: 32 };
-const transition = { duration: 0.7, ease: [0.16, 1, 0.3, 1] };
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
+};
+const item = {
+  hidden: { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0 },
+};
+const transition = {
+  duration: 0.7,
+  ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+};
 
 export function Hero() {
   const reduceMotion = useReducedMotion();

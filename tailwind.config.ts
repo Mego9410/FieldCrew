@@ -63,6 +63,8 @@ const config: Config = {
         "fc-hero": "var(--fc-shadow-hero)",
         "fc-panel": "var(--fc-shadow-panel)",
         "fc-panel-lg": "var(--fc-shadow-panel-lg)",
+        "legend-panel": "var(--legend-shadow-panel)",
+        "legend-glow": "0 0 60px rgba(91, 124, 255, 0.25)",
       },
       borderRadius: {
         "fc": "var(--fc-radius)",
@@ -72,6 +74,8 @@ const config: Config = {
         "gradient-primary": "linear-gradient(135deg, var(--fc-gradient-start) 0%, var(--fc-gradient-mid) 50%, var(--fc-gradient-end) 100%)",
         "gradient-hero": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         "gradient-cta-navy": "linear-gradient(180deg, #0f172a 0%, #0a0f1a 100%)",
+        "legend-gradient-primary": "linear-gradient(135deg, var(--legend-accent-start) 0%, var(--legend-accent-end) 100%)",
+        "legend-gradient-secondary": "linear-gradient(135deg, var(--legend-accent-secondary-start) 0%, var(--legend-accent-secondary-end) 100%)",
       },
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
@@ -90,14 +94,6 @@ const config: Config = {
       },
       transitionTimingFunction: {
         legend: "var(--legend-ease)",
-      },
-      backgroundImage: {
-        "legend-gradient-primary": "linear-gradient(135deg, var(--legend-accent-start) 0%, var(--legend-accent-end) 100%)",
-        "legend-gradient-secondary": "linear-gradient(135deg, var(--legend-accent-secondary-start) 0%, var(--legend-accent-secondary-end) 100%)",
-      },
-      boxShadow: {
-        "legend-panel": "var(--legend-shadow-panel)",
-        "legend-glow": "0 0 60px rgba(91, 124, 255, 0.25)",
       },
       animation: {
         "legend-float": "legend-float 8s ease-in-out infinite",

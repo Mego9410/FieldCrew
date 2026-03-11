@@ -23,7 +23,7 @@ export function useSectionReveal<T extends HTMLElement>(options?: Partial<typeof
           y: 0,
           opacity: 1,
           duration: opts.duration,
-          ease: LEGEND_EASE,
+          ease: LEGEND_EASE as unknown as gsap.EaseString,
           scrollTrigger: {
             trigger: el,
             start: "top 85%",
@@ -60,7 +60,7 @@ export function useStaggerReveal<T extends HTMLElement>(
           y: 0,
           opacity: 1,
           duration: opts.duration,
-          ease: LEGEND_EASE,
+          ease: LEGEND_EASE as unknown as gsap.EaseString,
           stagger,
           scrollTrigger: {
             trigger: el,
@@ -94,7 +94,7 @@ export function useCardReveal<T extends HTMLElement>(options?: Partial<typeof ca
           opacity: 1,
           rotation: 0,
           duration: opts.duration,
-          ease: LEGEND_EASE,
+          ease: LEGEND_EASE as unknown as gsap.EaseString,
           scrollTrigger: {
             trigger: el,
             start: "top 88%",
