@@ -49,10 +49,12 @@ export function useMouseTilt<T extends HTMLElement>(options: TiltOptions = {}) {
 
     el.style.transition = "transform 0.15s cubic-bezier(0.16, 1, 0.3, 1)";
     function animate() {
+      const current = ref.current;
+      if (!current) return;
       const s = stateRef.current;
       s.x += (s.targetX - s.x) * 0.12;
       s.y += (s.targetY - s.y) * 0.12;
-      el.style.transform = `perspective(${opts.perspective}px) rotateX(${s.x}deg) rotateY(${s.y}deg) scale3d(${opts.scale}, ${opts.scale}, ${opts.scale})`;
+      current.style.transform = `perspective(${opts.perspective}px) rotateX(${s.x}deg) rotateY(${s.y}deg) scale3d(${opts.scale}, ${opts.scale}, ${opts.scale})`;
       frameRef.current = requestAnimationFrame(animate);
     }
     frameRef.current = requestAnimationFrame(animate);
