@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, IBM_Plex_Sans, Inter, Oswald, Share_Tech_Mono } from "next/font/google";
+import { Bricolage_Grotesque, IBM_Plex_Sans, Inter, Oswald, Share_Tech_Mono, Geist } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SmoothScrollGate } from "@/lib/smooth-scroll-gate";
 import { LandingScrollbarControl } from "@/components/LandingScrollbarControl";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({
   variable: "--font-legend-body-fallback",
@@ -61,7 +64,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${bricolage.variable} ${ibmPlexSans.variable} ${oswald.variable} ${shareTechMono.variable} antialiased`}
+      className={cn("antialiased", inter.variable, bricolage.variable, ibmPlexSans.variable, oswald.variable, shareTechMono.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-screen bg-fc-page font-body text-fc-brand">
         <LandingScrollbarControl />

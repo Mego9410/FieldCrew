@@ -1,32 +1,34 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { routes } from "@/lib/routes";
+import { Pricing as PricingGrid } from "@/components/pricing";
 
 const tiers = [
   {
     id: "starter" as const,
     name: "Starter",
-    price: 49,
+    price: "49",
+    yearlyPrice: "470", // ~20% off
     workers: "Up to 5 workers",
-    highlighted: false,
+    isPopular: false,
   },
   {
     id: "growth" as const,
     name: "Growth",
-    price: 89,
+    price: "89",
+    yearlyPrice: "855",
     workers: "Up to 15 workers",
-    highlighted: true,
-    badge: "Most companies choose this",
+    isPopular: true,
   },
   {
     id: "pro" as const,
     name: "Pro",
-    price: 149,
+    price: "149",
+    yearlyPrice: "1430",
     workers: "Up to 30 workers",
-    highlighted: false,
+    isPopular: false,
   },
 ];
 
@@ -62,70 +64,28 @@ export function Pricing() {
           </p>
         </motion.div>
 
-        <div className="mt-20 grid gap-6 md:grid-cols-3 md:items-stretch">
-          {tiers.map((tier) => (
-            <motion.div
-              key={tier.name}
-              className={`relative flex flex-col overflow-hidden rounded-[20px] border bg-[rgba(255,255,255,0.04)] backdrop-blur-[30px] transition-all duration-300 ${
-                tier.highlighted
-                  ? "z-10 border-[#5b7cff] ring-1 ring-[#5b7cff]/20 md:-mt-2 md:scale-[1.02]"
-                  : "border-[rgba(255,255,255,0.08)] hover:-translate-y-1 hover:border-white/15"
-              }`}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{
-                duration: 0.6,
-                delay: 0.1,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-            >
-              {tier.highlighted && (
-                <>
-                  <div className="h-0.5 w-full shrink-0 bg-[#5b7cff]" aria-hidden />
-                  <p className="mt-4 text-center text-[10px] font-bold uppercase tracking-wider text-[#5b7cff]">
-                    {tier.badge}
-                  </p>
-                </>
-              )}
-              <div
-                className={
-                  tier.highlighted
-                    ? "mt-4 flex flex-1 flex-col px-6 pb-8"
-                    : "flex flex-1 flex-col p-6"
-                }
-              >
-                <h3 className="font-legend-display text-2xl font-semibold text-white">
-                  {tier.name}
-                </h3>
-                <p className="mt-2 font-legend-body text-base text-[#a1a1aa]">
-                  {tier.workers}
-                </p>
-                <p className="mt-6 font-legend-display text-4xl font-bold tabular-nums tracking-tight text-white sm:text-5xl">
-                  ${tier.price}
-                  <span className="ml-1 text-xl font-normal text-[#a1a1aa]">
-                    /month
-                  </span>
-                </p>
-                <div className="mt-8">
-                  <Link
-                    href={`${routes.owner.subscribe}?plan=${tier.id}`}
-                    className={`inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-xl text-center font-legend-body font-semibold transition-all duration-300 focus-visible:outline focus-visible:ring-2 focus-visible:ring-[#5b7cff] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111] ${
-                      tier.highlighted
-                        ? "bg-gradient-to-r from-[#5b7cff] to-[#9d6cff] text-white hover:scale-[1.02]"
-                        : "border border-[rgba(255,255,255,0.2)] text-white hover:border-white/30 hover:bg-white/5"
-                    }`}
-                  >
-                    Start with {tier.name}
-                  </Link>
-                </div>
-                {tier.highlighted && (
-                  <p className="mt-4 text-center font-legend-body text-sm text-[#a1a1aa]">
-                    1 recovered overrun pays for this.
-                  </p>
-                )}
-              </div>
-            </motion.div>
-          ))}
+        <div className="mt-16 rounded-2xl bg-[#050816] px-4 py-10 sm:px-6 md:px-10">
+          <PricingGrid
+            title="Simple, transparent pricing for HVAC teams under 30 techs"
+            description={
+              "Choose the plan that fits your crew size.\nAll plans include FieldCrew's labour tracking, owner dashboards, and support."
+            }
+            plans={tiers.map((tier) => ({
+              name: tier.name,
+              price: tier.price,
+              yearlyPrice: tier.yearlyPrice,
+              period: "month",
+              isPopular: tier.isPopular,
+              href: `${routes.owner.subscribe}?plan=${tier.id}`,
+              buttonText: `Start with ${tier.name}`,
+              description: tier.workers,
+              features: [
+                "Clock into jobs only — no generic shifts",
+                "Monthly labour profit report",
+                "Overtime and underpriced work surfaced automatically",
+              ],
+            }))}
+          />
         </div>
       </div>
     </section>

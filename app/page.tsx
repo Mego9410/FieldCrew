@@ -1,12 +1,14 @@
 import { MarketingNav } from "@/components/sections/MarketingNav";
-import { Hero } from "@/components/sections/Hero";
+import { ScrollableHeroShell } from "@/components/sections/ScrollableHeroShell";
 import { Problem } from "@/components/sections/Problem";
 import { RealScenario } from "@/components/sections/RealScenario";
 import { Features } from "@/components/sections/Features";
+import { HowItWorksSteps } from "@/components/sections/HowItWorksSteps";
 import { Differentiation } from "@/components/sections/Differentiation";
 import { ProofTrust } from "@/components/sections/ProofTrust";
 import { Pricing } from "@/components/sections/Pricing";
 import { CTA } from "@/components/sections/CTA";
+import { DataFlowDiagram } from "@/components/sections/DataFlowDiagram";
 import { Footer } from "@/components/sections/Footer";
 
 export default function Home() {
@@ -20,10 +22,12 @@ export default function Home() {
       </a>
       <MarketingNav />
       <main id="main" className="overflow-x-hidden bg-[#0a0a0a]">
-        <Hero />
+        <ScrollableHeroShell />
+        <DataFlowDiagram />
         <Problem />
         <RealScenario />
         <Features />
+        <HowItWorksSteps />
         <Differentiation />
         <ProofTrust />
         <Pricing />

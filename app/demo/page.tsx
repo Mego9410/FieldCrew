@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Nav } from "@/components/landing/Nav";
 import { Footer } from "@/components/landing/Footer";
+import { DataFlowScrollHero } from "@/components/sections/DataFlowScrollHero";
 
 export const metadata: Metadata = {
   title: "Watch Demo — FieldCrew",
@@ -13,6 +14,9 @@ export default function DemoPage() {
     <>
       <Nav />
       <main id="main" className="min-h-screen bg-fc-page">
+        <section className="bg-black text-white">
+          <DataFlowScrollHero />
+        </section>
         <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6 lg:px-8">
           <h1 className="font-display text-3xl font-bold text-fc-brand sm:text-4xl">
             Watch 2-Minute Demo

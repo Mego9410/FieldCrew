@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { FloatingHeroCards } from "./FloatingHeroCards";
+import AnimatedTextCycle from "@/components/ui/animated-text-cycle";
 
 const HeroGradientMesh = dynamic(() => import("./HeroGradientMesh").then((m) => m.HeroGradientMesh), {
   ssr: false,
@@ -11,12 +12,12 @@ const HeroGradientMesh = dynamic(() => import("./HeroGradientMesh").then((m) => 
     <div
       className="absolute inset-0"
       style={{
-        background: "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(91,124,255,0.15) 0%, transparent 50%), #0a0a0a",
+        background:
+          "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(91,124,255,0.15) 0%, transparent 50%), #0a0a0a",
       }}
     />
   ),
 });
-
 const stagger = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
@@ -39,9 +40,8 @@ export function Hero() {
       aria-label="Hero"
     >
       <HeroGradientMesh />
-
-      <div className="relative z-10 mx-auto grid w-full max-w-[1280px] grid-cols-12 gap-6 px-4 py-12 sm:gap-8 sm:px-6 sm:py-16 md:gap-12 md:px-8 md:py-20 lg:grid-cols-12 lg:items-center lg:gap-16">
-        <div className="col-span-12 lg:col-span-6">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1280px] grid-cols-12 gap-6 px-4 py-12 sm:gap-8 sm:px-6 sm:py-16 md:gap-10 md:px-8 md:py-20 lg:grid-cols-12 lg:items-center lg:gap-10">
+        <div className="col-span-12 lg:col-span-7">
           <motion.div
             variants={reduceMotion ? undefined : stagger}
             initial="hidden"
@@ -61,9 +61,15 @@ export function Hero() {
               transition={transition}
             >
               <span className="block text-[#a1a1aa]">Where is your</span>
-              <span className="block">payroll</span>
-              <span className="block bg-gradient-to-r from-[#5b7cff] to-[#9d6cff] bg-clip-text text-transparent">
-                leaking?
+              <span className="block">
+                <AnimatedTextCycle
+                  words={[
+                    "payroll really going?",
+                    "overtime budget going?",
+                    "labour profit leaking?",
+                  ]}
+                  className="bg-gradient-to-r from-[#5b7cff] to-[#9d6cff] bg-clip-text text-transparent"
+                />
               </span>
             </motion.h1>
             <motion.p
@@ -102,8 +108,10 @@ export function Hero() {
             </motion.p>
           </motion.div>
         </div>
-        <div className="col-span-12 flex justify-center lg:col-span-6 lg:justify-end">
-          <FloatingHeroCards />
+        <div className="col-span-12 mt-8 flex justify-center lg:col-span-5 lg:mt-0 lg:justify-end">
+          <div className="w-full max-w-[320px]">
+            <FloatingHeroCards />
+          </div>
         </div>
       </div>
     </section>
