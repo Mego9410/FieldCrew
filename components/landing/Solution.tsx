@@ -7,18 +7,18 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 const steps = [
   {
     label: "1",
-    title: "Clock into jobs only",
-    desc: "No job = no clock. Techs must select a job before starting time. No generic shifts, no uncoded hours.",
+    title: "Add your team",
+    desc: "Set up your technicians and labor inputs in minutes.",
   },
   {
     label: "2",
-    title: "Hours attach to revenue",
-    desc: "Every hour is tied to a job code. Labour cost rolls up per job so you see true margin by install, service call, or maintenance.",
+    title: "Track quoted vs actual time",
+    desc: "See how job time compares to what was originally estimated.",
   },
   {
     label: "3",
-    title: "Monthly labour profit report",
-    desc: "Overtime by tech, job overruns, margin by service type, and recoverable leakage. One report. No guesswork.",
+    title: "Spot where profit is leaking",
+    desc: "Find the jobs, patterns, and overtime pressure hurting your margins.",
   },
 ];
 
@@ -40,7 +40,7 @@ export function Solution() {
             id="solution-heading"
             className="font-display font-bold text-fc-brand fc-section-h2"
           >
-            Control. Enforce. Recover.
+            How FieldCrew Helps
           </h2>
         </ScrollReveal>
 
@@ -99,6 +99,10 @@ export function Solution() {
             </motion.div>
           ))}
         </div>
+
+        <p className="mx-auto mt-12 max-w-2xl text-center text-lg font-semibold text-fc-muted fc-body-air">
+          No heavy onboarding. No complicated implementation.
+        </p>
       </div>
     </section>
   );

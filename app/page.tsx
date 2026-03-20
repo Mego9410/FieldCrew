@@ -1,12 +1,14 @@
 import { Nav } from "@/components/landing/Nav";
 import { Hero } from "@/components/landing/Hero";
-import { Problem } from "@/components/landing/Problem";
-import { RealScenario } from "@/components/landing/RealScenario";
+import { IndustryProblem } from "@/components/landing/IndustryProblem";
+import { RelatableBusinessImpact } from "@/components/landing/RelatableBusinessImpact";
+import { MoneyDisappearsFlow } from "@/components/landing/MoneyDisappearsFlow";
+import { CalculatorCoreValue } from "@/components/landing/CalculatorCoreValue";
 import { Solution } from "@/components/landing/Solution";
-import { Differentiation } from "@/components/landing/Differentiation";
-import { ProofTrust } from "@/components/landing/ProofTrust";
-import { Pricing } from "@/components/landing/Pricing";
+import { ObjectionHandling } from "@/components/landing/ObjectionHandling";
+import { SimpleStart } from "@/components/landing/SimpleStart";
 import { FinalCta } from "@/components/landing/FinalCta";
+import { CtaSupportMicrocopy } from "@/components/landing/CtaSupportMicrocopy";
 import { Footer } from "@/components/landing/Footer";
 
 export default function Home() {
@@ -21,13 +23,15 @@ export default function Home() {
       <Nav />
       <main id="main">
         <Hero />
-        <Problem />
-        <RealScenario />
+        <IndustryProblem />
+        <RelatableBusinessImpact />
+        <MoneyDisappearsFlow />
+        <CalculatorCoreValue />
         <Solution />
-        <Differentiation />
-        <ProofTrust />
-        <Pricing />
+        <ObjectionHandling />
+        <SimpleStart />
         <FinalCta />
+        <CtaSupportMicrocopy />
       </main>
       <Footer />
     </>

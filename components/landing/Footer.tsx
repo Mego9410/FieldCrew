@@ -3,8 +3,7 @@ import Link from "next/link";
 export function Footer() {
   const footerLinks = {
     Product: [
-      { label: "Features", href: "#features" },
-      { label: "Pricing", href: "#pricing" },
+      { label: "Calculator", href: "#pricing" },
       { label: "How it works", href: "#how-it-works" },
     ],
     Solutions: [

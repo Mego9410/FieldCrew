@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { HeroViewSwitcher } from "./HeroViewSwitcher";
+import Link from "next/link";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
 const fadeUp = {
@@ -75,21 +75,22 @@ export function Hero() {
                   variants={reduceMotion ? undefined : fadeUp}
                   transition={transition}
                 >
-                  WHERE IS YOUR
-                </motion.span>
-                <motion.span
-                  className="block text-white"
-                  variants={reduceMotion ? undefined : fadeUp}
-                  transition={transition}
-                >
-                  PAYROLL
+                  Most HVAC Businesses Are Losing
                 </motion.span>
                 <motion.span
                   className="block bg-gradient-to-r from-fc-orange-500 to-fc-orange-600 bg-clip-text text-transparent"
                   variants={reduceMotion ? undefined : fadeUp}
                   transition={transition}
                 >
-                  LEAKING?
+                  $3,000-$10,000
+                  <span className="ml-3 text-white/95">/month</span>
+                </motion.span>
+                <motion.span
+                  className="block text-white"
+                  variants={reduceMotion ? undefined : fadeUp}
+                  transition={transition}
+                >
+                  Every month without realising
                 </motion.span>
               </motion.h1>
 
@@ -99,10 +100,11 @@ export function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...transition, delay: reduceMotion ? 0 : 0.25 }}
               >
-                Most 10-tech HVAC companies lose{" "}
-                <span className="font-semibold text-white">$5,000–$15,000</span>
-                /month in hidden labour inefficiency. FieldCrew shows you
-                exactly where.
+                Not from lack of work.
+                <span className="block">
+                  From under-quoted jobs, labor overruns, and overtime that
+                  quietly eats profit.
+                </span>
               </motion.p>
 
               <motion.div
@@ -111,20 +113,25 @@ export function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...transition, delay: reduceMotion ? 0 : 0.35 }}
               >
-                <MagneticButton href="/sample-report" variant="primary">
-                  See a Real Labour Profit Report
-                </MagneticButton>
-                <MagneticButton href="/demo" variant="secondary">
-                  Watch 2-Minute Demo
+                <MagneticButton href="/profit-leak" variant="primary">
+                  See What You're Losing
                 </MagneticButton>
               </motion.div>
-              <motion.p
-                className="mt-5 text-sm text-fc-steel-500"
-                initial={{ opacity: 1 }}
-                animate={{ opacity: 1 }}
+
+              <motion.div
+                className="mt-4 flex flex-col items-center gap-2 sm:items-start"
+                initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...transition, delay: reduceMotion ? 0 : 0.45 }}
               >
-                Built for HVAC teams under 25 techs. No enterprise complexity.
-              </motion.p>
+                <p className="text-sm text-fc-steel-500">Takes about 60 seconds</p>
+                <Link
+                  href="/sample-report"
+                  className="text-sm font-semibold text-fc-accent underline decoration-fc-accent underline-offset-4 hover:no-underline focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950 rounded"
+                >
+                  Want to see an example report first?
+                </Link>
+              </motion.div>
             </div>
           </div>
 
@@ -148,7 +155,51 @@ export function Hero() {
               aria-hidden
             />
             <div className="relative shadow-fc-panel-lg rounded-[var(--fc-radius)] border border-fc-navy-800 bg-fc-navy-900/95 ring-1 ring-white/5">
-              <HeroViewSwitcher />
+              <div>
+                <div className="border-b border-fc-navy-800 bg-fc-navy-800/50 px-5 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-fc-steel-500">
+                    Estimated monthly loss
+                  </p>
+                </div>
+                <div className="px-5 py-6">
+                  <p className="fc-display-number text-4xl font-extrabold tabular-nums text-white">
+                    $4,280
+                  </p>
+                  <p className="mt-2 text-sm text-slate-300">
+                    Likely profit leakage from the stuff you already feel.
+                  </p>
+
+                  <div className="mt-6 space-y-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <p className="text-sm font-semibold text-slate-200">
+                        Loss from under-quoting
+                      </p>
+                      <p className="font-display text-lg font-extrabold text-fc-orange-500 tabular-nums">
+                        $3,100
+                      </p>
+                    </div>
+                    <div className="flex items-start justify-between gap-4">
+                      <p className="text-sm font-semibold text-slate-200">
+                        Loss from overtime spillover
+                      </p>
+                      <p className="font-display text-lg font-extrabold text-fc-orange-500 tabular-nums">
+                        $1,180
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 rounded-lg border border-fc-navy-800 bg-fc-navy-800/20 px-4 py-3">
+                    <p className="text-xs font-semibold text-slate-200">
+                      Matches how cold leads describe the leak:
+                    </p>
+                    <ul className="mt-2 space-y-1 text-xs text-slate-400">
+                      <li>Quoted vs actual time</li>
+                      <li>Labor overruns</li>
+                      <li>Overtime used to catch up</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 
 export function FinalCta() {
   const reduceMotion = useReducedMotion();
@@ -39,7 +39,7 @@ export function FinalCta() {
           viewport={{ amount: 0.2, once: true }}
           transition={{ duration: reduceMotion ? 0 : 0.5, ease: [0.2, 0.8, 0.2, 1] }}
         >
-          Stop guessing payroll. Start controlling it.
+          Find Out What Your Business Is Actually Losing
         </motion.h2>
         <motion.p
           className="mx-auto mt-7 max-w-2xl text-xl text-slate-300 fc-body-air sm:text-2xl"
@@ -48,21 +48,17 @@ export function FinalCta() {
           viewport={{ amount: 0.2, once: true }}
           transition={{ duration: reduceMotion ? 0 : 0.4, delay: 0.15 }}
         >
-          See exactly where labour profit is leaking — then fix it.
+          It's probably more than you think. And it usually starts with quoted vs actual labor time.
         </motion.p>
-        <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:justify-center sm:gap-6">
-          <Link
-            href="/sample-report"
-            className="cta-sweep group relative inline-flex min-h-[52px] min-w-[56px] cursor-pointer items-center justify-center overflow-hidden rounded-[var(--fc-radius-lg)] bg-fc-accent px-12 py-4 text-lg font-bold text-white shadow-fc-lg transition-all duration-200 hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950"
+        <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:gap-6">
+          <MagneticButton
+            href="/profit-leak"
+            variant="primary"
+            className="w-full sm:w-auto"
           >
-            <span className="relative z-10">See Where Your Profit Is Leaking</span>
-          </Link>
-          <Link
-            href="/book"
-            className="inline-flex min-h-[52px] min-w-[56px] cursor-pointer items-center justify-center rounded-[var(--fc-radius-lg)] border-2 border-fc-steel-500 bg-transparent px-12 py-4 text-lg font-semibold text-slate-200 transition-all duration-200 hover:border-white hover:bg-white/5 hover:text-white focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950"
-          >
-            Book 15-Min Walkthrough
-          </Link>
+            See My Monthly Loss
+          </MagneticButton>
+          <p className="text-sm text-fc-steel-500">Takes about 60 seconds</p>
         </div>
       </div>
     </section>
