@@ -48,7 +48,7 @@ export function FinalCta() {
           viewport={{ amount: 0.2, once: true }}
           transition={{ duration: reduceMotion ? 0 : 0.4, delay: 0.15 }}
         >
-          It's probably more than you think. And it usually starts with quoted vs actual labor time.
+          It&apos;s probably more than you think. And it usually starts with quoted vs actual labor time.
         </motion.p>
         <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:gap-6">
           <MagneticButton

@@ -26,7 +26,7 @@ export function MoneyDisappearsFlow() {
             id="money-disappears-heading"
             className="font-display font-bold text-fc-brand fc-section-h2"
           >
-            You Don't Lose It On One Job
+            You Don&apos;t Lose It On One Job
           </h2>
         </ScrollReveal>
 
@@ -60,7 +60,7 @@ export function MoneyDisappearsFlow() {
           Now repeat that across 50, 100, or 200 jobs.
         </p>
         <p className="mt-3 text-center text-lg text-fc-muted fc-body-air">
-          That's where thousands of dollars disappear each month.
+          That&apos;s where thousands of dollars disappear each month.
         </p>
       </div>
     </section>

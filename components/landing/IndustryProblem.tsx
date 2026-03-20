@@ -36,7 +36,7 @@ export function IndustryProblem() {
             id="industry-problem-heading"
             className="font-display font-bold text-fc-brand fc-section-h2"
           >
-            This Isn't a Small Problem
+            This Isn&apos;t a Small Problem
           </h2>
         </ScrollReveal>
 

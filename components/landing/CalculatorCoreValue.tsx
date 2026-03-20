@@ -38,7 +38,7 @@ function LossPreviewCard() {
 
         <div className="mt-6 rounded-lg border border-fc-border bg-fc-surface-muted/40 px-4 py-3">
           <p className="text-xs font-semibold text-fc-brand">
-            What you'll enter:
+            What you&apos;ll enter:
           </p>
           <ul className="mt-2 space-y-2 text-sm text-fc-muted">
             <li>Number of techs</li>

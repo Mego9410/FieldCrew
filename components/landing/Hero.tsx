@@ -114,7 +114,7 @@ export function Hero() {
                 transition={{ ...transition, delay: reduceMotion ? 0 : 0.35 }}
               >
                 <MagneticButton href="/profit-leak" variant="primary">
-                  See What You're Losing
+                See What You&apos;re Losing
                 </MagneticButton>
               </motion.div>
 

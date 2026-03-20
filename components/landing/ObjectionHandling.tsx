@@ -48,7 +48,7 @@ export function ObjectionHandling() {
             id="objection-heading"
             className="font-display font-bold text-fc-brand fc-section-h2"
           >
-            You Already Know Jobs Run Over. But Do You Know What It's Costing You?
+            You Already Know Jobs Run Over. But Do You Know What It&apos;s Costing You?
           </h2>
         </ScrollReveal>
 
