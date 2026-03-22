@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, IBM_Plex_Sans, Oswald, Share_Tech_Mono } from "next/font/google";
+import { Bricolage_Grotesque, IBM_Plex_Sans, Oswald, Share_Tech_Mono, Geist } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-display",
@@ -52,7 +55,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${bricolage.variable} ${ibmPlexSans.variable} ${oswald.variable} ${shareTechMono.variable} antialiased`}
+      className={cn("antialiased", bricolage.variable, ibmPlexSans.variable, oswald.variable, shareTechMono.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-screen bg-fc-page font-body text-fc-brand">
         {children}

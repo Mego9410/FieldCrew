@@ -45,14 +45,15 @@ export function Hero() {
         }}
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8 lg:py-24 xl:px-12">
+      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8 lg:py-20 xl:px-12 xl:py-22">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-start lg:gap-16">
           {/* Left — Headline + CTAs (controlled asymmetry) */}
-          <div className="flex flex-col justify-center text-center lg:text-left">
-            <div className="flex flex-col items-center lg:items-start">
+          <div className="relative z-0 flex min-w-0 flex-col justify-center lg:justify-start text-center lg:text-left lg:pr-6">
+            <div className="flex min-w-0 flex-col items-center lg:items-start">
               <motion.h1
-                className="font-display font-extrabold tracking-tight text-white fc-hero-h1"
-                initial={reduceMotion ? "visible" : "hidden"}
+                className="font-display font-extrabold tracking-tight text-white fc-hero-h1 text-balance max-w-[40rem] min-w-0 lg:max-w-[34rem]"
+                // Render visible on first paint to avoid a "blank hero" if client JS delays.
+                initial="visible"
                 animate="visible"
                 variants={
                   reduceMotion
@@ -78,12 +79,14 @@ export function Hero() {
                   Most HVAC Businesses Are Losing
                 </motion.span>
                 <motion.span
-                  className="block bg-gradient-to-r from-fc-orange-500 to-fc-orange-600 bg-clip-text text-transparent"
+                  className="fc-hero-h1-accent block max-w-full bg-gradient-to-r from-fc-orange-500 to-fc-orange-600 bg-clip-text pb-[0.1em] text-transparent [background-clip:text] [-webkit-background-clip:text]"
                   variants={reduceMotion ? undefined : fadeUp}
                   transition={transition}
                 >
-                  $3,000-$10,000
-                  <span className="ml-3 text-white/95">/month</span>
+                  <span className="flex flex-col items-center gap-y-0.5 sm:inline-flex sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-3 sm:gap-y-1 lg:items-start">
+                    <span className="min-w-0 shrink">$3,000-$10,000</span>
+                    <span className="text-white/95">/month</span>
+                  </span>
                 </motion.span>
                 <motion.span
                   className="block text-white"
@@ -96,7 +99,7 @@ export function Hero() {
 
               <motion.p
                 className="mt-6 max-w-lg text-lg text-slate-300 fc-body-air sm:text-xl"
-                initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 12 }}
+                initial={{ opacity: 1, y: 0 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...transition, delay: reduceMotion ? 0 : 0.25 }}
               >
@@ -109,7 +112,7 @@ export function Hero() {
 
               <motion.div
                 className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5"
-                initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 12 }}
+                initial={{ opacity: 1, y: 0 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...transition, delay: reduceMotion ? 0 : 0.35 }}
               >
@@ -120,7 +123,7 @@ export function Hero() {
 
               <motion.div
                 className="mt-4 flex flex-col items-center gap-2 sm:items-start"
-                initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 8 }}
+                initial={{ opacity: 1, y: 0 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...transition, delay: reduceMotion ? 0 : 0.45 }}
               >
@@ -137,13 +140,10 @@ export function Hero() {
 
           {/* Right — Command panel (floats, overlaps boundary) */}
           <motion.div
-            className="relative mx-auto w-full max-w-xl lg:mx-0 lg:ml-auto lg:-mb-12"
-            initial={
-              reduceMotion
-                ? { opacity: 1, scale: 1, filter: "blur(0px)" }
-                : { opacity: 0, scale: 0.98, filter: "blur(4px)" }
-            }
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            // Prevent the animated card (scale/filter) from visually bleeding into the left column.
+            className="relative z-20 mx-auto w-full max-w-xl min-w-0 overflow-hidden lg:mx-0 lg:ml-auto lg:mt-8 xl:mt-0"
+            initial={{ opacity: 1, filter: "blur(0px)" }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ ...transition, delay: reduceMotion ? 0 : 0.3 }}
           >
             <div
