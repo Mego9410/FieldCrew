@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import * as data from "@/lib/data";
+import { toErrorMessage } from "@/lib/to-error-message";
 import type { Company, Worker, Project, Job, TimeEntry, JobType, OwnerUser } from "@/lib/entities";
 
 export function useCompanies() {
@@ -16,7 +17,8 @@ export function useCompanies() {
       setItems(list);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -41,7 +43,8 @@ export function useOwnerUsers() {
       setItems(list);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -66,7 +69,8 @@ export function useWorkers(companyId?: string) {
       setItems(list);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -96,7 +100,8 @@ export function useWorker(id: string | null) {
       setItem(w);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -127,7 +132,8 @@ export function useWorkerByToken(token: string | null) {
       setItem(w);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -152,7 +158,8 @@ export function useProjects(companyId?: string) {
       setItems(list);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -177,7 +184,8 @@ export function useJobs(companyId?: string, projectId?: string) {
       setItems(list);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -207,7 +215,8 @@ export function useJobsForWorker(workerId: string | null) {
       setItems(list);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -238,7 +247,8 @@ export function useJobsForWorkerByToken(token: string | null) {
       setItems(list);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -268,7 +278,8 @@ export function useJob(id: string | null) {
       setItem(j);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -293,7 +304,8 @@ export function useTimeEntries(workerId?: string, jobId?: string) {
       setItems(list);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -325,7 +337,8 @@ export function useTimeEntriesByToken(token: string | null, jobId?: string) {
       setItems(filtered);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }
@@ -350,7 +363,8 @@ export function useJobTypes(companyId?: string) {
       setItems(list);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
+      const msg = toErrorMessage(e);
+      setError(e instanceof Error && e.message === msg ? e : new Error(msg));
     } finally {
       setLoading(false);
     }

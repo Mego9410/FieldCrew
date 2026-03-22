@@ -13,6 +13,7 @@ import {
 } from "@/lib/analytics";
 import type { DateRange } from "@/lib/analytics";
 import { getJobs, getWorkers, getTimeEntries, getJobTypes } from "@/lib/data";
+import { toErrorMessage } from "@/lib/to-error-message";
 import type { Worker, TimeEntry } from "@/lib/entities";
 import {
   Table,
@@ -162,7 +163,7 @@ export default function JobTypeDetailPage() {
       })
       .catch((err) => {
         if (!cancelled) {
-          setLoadError(err?.message ?? "Failed to load");
+          setLoadError(toErrorMessage(err) || "Failed to load");
           setTypeName(null);
           setSummary(null);
           setJobRows([]);

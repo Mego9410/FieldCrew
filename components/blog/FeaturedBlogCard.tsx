@@ -45,7 +45,7 @@ export function FeaturedBlogCard({ post }: FeaturedBlogCardProps) {
             <ReadingTime minutes={readingTimeMinutes} />
           </div>
           <Link href={`/blog/${slug}`}>
-            <Button variant="primary">Read article</Button>
+            <Button variant="default">Read article</Button>
           </Link>
         </div>
       </div>

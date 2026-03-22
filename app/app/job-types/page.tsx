@@ -13,6 +13,7 @@ import {
   type JobTypeMargin,
 } from "@/lib/analytics";
 import { getJobs, getWorkers, getTimeEntries, getJobTypes } from "@/lib/data";
+import { toErrorMessage } from "@/lib/to-error-message";
 import {
   Table,
   TableBody,
@@ -78,7 +79,7 @@ export default function JobTypesPage() {
       })
       .catch((err) => {
         if (!cancelled) {
-          setLoadError(err?.message ?? "Failed to load job types");
+          setLoadError(toErrorMessage(err) || "Failed to load job types");
           setRows([]);
         }
       })

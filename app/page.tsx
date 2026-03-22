@@ -7,6 +7,7 @@ import { CalculatorCoreValue } from "@/components/landing/CalculatorCoreValue";
 import { Solution } from "@/components/landing/Solution";
 import { ObjectionHandling } from "@/components/landing/ObjectionHandling";
 import { SimpleStart } from "@/components/landing/SimpleStart";
+import { PricingSection4 } from "@/components/landing/PricingSection4";
 import { FinalCta } from "@/components/landing/FinalCta";
 import { CtaSupportMicrocopy } from "@/components/landing/CtaSupportMicrocopy";
 import { Footer } from "@/components/landing/Footer";
@@ -30,6 +31,7 @@ export default function Home() {
         <Solution />
         <ObjectionHandling />
         <SimpleStart />
+        <PricingSection4 variant="marketing" />
         <FinalCta />
         <CtaSupportMicrocopy />
       </main>

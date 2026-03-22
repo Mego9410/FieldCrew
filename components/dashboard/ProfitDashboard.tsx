@@ -28,6 +28,7 @@ import {
   type ChartDataPoint,
 } from "@/lib/analytics";
 import { getJobs, getWorkers, getTimeEntries, getJobTypes } from "@/lib/data";
+import { toErrorMessage } from "@/lib/to-error-message";
 
 export function ProfitDashboard() {
   const [timeframe, setTimeframe] = useState<"this_week" | "last_week" | "last_30_days">("this_week");
@@ -114,7 +115,7 @@ export function ProfitDashboard() {
       })
       .catch((err) => {
         if (!cancelled) {
-          setLoadError(err?.message ?? "Failed to load dashboard");
+          setLoadError(toErrorMessage(err) || "Failed to load dashboard");
           setDashboardData(null);
         }
       });

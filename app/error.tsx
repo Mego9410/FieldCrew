@@ -2,12 +2,10 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { toErrorMessage } from "@/lib/to-error-message";
 
 function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return (error as Error).message;
-  if (typeof error === "object" && error !== null && "message" in error)
-    return String((error as { message: unknown }).message);
-  return "Something went wrong";
+  return toErrorMessage(error);
 }
 
 export default function Error({
@@ -28,7 +26,7 @@ export default function Error({
         Something went wrong
       </h1>
       <p className="mt-2 text-fc-muted">
-        {message === "[object Event]" ? "We couldn't load this page. Please try again." : message}
+        {message}
       </p>
       <div className="mt-6 flex gap-4">
         <button

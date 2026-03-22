@@ -2,6 +2,7 @@ import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
 import { ensureOwnerUserForAuthUser } from "@/lib/data";
 import { NextResponse } from "next/server";
+import { toErrorMessage } from "@/lib/to-error-message";
 
 /**
  * OAuth callback (e.g. Google). Supabase redirects here with ?code=...
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
       );
     }
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
+    const message = toErrorMessage(err);
     console.error("[auth/callback] ensureOwnerUserForAuthUser failed:", err);
     // Surface the real error so we can fix RLS/config (e.g. "new row violates row-level security policy").
     const userMessage =

@@ -1,131 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  calculateLeakage,
-  DEFAULT_LEAKAGE_INPUTS,
-  type LeakageInputs,
-  type LeakageOutputs,
-} from "@/lib/leakageCalculator";
 import { SampleProfitReport } from "@/components/SampleProfitReport";
-import { useReducedMotion } from "framer-motion";
-
-type SimpleInputs = {
-  techs: number;
-  hourlyLaborCost: number;
-  jobsPerWeek: number;
-  overtimeHoursPerWeek: number; // team total
-};
-
-function clamp(n: number, min: number, max: number) {
-  if (!Number.isFinite(n)) return min;
-  return Math.max(min, Math.min(max, n));
-}
-
-function ProfitLeakField({
-  label,
-  value,
-  min,
-  max,
-  stepValue,
-  unit,
-  onChange,
-  inputId,
-}: {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  stepValue?: number;
-  unit?: string;
-  inputId: string;
-  onChange: (v: number) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={inputId} className="text-xs font-semibold text-slate-500">
-        {label}
-      </label>
-      <div className="flex items-baseline gap-2">
-        <input
-          id={inputId}
-          type="number"
-          min={min}
-          max={max}
-          step={stepValue ?? 1}
-          value={value}
-          onChange={(e) => {
-            const v = e.target.valueAsNumber;
-            if (!Number.isNaN(v)) onChange(v);
-          }}
-          className="w-full rounded border border-slate-200 bg-slate-50/80 px-4 py-2 text-sm font-semibold tabular-nums text-fc-brand placeholder:text-slate-400 focus:border-fc-accent focus:bg-white focus:outline-none focus:ring-1 focus:ring-fc-accent"
-        />
-        {unit ? <span className="text-sm text-slate-400">{unit}</span> : null}
-      </div>
-    </div>
-  );
-}
+import {
+  ProfitLeakField,
+  useProfitLeakEstimate,
+} from "@/components/landing/profit-leak-estimate";
 
 export function ProfitLeakCalculator() {
   const reduceMotion = useReducedMotion();
   const [step, setStep] = useState<1 | 2>(1);
 
-  const [inputs, setInputs] = useState<SimpleInputs>({
-    techs: 10,
-    hourlyLaborCost: 28,
-    jobsPerWeek: 100,
-    overtimeHoursPerWeek: 20, // team total default: 2 hrs/tech/week for 10 techs
-  });
-
-  const leakageInputs: LeakageInputs = useMemo(() => {
-    const techs = clamp(Math.floor(inputs.techs), 1, 200);
-    const hourlyWage = clamp(inputs.hourlyLaborCost, 10, 150);
-    const jobsPerWeek = clamp(inputs.jobsPerWeek, 1, 20000);
-    const overtimeHoursPerWeek = clamp(inputs.overtimeHoursPerWeek, 0, 50000);
-
-    // Assumptions to keep the calculator simple:
-    // - We convert your 4 inputs into the full model using typical HVAC defaults.
-    // - You can still view a detailed sample report (and we’ll tailor in the full FieldCrew workflow).
-    const billableRate = clamp(Math.round(hourlyWage * 4.1), 50, 400);
-
-    // Model expects per-tech weekly values.
-    const jobsPerTechPerWeek = jobsPerWeek / techs;
-    const otHoursPerTechPerWeek = overtimeHoursPerWeek / techs;
-
-    return {
-      techs,
-      hourlyWage,
-      billableRate,
-      otHoursPerTechPerWeek,
-      untrackedHoursPerTechPerWeek: DEFAULT_LEAKAGE_INPUTS.untrackedHoursPerTechPerWeek,
-      jobOverrunRate: DEFAULT_LEAKAGE_INPUTS.jobOverrunRate,
-      avgOverrunHours: DEFAULT_LEAKAGE_INPUTS.avgOverrunHours,
-      jobsPerTechPerWeek,
-    };
-  }, [inputs]);
-
-  const [outputs, setOutputs] = useState<LeakageOutputs | null>(null);
-
-  const run = useCallback(() => {
-    const result = calculateLeakage(leakageInputs);
-    setOutputs(result);
-    return result;
-  }, [leakageInputs]);
-
-  useEffect(() => {
-    run();
-  }, [run]);
-
-  const currentOutputs = outputs ?? calculateLeakage(leakageInputs);
-
-  const underQuotedLoss = useMemo(() => {
-    return currentOutputs.untrackedTimeRevenue + currentOutputs.jobOverrunWaste;
-  }, [currentOutputs.untrackedTimeRevenue, currentOutputs.jobOverrunWaste]);
+  const {
+    inputs,
+    setInputs,
+    outputs,
+    formatUnderQuoted,
+  } = useProfitLeakEstimate();
 
   const handleSeeReport = () => {
-    run();
     setStep(2);
   };
 
@@ -212,7 +108,8 @@ export function ProfitLeakCalculator() {
                     Result updates live
                   </p>
                   <p className="mt-2 text-sm text-slate-600">
-                    We use typical HVAC assumptions for untracked time and job overruns to keep this simple.
+                    We use typical HVAC assumptions for untracked time and job
+                    overruns to keep this simple.
                   </p>
                 </div>
               </section>
@@ -224,7 +121,7 @@ export function ProfitLeakCalculator() {
                       Estimated monthly profit leak
                     </p>
                     <p className="mt-2 font-display text-5xl font-extrabold tabular-nums text-fc-brand">
-                      {currentOutputs.formatted.totalRecoverableProfit}
+                      {outputs.formatted.totalRecoverableProfit}
                     </p>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -233,7 +130,7 @@ export function ProfitLeakCalculator() {
                         Overtime premium
                       </p>
                       <p className="mt-1 font-display text-xl font-bold tabular-nums text-fc-brand">
-                        {currentOutputs.formatted.overtimePremiumWaste}
+                        {outputs.formatted.overtimePremiumWaste}
                       </p>
                     </div>
                     <div className="rounded-lg border border-slate-200/80 bg-slate-50/50 px-4 py-3">
@@ -241,11 +138,7 @@ export function ProfitLeakCalculator() {
                         Under-quoted labor
                       </p>
                       <p className="mt-1 font-display text-xl font-bold tabular-nums text-fc-brand">
-                        {new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: "USD",
-                          maximumFractionDigits: 0,
-                        }).format(Math.round(underQuotedLoss))}
+                        {formatUnderQuoted}
                       </p>
                     </div>
                   </div>
@@ -260,11 +153,10 @@ export function ProfitLeakCalculator() {
                     See a Real Example Report
                   </button>
                   <div className="text-sm text-fc-steel-500">
-                    Want FieldCrew to find the jobs behind the number?
-                    {" "}
+                    Want FieldCrew to find the jobs behind the number?{" "}
                     <Link
                       href="/signup"
-                      className="font-semibold text-fc-accent underline decoration-fc-accent underline-offset-4 hover:no-underline focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-0 rounded"
+                      className="rounded font-semibold text-fc-accent underline decoration-fc-accent underline-offset-4 hover:no-underline focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-0"
                     >
                       Get started
                     </Link>
@@ -276,7 +168,7 @@ export function ProfitLeakCalculator() {
             <>
               <div className="mt-10 rounded-xl border border-fc-border bg-white p-4 shadow-fc-sm sm:p-6">
                 <SampleProfitReport
-                  userEstimate={currentOutputs}
+                  userEstimate={outputs}
                   auditUrl="/book"
                   onDownloadClick={handlePrint}
                 />
@@ -297,4 +189,3 @@ export function ProfitLeakCalculator() {
     </div>
   );
 }
-

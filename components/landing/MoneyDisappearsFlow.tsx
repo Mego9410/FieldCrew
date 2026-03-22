@@ -1,15 +1,21 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { FeatureCarousel } from "@/components/ui/feature-carousel";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { ArrowRight } from "lucide-react";
 
 const steps = [
   "A job runs 45-90 minutes over",
   "Labor cost goes beyond what was quoted",
   "The schedule slips and the team falls behind",
   "Overtime is used to catch up",
-];
+] as const;
+
+const carouselItems = steps.map((title, i) => ({
+  id: `money-flow-${i + 1}`,
+  label: `Step ${i + 1}`,
+  title,
+}));
 
 export function MoneyDisappearsFlow() {
   const reduceMotion = useReducedMotion();
@@ -31,35 +37,19 @@ export function MoneyDisappearsFlow() {
         </ScrollReveal>
 
         <motion.div
-          className="mt-14 flex flex-col gap-6 lg:flex-row lg:items-stretch lg:justify-between"
+          className="mt-12 sm:mt-14"
           initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.2, once: true }}
           transition={{ duration: 0.4, ease: [0.2, 0.8, 0.2, 1] }}
         >
-          {steps.map((title, i) => (
-            <div key={title} className="flex-1">
-              <div className="rounded-[var(--fc-radius)] border border-fc-border bg-white p-6 shadow-fc-sm">
-                <p className="font-display text-xs font-bold uppercase tracking-wider text-fc-accent">
-                  Step {i + 1}
-                </p>
-                <p className="mt-3 text-lg font-semibold text-fc-brand fc-body-air">
-                  {title}
-                </p>
-              </div>
-              {i < steps.length - 1 && (
-                <div className="hidden pt-4 lg:flex lg:justify-center">
-                  <ArrowRight className="h-5 w-5 text-fc-orange-500" aria-hidden />
-                </div>
-              )}
-            </div>
-          ))}
+          <FeatureCarousel items={carouselItems} autoPlayIntervalMs={5200} />
         </motion.div>
 
-        <p className="mt-12 text-center text-xl font-bold text-fc-brand">
+        <p className="mt-12 hyphens-none break-normal text-center text-xl font-bold text-fc-brand">
           Now repeat that across 50, 100, or 200 jobs.
         </p>
-        <p className="mt-3 text-center text-lg text-fc-muted fc-body-air">
+        <p className="mt-3 hyphens-none break-normal text-center text-lg text-fc-muted fc-body-air">
           That&apos;s where thousands of dollars disappear each month.
         </p>
       </div>

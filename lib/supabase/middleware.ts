@@ -92,9 +92,22 @@ export async function updateSession(request: NextRequest) {
     return redirectRes;
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: Awaited<
+    ReturnType<typeof supabase.auth.getUser>
+  >["data"]["user"] = null;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (
+      error &&
+      error.message !== "Auth session missing!" &&
+      !error.message.includes("Refresh Token")
+    ) {
+      console.warn("[middleware] getUser:", error.message);
+    }
+    user = data?.user ?? null;
+  } catch (e) {
+    console.error("[middleware] getUser failed:", e);
+  }
 
   // Send OAuth errors from root to login so user sees the troubleshooting message.
   const isRootWithOAuthError =

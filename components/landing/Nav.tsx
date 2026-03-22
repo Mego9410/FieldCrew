@@ -3,17 +3,50 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, MoveRight, X } from "lucide-react";
+import { buttonVariants } from "@/components/ui/Button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 import { routes } from "@/lib/routes";
 
 function getMobileNavLinks(pathname: string) {
   const isHome = pathname === "/";
-  return [
-    { href: isHome ? "#how-it-works" : "/#how-it-works", label: "Product" },
-    { href: "/blog", label: "Blog" },
-    { href: isHome ? "#pricing" : "/#pricing", label: "Pricing" },
-    { href: "/login", label: "Log in" },
-  ];
+  const productHref = isHome ? "#how-it-works" : "/#how-it-works";
+  const pricingHref = isHome ? "#pricing" : "/#pricing";
+  return {
+    productHref,
+    pricingHref,
+    sections: [
+      {
+        title: "Product",
+        items: [
+          { href: productHref, label: "How it works" },
+          { href: "/profit-leak", label: "Profit leak estimate" },
+          { href: "/sample-report", label: "Sample report" },
+          { href: "/book", label: "Book a demo" },
+        ],
+      },
+      {
+        title: "Site",
+        items: [
+          { href: "/blog", label: "Blog" },
+          { href: pricingHref, label: "Pricing" },
+        ],
+      },
+    ],
+    auth: [
+      { href: "/login", label: "Log in" },
+      { href: routes.owner.subscribe, label: "Get Started", primary: true as const },
+    ],
+  };
 }
 
 export function Nav() {
@@ -63,140 +96,282 @@ export function Nav() {
   const pricingHref = isHome ? "#pricing" : "/#pricing";
   const darkNav = isHome && heroVisible;
 
-  const linkClass = darkNav
-    ? "block min-h-[44px] min-w-[44px] cursor-pointer items-center rounded-md px-4 py-3 text-base font-medium text-slate-200 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950 flex"
-    : "block min-h-[44px] min-w-[44px] cursor-pointer items-center rounded-md px-4 py-3 text-base font-medium text-fc-brand transition-colors hover:bg-fc-surface-muted hover:text-fc-accent focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 flex";
+  const productLinks = [
+    { title: "How it works", href: productHref },
+    { title: "Profit leak estimate", href: "/profit-leak" },
+    { title: "Sample report", href: "/sample-report" },
+    { title: "Book a demo", href: "/book" },
+  ] as const;
+
+  const learnLinks = [
+    { title: "Blog", href: "/blog" },
+    { title: "Pricing", href: pricingHref },
+  ] as const;
+
+  const triggerClass = cn(
+    navigationMenuTriggerStyle(),
+    "text-sm font-medium",
+    darkNav
+      ? "!bg-transparent text-white hover:bg-white/10 hover:text-white focus:bg-white/10 data-[state=open]:bg-white/15 data-[state=open]:text-white"
+      : "text-fc-brand hover:text-fc-accent",
+  );
+
+  const mobile = getMobileNavLinks(pathname);
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b backdrop-blur-md transition-colors duration-300 ${
+      className={cn(
+        "sticky top-0 z-50 border-b backdrop-blur-md transition-colors duration-300",
         darkNav
-          ? "border-fc-navy-800 bg-fc-navy-950/95 supports-[backdrop-filter]:bg-fc-navy-950 shadow-lg shadow-black/20"
-          : "border-fc-border bg-white/80 supports-[backdrop-filter]:bg-white/95"
-      }`}
+          ? "border-fc-navy-800 bg-fc-navy-950/95 shadow-lg shadow-black/20 supports-[backdrop-filter]:bg-fc-navy-950"
+          : "border-fc-border bg-white/80 supports-[backdrop-filter]:bg-white/95",
+      )}
     >
       <nav
-        className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8"
+        className="relative mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8"
         aria-label="Main navigation"
       >
-        <Link
-          href="/"
-          className={`font-display text-xl font-bold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded min-h-[44px] min-w-[44px] inline-flex items-center ${
-            darkNav
-              ? "text-white hover:text-fc-orange-500 focus:ring-offset-fc-navy-950 drop-shadow-sm"
-              : "text-fc-brand hover:text-fc-accent"
-          }`}
-        >
-          FieldCrew
-        </Link>
+        <div className="flex min-h-20 w-full items-center gap-3 lg:grid lg:grid-cols-3 lg:items-center lg:gap-4">
+          {/* Col 1: mobile logo OR desktop nav */}
+          <div className="flex min-w-0 flex-1 items-center gap-2 lg:min-w-0">
+            <Link
+              href="/"
+              className={cn(
+                "font-display text-lg font-bold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded-md min-h-[44px] inline-flex items-center lg:hidden",
+                darkNav
+                  ? "text-white hover:text-fc-orange-500 focus:ring-offset-fc-navy-950"
+                  : "text-fc-brand hover:text-fc-accent",
+              )}
+            >
+              FieldCrew
+            </Link>
 
-        {/* Desktop nav: visible from sm up */}
-        <div className="hidden sm:flex items-center gap-6">
-          <Link
-            href={productHref}
-            className={`text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded min-h-[44px] min-w-[44px] inline-flex items-center justify-center ${
-              darkNav
-                ? "text-white/95 hover:text-white focus:ring-offset-fc-navy-950"
-                : "text-fc-brand hover:text-fc-accent"
-            }`}
-          >
-            Product
-          </Link>
-          <Link
-            href="/blog"
-            className={`text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded min-h-[44px] min-w-[44px] inline-flex items-center justify-center ${
-              darkNav
-                ? "text-white/95 hover:text-white focus:ring-offset-fc-navy-950"
-                : "text-fc-brand hover:text-fc-accent"
-            }`}
-          >
-            Blog
-          </Link>
-          <Link
-            href={pricingHref}
-            className={`text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded min-h-[44px] min-w-[44px] inline-flex items-center justify-center ${
-              darkNav
-                ? "text-white/95 hover:text-white focus:ring-offset-fc-navy-950"
-                : "text-fc-brand hover:text-fc-accent"
-            }`}
-          >
-            Pricing
-          </Link>
-          <Link
-            href="/login"
-            className={`text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded min-h-[44px] min-w-[44px] inline-flex items-center justify-center ${
-              darkNav
-                ? "text-white/95 hover:text-white focus:ring-offset-fc-navy-950"
-                : "text-fc-brand hover:text-fc-accent"
-            }`}
-          >
-            Log in
-          </Link>
-          <Link
-            href={routes.owner.subscribe}
-            className={`inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md px-6 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 shadow-fc-sm ${
-              darkNav
-                ? "bg-fc-orange-500 text-fc-navy-950 hover:bg-fc-orange-600 focus:ring-offset-fc-navy-950"
-                : "bg-fc-brand text-white hover:bg-fc-brand/90"
-            }`}
-          >
-            Get Started
-          </Link>
-        </div>
+            <div className="hidden justify-start lg:flex">
+              <NavigationMenu className="flex justify-start">
+                <NavigationMenuList className="flex flex-row justify-start gap-1 space-x-0">
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className={triggerClass}>Product</NavigationMenuTrigger>
+                    <NavigationMenuContent className="!w-[min(100vw-2rem,450px)] p-4">
+                      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2">
+                        <div className="flex h-full flex-col justify-between">
+                          <div className="flex flex-col">
+                            <p className="text-base font-medium text-fc-brand">Product</p>
+                            <p className="text-sm text-muted-foreground">
+                              See where labour profit leaks and what to do about it.
+                            </p>
+                          </div>
+                          <Link
+                            href={routes.owner.subscribe}
+                            className={cn(
+                              buttonVariants({ size: "sm" }),
+                              "mt-6 inline-flex w-fit bg-fc-brand text-white hover:bg-fc-navy-800",
+                            )}
+                          >
+                            Get started
+                          </Link>
+                        </div>
+                        <div className="flex h-full flex-col justify-end text-sm">
+                          {productLinks.map((sub) => (
+                            <NavigationMenuLink key={sub.title} asChild>
+                              <Link
+                                href={sub.href}
+                                className="flex flex-row items-center justify-between rounded-md px-4 py-2 hover:bg-muted"
+                              >
+                                <span className="text-fc-brand">{sub.title}</span>
+                                <MoveRight className="h-4 w-4 text-muted-foreground" />
+                              </Link>
+                            </NavigationMenuLink>
+                          ))}
+                        </div>
+                      </div>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
 
-        {/* Mobile: hamburger only */}
-        <div className="flex items-center sm:hidden">
-          <button
-            type="button"
-            data-mobile-nav-trigger
-            onClick={() => setMobileOpen((o) => !o)}
-            className={`inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 ${
-              darkNav
-                ? "text-white hover:bg-white/10 focus:ring-offset-fc-navy-950"
-                : "text-fc-brand hover:bg-fc-surface-muted"
-            }`}
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-nav-panel"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          >
-            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className={triggerClass}>Learn</NavigationMenuTrigger>
+                    <NavigationMenuContent className="!w-[min(100vw-2rem,380px)] p-4">
+                      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2">
+                        <div className="flex flex-col">
+                          <p className="text-base font-medium text-fc-brand">Learn</p>
+                          <p className="text-sm text-muted-foreground">
+                            Pricing, articles, and resources for HVAC owners.
+                          </p>
+                        </div>
+                        <div className="flex flex-col justify-end text-sm">
+                          {learnLinks.map((sub) => (
+                            <NavigationMenuLink key={sub.title} asChild>
+                              <Link
+                                href={sub.href}
+                                className="flex flex-row items-center justify-between rounded-md px-4 py-2 hover:bg-muted"
+                              >
+                                <span className="text-fc-brand">{sub.title}</span>
+                                <MoveRight className="h-4 w-4 text-muted-foreground" />
+                              </Link>
+                            </NavigationMenuLink>
+                          ))}
+                        </div>
+                      </div>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <NavigationMenuLink asChild>
+                      <Link href="/blog" className={triggerClass}>
+                        Blog
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            </div>
+          </div>
+
+          {/* Col 2: centered brand (desktop) */}
+          <div className="hidden justify-center lg:flex">
+            <Link
+              href="/"
+              className={cn(
+                "font-display text-lg font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded-md",
+                darkNav
+                  ? "text-white hover:text-fc-orange-500 focus:ring-offset-fc-navy-950"
+                  : "text-fc-brand hover:text-fc-accent",
+              )}
+            >
+              FieldCrew
+            </Link>
+          </div>
+
+          {/* Col 3: CTAs + mobile menu */}
+          <div className="ml-auto flex shrink-0 items-center justify-end gap-2 sm:gap-4">
+            <Link
+              href={pricingHref}
+              className={cn(
+                buttonVariants({ variant: "ghost" }),
+                "hidden text-sm font-medium lg:inline-flex",
+                darkNav
+                  ? "text-white/95 hover:bg-white/10 hover:text-white"
+                  : "text-fc-brand hover:text-fc-accent",
+              )}
+            >
+              Pricing
+            </Link>
+            <div
+              className={cn(
+                "hidden h-6 w-px lg:block",
+                darkNav ? "bg-white/25" : "bg-fc-border",
+              )}
+              aria-hidden
+            />
+
+            <Link
+              href="/login"
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "hidden h-9 items-center justify-center px-4 text-sm font-medium lg:inline-flex",
+                darkNav &&
+                  "border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white",
+              )}
+            >
+              Log in
+            </Link>
+
+            <Link
+              href={routes.owner.subscribe}
+              className={cn(
+                buttonVariants(),
+                "hidden h-9 px-5 text-sm font-semibold shadow-fc-sm lg:inline-flex",
+                darkNav
+                  ? "border-0 bg-fc-orange-500 text-fc-navy-950 hover:bg-fc-orange-600"
+                  : "bg-fc-brand text-white hover:bg-fc-brand/90",
+              )}
+            >
+              Get Started
+            </Link>
+
+            <button
+              type="button"
+              data-mobile-nav-trigger
+              onClick={() => setMobileOpen((o) => !o)}
+              className={cn(
+                "inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 lg:hidden",
+                darkNav
+                  ? "text-white hover:bg-white/10 focus:ring-offset-fc-navy-950"
+                  : "text-fc-brand hover:bg-fc-surface-muted",
+              )}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav-panel"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            >
+              {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
       </nav>
 
-      {/* Mobile drawer */}
       {mobileOpen && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-fc-brand/20 backdrop-blur-sm sm:hidden"
+            className="fixed inset-0 z-40 bg-fc-brand/20 backdrop-blur-sm lg:hidden"
             aria-hidden
             onClick={() => setMobileOpen(false)}
           />
           <div
             id="mobile-nav-panel"
             ref={panelRef}
-            className="fixed top-0 right-0 z-50 h-full w-full max-w-[280px] border-l border-fc-border bg-white shadow-fc-lg sm:hidden"
+            className="fixed top-0 right-0 z-50 h-full w-full max-w-[320px] overflow-y-auto border-l border-fc-border bg-white shadow-fc-lg lg:hidden"
             role="dialog"
             aria-label="Mobile menu"
           >
-            <div className="flex flex-col gap-1 p-4 pt-16">
-              {getMobileNavLinks(pathname).map(({ href, label }) => (
-                <Link
-                  key={`${href}-${label}`}
-                  href={href}
-                  className={linkClass}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {label}
-                </Link>
+            <div className="flex flex-col gap-8 p-4 pt-20">
+              {mobile.sections.map((section) => (
+                <div key={section.title} className="flex flex-col gap-3">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-fc-muted">
+                    {section.title}
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    {section.items.map(({ href, label }) => (
+                      <Link
+                        key={href + label}
+                        href={href}
+                        className="flex items-center justify-between rounded-lg px-3 py-2.5 text-base font-medium text-fc-brand hover:bg-fc-surface-muted"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {label}
+                        <MoveRight className="h-4 w-4 text-fc-muted" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
-              <Link
-                href={routes.owner.subscribe}
-                onClick={() => setMobileOpen(false)}
-                className="inline-flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-md bg-fc-brand px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-fc-brand/90 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 mt-2"
-              >
-                Get Started
-              </Link>
+              <div className="flex flex-col gap-2 border-t border-fc-border pt-6">
+                {mobile.auth.map(({ href, label, ...rest }) =>
+                  "primary" in rest && rest.primary ? (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        buttonVariants(),
+                        "h-11 w-full justify-center bg-fc-brand text-white hover:bg-fc-brand/90",
+                      )}
+                    >
+                      {label}
+                    </Link>
+                  ) : (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "h-11 w-full justify-center border-fc-border",
+                      )}
+                    >
+                      {label}
+                    </Link>
+                  ),
+                )}
+              </div>
             </div>
           </div>
         </>
