@@ -11,7 +11,7 @@ export function CtaSupportMicrocopy() {
       <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
         <ScrollReveal className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-semibold text-fc-muted">
-            No demo required. No pressure sales call.
+            No meetings required. No pressure sales process.
           </p>
           <p className="mt-2 text-sm text-fc-muted">
             Get your estimate first, built for HVAC owners and operations

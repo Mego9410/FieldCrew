@@ -109,47 +109,71 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-fc-surface px-4">
-      <div className="w-full max-w-[400px] border border-fc-border bg-fc-surface p-8">
-        <h1 className="font-display text-2xl font-bold text-fc-brand">
-          Owner login
-        </h1>
-        <p className="mt-2 text-sm text-fc-muted">
-          Sign in to your FieldCrew account to manage jobs, workers, and
-          payroll.
-        </p>
-
-        {error && (
-          <div
-            className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
-            role="alert"
-          >
-            <p>{error}</p>
-            {error === "Invalid login credentials" && (
-              <>
-                <p className="mt-2 text-red-700">
-                  If you just signed up, confirm your email first: check your inbox for a link from FieldCrew, then try again.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleResendConfirmation}
-                  disabled={resendStatus === "sending" || !email?.trim()}
-                  className="mt-2 font-medium underline underline-offset-2 hover:no-underline disabled:opacity-50"
-                >
-                  {resendStatus === "sending"
-                    ? "Sending…"
-                    : resendStatus === "sent"
-                      ? "Confirmation email sent — check your inbox"
-                      : resendStatus === "error"
-                        ? "Resend failed — try again"
-                        : "Resend confirmation email"}
-                </button>
-              </>
-            )}
+    <div className="min-h-screen bg-fc-surface px-4 py-10 sm:py-14">
+      <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+        <section className="rounded-2xl border border-fc-border bg-white p-7 shadow-fc-sm sm:p-9">
+          <p className="font-display text-xs font-semibold uppercase tracking-[0.16em] text-fc-accent">
+            Welcome back
+          </p>
+          <h1 className="mt-3 font-display text-3xl font-bold text-fc-brand sm:text-4xl">
+            Owner login
+          </h1>
+          <p className="mt-3 text-fc-muted">
+            Sign in to manage jobs, workers, and payroll visibility in one place.
+          </p>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            {[
+              "Weekly labour leak snapshot",
+              "Overrun and overtime visibility",
+              "Worker and job-level drill-downs",
+              "Recovery opportunity tracking",
+            ].map((item) => (
+              <article key={item} className="rounded-lg border border-fc-border bg-fc-surface p-3 text-sm text-fc-brand">
+                {item}
+              </article>
+            ))}
           </div>
-        )}
+        </section>
 
-        <form onSubmit={handleEmailSubmit} className="mt-6 space-y-4">
+        <div className="w-full border border-fc-border bg-fc-surface p-8">
+          <h2 className="font-display text-2xl font-bold text-fc-brand">
+            Sign in
+          </h2>
+          <p className="mt-2 text-sm text-fc-muted">
+            Use your account credentials or Google sign-in.
+          </p>
+
+          {error && (
+            <div
+              className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+              role="alert"
+            >
+              <p>{error}</p>
+              {error === "Invalid login credentials" && (
+                <>
+                  <p className="mt-2 text-red-700">
+                    If you just signed up, confirm your email first: check your inbox for a link from FieldCrew, then try again.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleResendConfirmation}
+                    disabled={resendStatus === "sending" || !email?.trim()}
+                    className="mt-2 font-medium underline underline-offset-2 hover:no-underline disabled:opacity-50"
+                  >
+                    {resendStatus === "sending"
+                      ? "Sending…"
+                      : resendStatus === "sent"
+                        ? "Confirmation email sent — check your inbox"
+                        : resendStatus === "error"
+                          ? "Resend failed — try again"
+                          : "Resend confirmation email"}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          <form onSubmit={handleEmailSubmit} className="mt-6 space-y-4">
           <div>
             <label
               htmlFor="email"
@@ -216,23 +240,23 @@ export default function LoginPage() {
               "Sign in with email"
             )}
           </button>
-        </form>
+          </form>
 
-        <div className="relative my-6">
+          <div className="relative my-6">
           <span className="absolute inset-0 flex items-center">
             <span className="w-full border-t border-fc-border" />
           </span>
           <span className="relative flex justify-center text-xs uppercase tracking-wide text-fc-muted">
             or
           </span>
-        </div>
+          </div>
 
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          disabled={loading !== null}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-fc-border bg-white px-4 py-2.5 font-medium text-fc-brand transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 disabled:opacity-70"
-        >
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={loading !== null}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-fc-border bg-white px-4 py-2.5 font-medium text-fc-brand transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 disabled:opacity-70"
+          >
           {loading === "google" ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -244,9 +268,9 @@ export default function LoginPage() {
               Sign in with Google
             </>
           )}
-        </button>
+          </button>
 
-        <p className="mt-6 text-center text-sm text-fc-muted">
+          <p className="mt-6 text-center text-sm text-fc-muted">
           Don&apos;t have an account?{" "}
           <Link
             href={routes.owner.subscribe}
@@ -261,16 +285,17 @@ export default function LoginPage() {
           >
             Back to home
           </Link>
-        </p>
+          </p>
 
-        <p className="mt-3 text-center">
+          <p className="mt-3 text-center">
           <Link
             href={routes.owner.onboarding}
             className="text-xs text-fc-muted underline underline-offset-2 hover:text-fc-accent"
           >
             Go to onboarding (no sign-in)
           </Link>
-        </p>
+          </p>
+        </div>
       </div>
     </div>
   );

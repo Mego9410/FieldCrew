@@ -19,7 +19,7 @@ export function StickyCTA({
     >
       <HiddenProfitCta
         label={label}
-        auditUrl="/book"
+        auditUrl="/sample-report"
         className="block w-full rounded-md border border-fc-accent bg-fc-surface px-4 py-3 text-center text-sm font-semibold text-fc-accent shadow-fc-md hover:bg-fc-accent hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
       />
     </div>

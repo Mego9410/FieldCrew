@@ -11,8 +11,82 @@ import { PricingSection4 } from "@/components/landing/PricingSection4";
 import { FinalCta } from "@/components/landing/FinalCta";
 import { CtaSupportMicrocopy } from "@/components/landing/CtaSupportMicrocopy";
 import { Footer } from "@/components/landing/Footer";
+import { headers } from "next/headers";
 
-export default function Home() {
+const US_STATE_NAMES: Record<string, string> = {
+  AL: "Alabama",
+  AK: "Alaska",
+  AZ: "Arizona",
+  AR: "Arkansas",
+  CA: "California",
+  CO: "Colorado",
+  CT: "Connecticut",
+  DE: "Delaware",
+  FL: "Florida",
+  GA: "Georgia",
+  HI: "Hawaii",
+  ID: "Idaho",
+  IL: "Illinois",
+  IN: "Indiana",
+  IA: "Iowa",
+  KS: "Kansas",
+  KY: "Kentucky",
+  LA: "Louisiana",
+  ME: "Maine",
+  MD: "Maryland",
+  MA: "Massachusetts",
+  MI: "Michigan",
+  MN: "Minnesota",
+  MS: "Mississippi",
+  MO: "Missouri",
+  MT: "Montana",
+  NE: "Nebraska",
+  NV: "Nevada",
+  NH: "New Hampshire",
+  NJ: "New Jersey",
+  NM: "New Mexico",
+  NY: "New York",
+  NC: "North Carolina",
+  ND: "North Dakota",
+  OH: "Ohio",
+  OK: "Oklahoma",
+  OR: "Oregon",
+  PA: "Pennsylvania",
+  RI: "Rhode Island",
+  SC: "South Carolina",
+  SD: "South Dakota",
+  TN: "Tennessee",
+  TX: "Texas",
+  UT: "Utah",
+  VT: "Vermont",
+  VA: "Virginia",
+  WA: "Washington",
+  WV: "West Virginia",
+  WI: "Wisconsin",
+  WY: "Wyoming",
+  DC: "District of Columbia",
+};
+
+async function getVisitorRegionName(): Promise<string | null> {
+  const requestHeaders = await headers();
+  const countryCode = requestHeaders.get("x-vercel-ip-country");
+  const regionCode = requestHeaders.get("x-vercel-ip-country-region");
+
+  if (!countryCode || !regionCode) {
+    return null;
+  }
+
+  // Vercel provides ISO region codes; expand US states for friendlier marketing copy.
+  if (countryCode.toUpperCase() === "US") {
+    return US_STATE_NAMES[regionCode.toUpperCase()] ?? null;
+  }
+
+  return null;
+}
+
+export default async function Home() {
+  const visitorRegionName = await getVisitorRegionName();
+
   return (
     <>
       <a
@@ -23,11 +97,11 @@ export default function Home() {
       </a>
       <Nav />
       <main id="main">
-        <Hero />
+        <Hero regionName={visitorRegionName} />
+        <CalculatorCoreValue />
         <IndustryProblem />
         <RelatableBusinessImpact />
         <MoneyDisappearsFlow />
-        <CalculatorCoreValue />
         <Solution />
         <ObjectionHandling />
         <SimpleStart />

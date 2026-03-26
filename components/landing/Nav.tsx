@@ -31,7 +31,7 @@ function getMobileNavLinks(pathname: string) {
           { href: productHref, label: "How it works" },
           { href: "/profit-leak", label: "Profit leak estimate" },
           { href: "/sample-report", label: "Sample report" },
-          { href: "/book", label: "Book a demo" },
+          { href: "/about", label: "About us" },
         ],
       },
       {
@@ -100,7 +100,7 @@ export function Nav() {
     { title: "How it works", href: productHref },
     { title: "Profit leak estimate", href: "/profit-leak" },
     { title: "Sample report", href: "/sample-report" },
-    { title: "Book a demo", href: "/book" },
+    { title: "About us", href: "/about" },
   ] as const;
 
   const learnLinks = [

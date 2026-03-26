@@ -241,7 +241,7 @@ export default async function BlogPostPage({ params }: Props) {
             <div className="mt-4" data-cta="blog-inline">
               <HiddenProfitCta
                 label="Show Me The Hidden Profit"
-                auditUrl="/book"
+                auditUrl="/sample-report"
                 className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md bg-fc-accent px-6 py-3 text-sm font-semibold text-white hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-brand"
               />
             </div>

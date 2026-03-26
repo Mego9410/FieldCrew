@@ -16,11 +16,37 @@ export default function RevenueLabourPage() {
       <p className="mt-1 text-sm text-fc-muted">
         Compare revenue and labour costs side-by-side with detailed breakdowns.
       </p>
-      <div className="mt-6 rounded-lg border border-fc-border bg-white p-8 text-center">
-        <p className="text-fc-muted">Detailed revenue vs labour analysis coming soon...</p>
-        <p className="mt-2 text-sm text-fc-muted">
-          TODO: Wire to API endpoint for revenue-labour analytics
+
+      <div className="mt-6 grid gap-4 md:grid-cols-3">
+        {[
+          "Use this lens to compare workload volume against labor spend trends.",
+          "Watch for weeks where revenue growth is outpaced by labor costs.",
+          "Pair this with overtime and overrun pages for root-cause checks.",
+        ].map((item) => (
+          <article key={item} className="rounded-lg border border-fc-border bg-white p-5 shadow-fc-sm">
+            <p className="text-sm text-fc-muted">{item}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="mt-6 rounded-lg border border-fc-border bg-white p-6 shadow-fc-sm">
+        <p className="text-sm text-fc-muted">
+          Use this page to prioritize where profitability is drifting: cost growth, execution delays, or quoting quality.
         </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link
+            href={routes.owner.dashboard.margin}
+            className="text-sm font-medium text-fc-accent hover:underline"
+          >
+            Open margin view
+          </Link>
+          <Link
+            href={routes.owner.dashboard.recovery}
+            className="text-sm font-medium text-fc-accent hover:underline"
+          >
+            Check recovery opportunities
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -26,7 +26,7 @@ interface HiddenProfitFlowProps {
   auditUrl?: string;
 }
 
-export function HiddenProfitFlow({ auditUrl = "/book" }: HiddenProfitFlowProps) {
+export function HiddenProfitFlow({ auditUrl = "/sample-report" }: HiddenProfitFlowProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [inputs, setInputs] = useState<LeakageInputs>(DEFAULT_LEAKAGE_INPUTS);
   const [outputs, setOutputs] = useState<LeakageOutputs | null>(null);

@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import { Nav } from "@/components/landing/Nav";
 import { Footer } from "@/components/landing/Footer";
 import { HiddenProfitFlow } from "@/components/HiddenProfitFlow";
+import {
+  CTAButtons,
+  PublicPageHero,
+  PublicPageShell,
+  PublicSection,
+} from "@/components/landing/PublicPagePrimitives";
+import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
   title: "Hidden Labour Profit Calculator — FieldCrew",
@@ -19,9 +26,20 @@ export default function HiddenProfitPage() {
         Skip to main content
       </a>
       <Nav />
-      <main id="main" className="min-h-screen border-b border-fc-border bg-white">
-        <HiddenProfitFlow auditUrl="/book" />
-      </main>
+      <PublicPageShell>
+        <PublicPageHero
+          eyebrow="Calculator"
+          title="Hidden labour profit calculator"
+          description="Estimate losses from overtime, untracked time, and overruns, then turn that estimate into a practical recovery plan."
+        />
+        <HiddenProfitFlow auditUrl="/sample-report" />
+        <PublicSection title="What to do with the result">
+          <CTAButtons
+            primary={{ label: "View sample report", href: routes.public.sampleReport }}
+            secondary={{ label: "Explore docs", href: routes.public.docs }}
+          />
+        </PublicSection>
+      </PublicPageShell>
       <Footer />
     </>
   );

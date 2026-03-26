@@ -1,38 +1,58 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Nav } from "@/components/landing/Nav";
 import { Footer } from "@/components/landing/Footer";
+import {
+  CTAButtons,
+  FeatureGrid,
+  PublicPageHero,
+  PublicPageShell,
+  PublicSection,
+} from "@/components/landing/PublicPagePrimitives";
+import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
-  title: "Book a Walkthrough — FieldCrew",
-  description: "Book a 15-minute walkthrough of FieldCrew. See how we help HVAC teams recover hidden labour profit.",
+  title: "Getting Started Guide — FieldCrew",
+  description: "Follow a self-guided path to estimate hidden labour leakage and review practical next steps.",
 };
 
 export default function BookPage() {
   return (
     <>
       <Nav />
-      <main id="main" className="min-h-screen bg-fc-page">
-        <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6 lg:px-8">
-          <h1 className="font-display text-3xl font-bold text-fc-brand sm:text-4xl">
-            Book 15-Min Walkthrough
-          </h1>
-          <p className="mt-4 text-lg text-fc-muted">
-            See how FieldCrew surfaces labour profit leakage and get a report like the sample — for your company.
-          </p>
-          <div className="mt-10 rounded-md border border-fc-border bg-white p-8 shadow-fc-sm">
-            <p className="text-fc-muted">
-              Scheduling and calendar integration coming soon. For now, reach out to schedule your walkthrough.
-            </p>
-            <Link
-              href="/"
-              className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-md bg-fc-accent px-6 py-3 font-semibold text-white hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
-            >
-              Back to Home
-            </Link>
-          </div>
-        </div>
-      </main>
+      <PublicPageShell>
+        <PublicPageHero
+          eyebrow="Conversion"
+          title="Self-guided getting started path"
+          description="Use this route to run your estimate, review a sample report, and move forward without scheduling a call."
+        />
+        <PublicSection title="What to do first">
+          <FeatureGrid
+            items={[
+              "Run the profit leak estimate with your current team numbers",
+              "Review the sample labour profit report format",
+              "Identify the first workflow improvements to make internally",
+            ]}
+          />
+        </PublicSection>
+        <PublicSection
+          title="What to prepare"
+          description="Gather rough team size, jobs-per-week, and the top bottlenecks you are seeing today."
+        >
+          <FeatureGrid
+            items={[
+              "Current team structure and dispatch model",
+              "How hours and overtime are tracked today",
+              "Where estimate-to-actual drift appears most often",
+            ]}
+          />
+        </PublicSection>
+        <PublicSection title="Next step resources">
+          <CTAButtons
+            primary={{ label: "Run profit leak estimate", href: routes.public.profitLeak }}
+            secondary={{ label: "View sample report", href: routes.public.sampleReport }}
+          />
+        </PublicSection>
+      </PublicPageShell>
       <Footer />
     </>
   );

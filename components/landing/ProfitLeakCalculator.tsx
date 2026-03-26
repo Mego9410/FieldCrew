@@ -169,7 +169,7 @@ export function ProfitLeakCalculator() {
               <div className="mt-10 rounded-xl border border-fc-border bg-white p-4 shadow-fc-sm sm:p-6">
                 <SampleProfitReport
                   userEstimate={outputs}
-                  auditUrl="/book"
+                  auditUrl="/sample-report"
                   onDownloadClick={handlePrint}
                 />
                 <div className="mt-4 print:hidden">

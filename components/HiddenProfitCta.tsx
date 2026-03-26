@@ -13,7 +13,7 @@ interface HiddenProfitCtaProps {
   /** CTA button label. Default: "Show Me The Hidden Profit" */
   label?: string;
   className?: string;
-  /** URL for "Book a 15-Minute Labour Audit". Default: "/book" */
+  /** Destination URL for next step actions. */
   auditUrl?: string;
   /** Variant for styling: link-style or button-style */
   variant?: "button" | "link";

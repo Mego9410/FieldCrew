@@ -118,7 +118,7 @@ export function BlogIndexClient({ posts }: BlogIndexClientProps) {
             <div className="mt-4" data-cta="blog-sidebar">
               <HiddenProfitCta
                 label="Show Me The Hidden Profit"
-                auditUrl="/book"
+                auditUrl="/sample-report"
                 className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md bg-fc-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-brand"
               />
             </div>

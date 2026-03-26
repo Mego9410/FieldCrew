@@ -35,7 +35,7 @@ interface HiddenProfitModalProps {
 export function HiddenProfitModal({
   isOpen,
   onClose,
-  auditUrl = "/book",
+  auditUrl = "/sample-report",
 }: HiddenProfitModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [inputs, setInputs] = useState<LeakageInputs>(DEFAULT_LEAKAGE_INPUTS);

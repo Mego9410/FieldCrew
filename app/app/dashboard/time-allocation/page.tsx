@@ -16,11 +16,37 @@ export default function TimeAllocationPage() {
       <p className="mt-1 text-sm text-fc-muted">
         See how your team&apos;s time is allocated across billable, travel, admin, and idle categories.
       </p>
-      <div className="mt-6 rounded-lg border border-fc-border bg-white p-8 text-center">
-        <p className="text-fc-muted">Detailed time allocation analysis coming soon...</p>
-        <p className="mt-2 text-sm text-fc-muted">
-          TODO: Wire to API endpoint for time allocation analytics
+
+      <div className="mt-6 grid gap-4 md:grid-cols-3">
+        {[
+          "Track where non-billable time is absorbing capacity.",
+          "Identify recurring travel/admin patterns by team workflow.",
+          "Use allocation trends to improve scheduling and dispatch plans.",
+        ].map((item) => (
+          <article key={item} className="rounded-lg border border-fc-border bg-white p-5 shadow-fc-sm">
+            <p className="text-sm text-fc-muted">{item}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="mt-6 rounded-lg border border-fc-border bg-white p-6 shadow-fc-sm">
+        <p className="text-sm text-fc-muted">
+          Start with jobs that routinely spike non-billable hours, then align crew planning to reduce avoidable idle and travel time.
         </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link
+            href={routes.owner.dashboard.recovery}
+            className="text-sm font-medium text-fc-accent hover:underline"
+          >
+            View recovery opportunities
+          </Link>
+          <Link
+            href={routes.owner.timesheets}
+            className="text-sm font-medium text-fc-accent hover:underline"
+          >
+            Open timesheets
+          </Link>
+        </div>
       </div>
     </div>
   );

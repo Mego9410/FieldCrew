@@ -10,6 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "check:links": "tsx scripts/check-link-integrity.ts",
+    "ci:verify-links": "npm run check:links",
     "clean": "node -e \"const fs=require('fs'); const p='.next'; if(fs.existsSync(p)){ fs.rmSync(p, { recursive: true }); console.log('Removed .next'); } else { console.log('No .next'); }\"",
     "redev": "npm run clean && npm run dev",
     "db:seed": "tsx scripts/seed-supabase.ts"

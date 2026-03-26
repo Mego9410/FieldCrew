@@ -1,78 +1,58 @@
 import Link from "next/link";
+import { footerLinkGroups, socialLinks } from "@/lib/site-links";
 
 export function Footer() {
-  const footerLinks = {
-    Product: [
-      { label: "Calculator", href: "#calculator" },
-      { label: "How it works", href: "#how-it-works" },
-    ],
-    Solutions: [
-      { label: "For HVAC", href: "#" },
-      { label: "For Contractors", href: "#" },
-      { label: "For Small Teams", href: "#" },
-    ],
-    Company: [
-      { label: "About", href: "#" },
-      { label: "Blog", href: "/blog" },
-      { label: "Careers", href: "#" },
-    ],
-    Resources: [
-      { label: "Documentation", href: "#" },
-      { label: "Support", href: "#" },
-      { label: "Contact", href: "#" },
-    ],
-    Legal: [
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
-      { label: "Security", href: "#" },
-    ],
-  };
-
   return (
-    <footer className="bg-fc-brand py-10 sm:py-12 text-slate-400" role="contentinfo">
+    <footer className="bg-fc-brand text-slate-400" role="contentinfo">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6 sm:gap-8">
-          <div className="col-span-2 lg:col-span-1">
+        <div className="grid gap-10 py-10 sm:py-12 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-4">
             <p className="font-display text-lg font-bold text-white">
               FieldCrew
             </p>
-            <p className="mt-3 text-sm text-slate-400">
+            <p className="mt-3 max-w-sm text-base leading-relaxed text-slate-400/95">
               Job-based payroll intelligence for HVAC crews.
             </p>
           </div>
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h3 className="font-display text-sm font-bold text-white uppercase tracking-wider">
-                {category}
-              </h3>
-              <ul className="mt-3 space-y-2">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="inline-flex min-h-[44px] min-w-[44px] items-center text-sm transition-colors duration-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-brand rounded -m-2 p-2"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+
+          <div className="grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-3 lg:col-span-8 lg:grid-cols-5 lg:gap-x-6">
+            {Object.entries(footerLinkGroups).map(([category, links]) => (
+              <nav key={category} aria-label={category}>
+                <h3 className="font-display text-sm font-bold uppercase tracking-[0.12em] text-white">
+                  {category}
+                </h3>
+                <ul className="mt-3 space-y-2">
+                  {links.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        className="inline-flex items-center rounded-sm text-sm leading-6 text-slate-400 transition-colors duration-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-brand"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
+          </div>
         </div>
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-6 sm:flex-row">
+
+        <div className="flex flex-col gap-4 border-t border-slate-800/80 py-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-500">
             © {new Date().getFullYear()} FieldCrew. All rights reserved.
           </p>
-          <div className="flex items-center gap-6">
-            {["Twitter", "LinkedIn", "Facebook", "YouTube"].map((social) => (
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            {socialLinks.map((social) => (
               <a
-                key={social}
-                href="#"
-                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-slate-400 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-brand rounded"
-                aria-label={social}
+                key={social.label}
+                href={social.href}
+                target={social.external ? "_blank" : undefined}
+                rel={social.external ? "noreferrer noopener" : undefined}
+                className="inline-flex items-center justify-center rounded-sm text-slate-400 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-brand"
+                aria-label={social.label}
               >
-                <span className="text-sm">{social}</span>
+                <span className="text-sm">{social.label}</span>
               </a>
             ))}
           </div>

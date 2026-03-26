@@ -32,7 +32,11 @@ const staticReveal = {
   visible: { opacity: 1, filter: "blur(0px)", y: 0 },
 };
 
-export function Hero() {
+type HeroProps = {
+  regionName?: string | null;
+};
+
+export function Hero({ regionName }: HeroProps) {
   const reduceMotion = useReducedMotion();
   const itemVariants = reduceMotion ? staticReveal : springReveal;
   const containerVariants = {
@@ -48,7 +52,11 @@ export function Hero() {
 
   const headlineBlock = (
     <h1 className="font-display font-extrabold tracking-tight text-white fc-hero-h1 text-balance max-w-[40rem] min-w-0 lg:max-w-[34rem]">
-      <span className="block text-fc-steel-500">Most HVAC Businesses Are Losing</span>
+      <span className="block text-fc-steel-500">
+        Most HVAC Businesses
+        {regionName ? ` in ${regionName}` : ""}
+        {" "}Are Losing
+      </span>
       <span className="fc-hero-h1-accent mt-2 block max-w-full bg-gradient-to-r from-fc-orange-500 to-fc-orange-600 bg-clip-text pb-[0.15em] text-transparent [background-clip:text] [-webkit-background-clip:text]">
         <span className="flex flex-col items-center gap-y-1 sm:inline-flex sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-3 sm:gap-y-1 lg:items-start">
           <span className="min-w-0 shrink">$3,000-$10,000</span>

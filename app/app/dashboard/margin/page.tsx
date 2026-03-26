@@ -16,11 +16,37 @@ export default function MarginPage() {
       <p className="mt-1 text-sm text-fc-muted">
         Detailed breakdown of revenue vs labour costs and margin trends.
       </p>
-      <div className="mt-6 rounded-lg border border-fc-border bg-white p-8 text-center">
-        <p className="text-fc-muted">Detailed margin analysis coming soon...</p>
-        <p className="mt-2 text-sm text-fc-muted">
-          TODO: Wire to API endpoint for margin analytics
+
+      <div className="mt-6 grid gap-4 md:grid-cols-3">
+        {[
+          "Gross margin signal: compare labour cost pressure against billed work.",
+          "Quote discipline: track where estimates consistently miss actual effort.",
+          "Crew utilization: spot jobs where extra hours are not improving outcomes.",
+        ].map((item) => (
+          <article key={item} className="rounded-lg border border-fc-border bg-white p-5 shadow-fc-sm">
+            <p className="text-sm text-fc-muted">{item}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="mt-6 rounded-lg border border-fc-border bg-white p-6 shadow-fc-sm">
+        <p className="text-sm text-fc-muted">
+          Use this view as a margin playbook: start with overrun-heavy jobs, then inspect overtime drivers and compare with project-level outcomes.
         </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link
+            href={routes.owner.dashboard.overruns}
+            className="text-sm font-medium text-fc-accent hover:underline"
+          >
+            Review overruns
+          </Link>
+          <Link
+            href={routes.owner.dashboard.revenueLabour}
+            className="text-sm font-medium text-fc-accent hover:underline"
+          >
+            Compare revenue vs labour
+          </Link>
+        </div>
       </div>
     </div>
   );

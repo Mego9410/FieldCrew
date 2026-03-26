@@ -87,33 +87,58 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-fc-surface px-4">
-      <div className="w-full max-w-[400px] border border-fc-border bg-fc-surface p-8">
-        <h1 className="font-display text-2xl font-bold text-fc-brand">
-          Create an account
-        </h1>
-        <p className="mt-2 text-sm text-fc-muted">
-          Sign up for FieldCrew to manage jobs, workers, and payroll.
-        </p>
-
-        {error && (
-          <div
-            className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
-            role="alert"
-          >
-            {error}
+    <div className="min-h-screen bg-fc-surface px-4 py-10 sm:py-14">
+      <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+        <section className="rounded-2xl border border-fc-border bg-white p-7 shadow-fc-sm sm:p-9">
+          <p className="font-display text-xs font-semibold uppercase tracking-[0.16em] text-fc-accent">
+            Get started
+          </p>
+          <h1 className="mt-3 font-display text-3xl font-bold text-fc-brand sm:text-4xl">
+            Create your account
+          </h1>
+          <p className="mt-3 text-fc-muted">
+            Set up your workspace and start tracking labour performance with meaningful weekly visibility.
+          </p>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            {[
+              "Fast onboarding for teams",
+              "Operational dashboards",
+              "Job and worker performance tracking",
+              "Recovery-focused reporting",
+            ].map((item) => (
+              <article key={item} className="rounded-lg border border-fc-border bg-fc-surface p-3 text-sm text-fc-brand">
+                {item}
+              </article>
+            ))}
           </div>
-        )}
-        {successMessage && (
-          <div
-            className="mt-4 rounded-lg border border-fc-border bg-slate-50 px-3 py-2 text-sm text-fc-brand"
-            role="status"
-          >
-            {successMessage}
-          </div>
-        )}
+        </section>
 
-        <form onSubmit={handleEmailSubmit} className="mt-6 space-y-4">
+        <div className="w-full border border-fc-border bg-fc-surface p-8">
+          <h2 className="font-display text-2xl font-bold text-fc-brand">
+            Sign up
+          </h2>
+          <p className="mt-2 text-sm text-fc-muted">
+            Create an account with email or Google.
+          </p>
+
+          {error && (
+            <div
+              className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+              role="alert"
+            >
+              {error}
+            </div>
+          )}
+          {successMessage && (
+            <div
+              className="mt-4 rounded-lg border border-fc-border bg-slate-50 px-3 py-2 text-sm text-fc-brand"
+              role="status"
+            >
+              {successMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleEmailSubmit} className="mt-6 space-y-4">
           <div>
             <label
               htmlFor="email"
@@ -181,23 +206,23 @@ export default function SignUpPage() {
               "Sign up with email"
             )}
           </button>
-        </form>
+          </form>
 
-        <div className="relative my-6">
+          <div className="relative my-6">
           <span className="absolute inset-0 flex items-center">
             <span className="w-full border-t border-fc-border" />
           </span>
           <span className="relative flex justify-center text-xs uppercase tracking-wide text-fc-muted">
             or
           </span>
-        </div>
+          </div>
 
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          disabled={loading !== null}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-fc-border bg-white px-4 py-2.5 font-medium text-fc-brand transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 disabled:opacity-70"
-        >
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={loading !== null}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-fc-border bg-white px-4 py-2.5 font-medium text-fc-brand transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 disabled:opacity-70"
+          >
           {loading === "google" ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -209,9 +234,9 @@ export default function SignUpPage() {
               Sign up with Google
             </>
           )}
-        </button>
+          </button>
 
-        <p className="mt-6 text-center text-sm text-fc-muted">
+          <p className="mt-6 text-center text-sm text-fc-muted">
           Already have an account?{" "}
           <Link
             href={routes.public.login}
@@ -226,7 +251,8 @@ export default function SignUpPage() {
           >
             Back to home
           </Link>
-        </p>
+          </p>
+        </div>
       </div>
     </div>
   );

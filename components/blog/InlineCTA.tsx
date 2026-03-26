@@ -31,7 +31,7 @@ export function InlineCTA({
       <div className="mt-4 inline-block" data-cta="blog-inline">
         <HiddenProfitCta
           label={buttonLabel}
-          auditUrl="/book"
+          auditUrl="/sample-report"
           variant="button"
           className="min-h-[44px] min-w-[44px] rounded-md px-5 py-2.5"
         />

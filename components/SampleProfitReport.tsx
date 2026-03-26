@@ -13,7 +13,7 @@ interface SampleProfitReportProps {
 
 export function SampleProfitReport({
   userEstimate,
-  auditUrl = "/book",
+  auditUrl = "/sample-report",
   onAuditClick,
   onDownloadClick,
 }: SampleProfitReportProps) {
@@ -108,7 +108,7 @@ export function SampleProfitReport({
           onClick={onAuditClick}
           className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md bg-fc-accent px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 print:no-underline"
         >
-          Book a 15‑Minute Labour Audit
+          View full sample report
         </a>
         <button
           type="button"
