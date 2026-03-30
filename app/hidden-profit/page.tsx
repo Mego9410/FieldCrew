@@ -32,7 +32,7 @@ export default function HiddenProfitPage() {
           title="Hidden labour profit calculator"
           description="Estimate losses from overtime, untracked time, and overruns, then turn that estimate into a practical recovery plan."
         />
-        <HiddenProfitFlow auditUrl="/sample-report" />
+        <HiddenProfitFlow />
         <PublicSection title="What to do with the result">
           <CTAButtons
             primary={{ label: "View sample report", href: routes.public.sampleReport }}

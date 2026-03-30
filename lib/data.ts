@@ -22,6 +22,11 @@ import type {
   TimeEntryInput,
   JobTypeInput,
 } from "./entities";
+import type {
+  CompanyOnboardingProfile,
+  EstimatedSnapshot,
+  OnboardingInsightInputs,
+} from "@/types/onboarding";
 
 type SupabaseClient = ReturnType<typeof createClient>;
 
@@ -46,7 +51,16 @@ function toCompany(r: Record<string, unknown>): Company {
     stripeSubscriptionId: (r.stripe_subscription_id as string) ?? undefined,
     subscriptionStatus: (r.subscription_status as string) ?? undefined,
     workerLimit: r.worker_limit != null ? Number(r.worker_limit) : undefined,
+    usingEstimatedInsight: r.using_estimated_insight != null ? Boolean(r.using_estimated_insight) : undefined,
     settings: settings ? {
+      onboardingStep:
+        settings.onboarding_step != null
+          ? Number(settings.onboarding_step)
+          : settings.onboardingStep != null
+            ? Number(settings.onboardingStep as number)
+            : undefined,
+      estimatedInsightDismissed:
+        (settings.estimated_insight_dismissed ?? settings.estimatedInsightDismissed) as boolean | undefined,
       otAfterHoursPerDay: settings.ot_after_hours_per_day != null ? Number(settings.ot_after_hours_per_day) : undefined,
       otAfterHoursPerWeek: settings.ot_after_hours_per_week != null ? Number(settings.ot_after_hours_per_week) : undefined,
       weekendMultiplier: settings.weekend_multiplier != null ? Number(settings.weekend_multiplier) : undefined,
@@ -73,6 +87,8 @@ function companySettingsToDb(s: Partial<Company["settings"]> | undefined): Recor
   if (s.requireNotesOnClockOut != null) out.require_notes_on_clock_out = s.requireNotesOnClockOut;
   if (s.requirePhotoOnClockOut != null) out.require_photo_on_clock_out = s.requirePhotoOnClockOut;
   if (s.jobReminderHours != null) out.job_reminder_hours = s.jobReminderHours;
+  if (s.onboardingStep != null) out.onboarding_step = s.onboardingStep;
+  if (s.estimatedInsightDismissed != null) out.estimated_insight_dismissed = s.estimatedInsightDismissed;
   return out;
 }
 
@@ -103,6 +119,8 @@ function toWorker(r: Record<string, unknown>): Worker {
     role: (r.role as Worker["role"]) ?? "tech",
     overtimeRate: r.overtime_rate != null ? Number(r.overtime_rate) : undefined,
     inviteStatus: (r.invite_status as Worker["inviteStatus"]) ?? "not_sent",
+    createdViaOnboarding:
+      r.created_via_onboarding != null ? Boolean(r.created_via_onboarding) : undefined,
   };
 }
 
@@ -144,6 +162,8 @@ function toJob(r: Record<string, unknown>): Job {
     workerIds: Array.isArray(row.worker_ids) ? (row.worker_ids as string[]) : undefined,
     status: row.status as Job["status"],
     instructions: row.instructions as string | undefined,
+    createdViaOnboarding:
+      row.created_via_onboarding != null ? Boolean(row.created_via_onboarding) : undefined,
   };
 }
 
@@ -213,6 +233,9 @@ export async function updateCompany(id: string, input: Partial<CompanyInput>, su
   if ((input as { stripeSubscriptionId?: string | null }).stripeSubscriptionId !== undefined) updates.stripe_subscription_id = (input as { stripeSubscriptionId?: string | null }).stripeSubscriptionId;
   if ((input as { subscriptionStatus?: string | null }).subscriptionStatus !== undefined) updates.subscription_status = (input as { subscriptionStatus?: string | null }).subscriptionStatus;
   if ((input as { workerLimit?: number }).workerLimit !== undefined) updates.worker_limit = (input as { workerLimit?: number }).workerLimit;
+  if ((input as { usingEstimatedInsight?: boolean }).usingEstimatedInsight !== undefined) {
+    updates.using_estimated_insight = (input as { usingEstimatedInsight?: boolean }).usingEstimatedInsight;
+  }
   const { data, error } = await db.from("companies").update(updates).eq("id", id).select().single();
   if (error || !data) return null;
   return toCompany(data);
@@ -222,6 +245,133 @@ export async function deleteCompany(id: string, supabase?: SupabaseClient): Prom
   const db = supabase ?? createClient();
   const { error } = await db.from("companies").delete().eq("id", id);
   return !error;
+}
+
+function toOnboardingProfile(r: Record<string, unknown>): CompanyOnboardingProfile | null {
+  const snap = r.estimated_snapshot_json as EstimatedSnapshot | undefined;
+  if (!snap || typeof snap !== "object") return null;
+  return {
+    companyId: r.company_id as string,
+    companyName: r.company_name as string,
+    tradeType: r.trade_type as CompanyOnboardingProfile["tradeType"],
+    fieldTechCount: Number(r.field_tech_count ?? 0),
+    officeStaffCount: r.office_staff_count != null ? Number(r.office_staff_count) : null,
+    jobsPerWeek: Number(r.jobs_per_week ?? 0),
+    avgJobDurationBand: r.avg_job_duration_band as CompanyOnboardingProfile["avgJobDurationBand"],
+    overrunFrequency: r.overrun_frequency as CompanyOnboardingProfile["overrunFrequency"],
+    overtimeFrequency: (r.overtime_frequency as CompanyOnboardingProfile["overtimeFrequency"]) ?? null,
+    estimatedSnapshot: snap,
+    onboardingCompletedAt: r.onboarding_completed_at ? String(r.onboarding_completed_at) : null,
+    onboardingStepCompleted:
+      r.onboarding_step_completed != null ? Number(r.onboarding_step_completed) : null,
+    onboardingSeedWorkersCompleted:
+      r.onboarding_seed_workers_completed != null
+        ? Boolean(r.onboarding_seed_workers_completed)
+        : false,
+    onboardingSeedJobsCompleted:
+      r.onboarding_seed_jobs_completed != null ? Boolean(r.onboarding_seed_jobs_completed) : false,
+    createdAt: String(r.created_at ?? ""),
+    updatedAt: String(r.updated_at ?? ""),
+  };
+}
+
+export async function getOnboardingProfile(
+  companyId: string,
+  supabase?: SupabaseClient
+): Promise<CompanyOnboardingProfile | null> {
+  const db = supabase ?? createClient();
+  const { data, error } = await db
+    .from("company_onboarding_profile")
+    .select("*")
+    .eq("company_id", companyId)
+    .maybeSingle();
+  if (error || !data) return null;
+  return toOnboardingProfile(data as Record<string, unknown>);
+}
+
+export async function upsertOnboardingProfile(
+  companyId: string,
+  input: {
+    companyName: string;
+    insightInputs: OnboardingInsightInputs;
+    estimatedSnapshot: EstimatedSnapshot;
+    onboardingStepCompleted?: number;
+    onboardingSeedWorkersCompleted?: boolean;
+    onboardingSeedJobsCompleted?: boolean;
+  },
+  supabase?: SupabaseClient
+): Promise<CompanyOnboardingProfile | null> {
+  const db = supabase ?? createClient();
+  const now = new Date().toISOString();
+  const ii = input.insightInputs;
+  const row = {
+    company_id: companyId,
+    company_name: input.companyName,
+    trade_type: ii.tradeType,
+    field_tech_count: ii.fieldTechCount,
+    office_staff_count: ii.officeStaffCount ?? null,
+    jobs_per_week: ii.jobsPerWeek,
+    avg_job_duration_band: ii.avgJobDurationBand,
+    overrun_frequency: ii.overrunFrequency,
+    overtime_frequency: ii.overtimeFrequency ?? null,
+    estimated_snapshot_json: input.estimatedSnapshot as unknown as Record<string, unknown>,
+    onboarding_step_completed: input.onboardingStepCompleted ?? 4,
+    onboarding_seed_workers_completed: input.onboardingSeedWorkersCompleted ?? false,
+    onboarding_seed_jobs_completed: input.onboardingSeedJobsCompleted ?? false,
+    updated_at: now,
+  };
+  const { data, error } = await db
+    .from("company_onboarding_profile")
+    .upsert(row, { onConflict: "company_id" })
+    .select()
+    .single();
+  if (error || !data) return null;
+  return toOnboardingProfile(data as Record<string, unknown>);
+}
+
+export async function markOnboardingProfileDashboardEntered(
+  companyId: string,
+  supabase?: SupabaseClient
+): Promise<void> {
+  const db = supabase ?? createClient();
+  await db
+    .from("company_onboarding_profile")
+    .update({ onboarding_completed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq("company_id", companyId);
+}
+
+export async function updateOnboardingProfileProgress(
+  companyId: string,
+  input: {
+    onboardingStepCompleted?: number;
+    onboardingSeedWorkersCompleted?: boolean;
+    onboardingSeedJobsCompleted?: boolean;
+  },
+  supabase?: SupabaseClient
+): Promise<void> {
+  const db = supabase ?? createClient();
+  const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (input.onboardingStepCompleted !== undefined) {
+    updates.onboarding_step_completed = input.onboardingStepCompleted;
+  }
+  if (input.onboardingSeedWorkersCompleted !== undefined) {
+    updates.onboarding_seed_workers_completed = input.onboardingSeedWorkersCompleted;
+  }
+  if (input.onboardingSeedJobsCompleted !== undefined) {
+    updates.onboarding_seed_jobs_completed = input.onboardingSeedJobsCompleted;
+  }
+  await db.from("company_onboarding_profile").update(updates).eq("company_id", companyId);
+}
+
+/** Distinct jobs that have at least one time entry for this company. */
+export async function countJobsWithLabourEntries(companyId: string, supabase?: SupabaseClient): Promise<number> {
+  const db = supabase ?? createClient();
+  const { data: jobs, error: jErr } = await db.from("jobs").select("id").eq("company_id", companyId);
+  if (jErr || !jobs?.length) return 0;
+  const ids = jobs.map((j) => (j as { id: string }).id);
+  const { data: entries, error: eErr } = await db.from("time_entries").select("job_id").in("job_id", ids);
+  if (eErr || !entries?.length) return 0;
+  return new Set(entries.map((e) => (e as { job_id: string }).job_id)).size;
 }
 
 // ─── OwnerUsers ─────────────────────────────────────────────────────────────
@@ -393,6 +543,7 @@ export async function addWorker(input: WorkerInput, supabase?: SupabaseClient): 
     role: (input as { role?: string }).role ?? "tech",
     overtime_rate: (input as { overtimeRate?: number }).overtimeRate ?? null,
     invite_status: (input as { inviteStatus?: string }).inviteStatus ?? "not_sent",
+    created_via_onboarding: (input as { createdViaOnboarding?: boolean }).createdViaOnboarding ?? false,
   });
   if (error) throw error;
   return worker;
@@ -408,6 +559,9 @@ export async function updateWorker(id: string, input: Partial<WorkerInput>, supa
   if ((input as { role?: string }).role !== undefined) updates.role = (input as { role?: string }).role;
   if ((input as { overtimeRate?: number }).overtimeRate !== undefined) updates.overtime_rate = (input as { overtimeRate?: number }).overtimeRate;
   if ((input as { inviteStatus?: string }).inviteStatus !== undefined) updates.invite_status = (input as { inviteStatus?: string }).inviteStatus;
+  if ((input as { createdViaOnboarding?: boolean }).createdViaOnboarding !== undefined) {
+    updates.created_via_onboarding = (input as { createdViaOnboarding?: boolean }).createdViaOnboarding;
+  }
   const { data, error } = await db.from("workers").update(updates).eq("id", id).select().single();
   if (error || !data) return null;
   return toWorker(data);
@@ -655,6 +809,7 @@ function jobToRow(input: JobInput & { id?: string }) {
     worker_ids: input.workerIds ?? [],
     status: input.status ?? "scheduled",
     instructions: input.instructions ?? null,
+    created_via_onboarding: input.createdViaOnboarding ?? false,
   };
 }
 
@@ -688,6 +843,9 @@ export async function updateJob(id: string, input: Partial<JobInput>, supabase?:
   if (input.workerIds != null) updates.worker_ids = input.workerIds;
   if (input.status != null) updates.status = input.status;
   if (input.instructions !== undefined) updates.instructions = input.instructions;
+  if ((input as { createdViaOnboarding?: boolean }).createdViaOnboarding !== undefined) {
+    updates.created_via_onboarding = (input as { createdViaOnboarding?: boolean }).createdViaOnboarding;
+  }
   const { data, error } = await db.from("jobs").update(updates).eq("id", id).select().single();
   if (error || !data) return null;
   return toJob(data);

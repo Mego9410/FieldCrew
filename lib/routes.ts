@@ -31,6 +31,8 @@ export const routes = {
     home: "/app",
     subscribe: "/subscribe",
     onboarding: "/onboarding",
+    /** Re-open first-insight onboarding to edit answers (requires `edit=1` + completed onboarding). */
+    onboardingEdit: "/onboarding?edit=1",
     jobs: "/app/jobs",
     job: (jobId: string) => `/app/jobs/${jobId}`,
     workers: "/app/workers",

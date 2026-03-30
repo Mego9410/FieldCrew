@@ -28,6 +28,7 @@ export default function ProfitLeakPage() {
       <Nav />
       <PublicPageShell>
         <PublicPageHero
+          className="py-8 sm:py-10 lg:py-12"
           eyebrow="Calculator"
           title="Profit leak calculator"
           description="Estimate monthly recoverable labour profit from under-quoted work and overtime pressure in under a minute."

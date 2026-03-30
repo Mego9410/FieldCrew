@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import typography from "@tailwindcss/typography";
 
 const config: Config = {
     darkMode: ["class"],
@@ -131,9 +132,49 @@ const config: Config = {
         "fc": "150ms",
         "fc-slow": "200ms",
       },
+      keyframes: {
+        /** Soft invite pulse for interactive demo tabs (marketing). */
+        "fc-demo-tab-idle": {
+          "0%, 100%": {
+            boxShadow:
+              "0 1px 2px rgb(15 23 42 / 0.05), 0 0 0 0 rgb(249 115 22 / 0)",
+          },
+          "50%": {
+            boxShadow:
+              "0 1px 3px rgb(15 23 42 / 0.06), 0 0 0 3px rgb(249 115 22 / 0.11)",
+          },
+        },
+        "fc-demo-tab-active": {
+          "0%, 100%": {
+            boxShadow:
+              "0 1px 2px rgb(15 23 42 / 0.08), 0 0 0 0 rgb(249 115 22 / 0.35)",
+          },
+          "50%": {
+            boxShadow:
+              "0 2px 8px rgb(249 115 22 / 0.28), 0 0 0 2px rgb(249 115 22 / 0.12)",
+          },
+        },
+        /** Login page staggered reveal */
+        "fc-login-left": {
+          from: { opacity: "0", transform: "translateY(10px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "fc-login-right": {
+          from: { opacity: "0", transform: "translateY(10px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "fc-demo-tab-idle": "fc-demo-tab-idle 2.6s ease-in-out infinite",
+        "fc-demo-tab-active": "fc-demo-tab-active 2.6s ease-in-out infinite",
+        "fc-login-left":
+          "fc-login-left 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards",
+        "fc-login-right":
+          "fc-login-right 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.14s forwards",
+      },
     },
   },
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [typography],
 };
 
 export default config;

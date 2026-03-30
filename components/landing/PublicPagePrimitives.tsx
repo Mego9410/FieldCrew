@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 export function PublicPageShell({ children }: { children: ReactNode }) {
   return (
@@ -13,13 +14,21 @@ export function PublicPageHero({
   eyebrow,
   title,
   description,
+  className,
 }: {
   eyebrow: string;
   title: string;
   description: string;
+  /** Merges with default padding; use to tighten spacing (e.g. calculator pages). */
+  className?: string;
 }) {
   return (
-    <section className="border-b border-fc-border bg-gradient-to-b from-slate-100/95 via-white to-slate-50/40 py-12 sm:py-16 lg:py-20">
+    <section
+      className={cn(
+        "border-b border-fc-border bg-gradient-to-b from-slate-100/95 via-white to-slate-50/40 py-12 sm:py-16 lg:py-20",
+        className,
+      )}
+    >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <span className="font-display text-xs font-semibold uppercase tracking-[0.16em] text-fc-accent">
           {eyebrow}

@@ -1,7 +1,5 @@
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { getCompanyForCurrentUser, ensureOwnerUserForAuthUser } from "@/lib/data";
-import { routes } from "@/lib/routes";
-import { redirect } from "next/navigation";
 
 export default async function OnboardingLayout({
   children,
@@ -22,10 +20,7 @@ export default async function OnboardingLayout({
       console.error("[onboarding/layout] ensureOwnerUserForAuthUser failed:", err);
     }
   }
-  // Allow unauthenticated / no-company access for "force onboarding" preview from login page
-  if (company?.onboardingStatus === "complete") {
-    redirect(routes.owner.home);
-  }
+  // Completed owners are redirected from /onboarding in page.tsx unless ?edit=1 (see onboarding/page.tsx).
   return (
     <div className="min-h-screen bg-[var(--fc-bg-page)]">
       {children}

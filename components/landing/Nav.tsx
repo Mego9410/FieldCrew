@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Menu, MoveRight, X } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
 import {
@@ -20,10 +21,7 @@ import { routes } from "@/lib/routes";
 function getMobileNavLinks(pathname: string) {
   const isHome = pathname === "/";
   const productHref = isHome ? "#how-it-works" : "/#how-it-works";
-  const pricingHref = isHome ? "#pricing" : "/#pricing";
   return {
-    productHref,
-    pricingHref,
     sections: [
       {
         title: "Product",
@@ -38,7 +36,7 @@ function getMobileNavLinks(pathname: string) {
         title: "Site",
         items: [
           { href: "/blog", label: "Blog" },
-          { href: pricingHref, label: "Pricing" },
+          { href: routes.owner.subscribe, label: "Pricing" },
         ],
       },
     ],
@@ -49,11 +47,21 @@ function getMobileNavLinks(pathname: string) {
   };
 }
 
+/** Close after navigation starts — closing in the same tick can unmount `<Link>` before Next.js handles the click. */
+function scheduleCloseMobileMenu(setOpen: (v: boolean) => void) {
+  window.setTimeout(() => setOpen(false), 0);
+}
+
 export function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [heroVisible, setHeroVisible] = useState(true);
   const pathname = usePathname();
   const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -93,7 +101,6 @@ export function Nav() {
 
   const isHome = pathname === "/";
   const productHref = isHome ? "#how-it-works" : "/#how-it-works";
-  const pricingHref = isHome ? "#pricing" : "/#pricing";
   const darkNav = isHome && heroVisible;
 
   const productLinks = [
@@ -105,7 +112,7 @@ export function Nav() {
 
   const learnLinks = [
     { title: "Blog", href: "/blog" },
-    { title: "Pricing", href: pricingHref },
+    { title: "Pricing", href: routes.owner.subscribe },
   ] as const;
 
   const triggerClass = cn(
@@ -244,7 +251,7 @@ export function Nav() {
           {/* Col 3: CTAs + mobile menu */}
           <div className="ml-auto flex shrink-0 items-center justify-end gap-2 sm:gap-4">
             <Link
-              href={pricingHref}
+              href={routes.owner.subscribe}
               className={cn(
                 buttonVariants({ variant: "ghost" }),
                 "hidden text-sm font-medium lg:inline-flex",
@@ -308,74 +315,80 @@ export function Nav() {
         </div>
       </nav>
 
-      {mobileOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-fc-brand/20 backdrop-blur-sm lg:hidden"
-            aria-hidden
-            onClick={() => setMobileOpen(false)}
-          />
-          <div
-            id="mobile-nav-panel"
-            ref={panelRef}
-            className="fixed top-0 right-0 z-50 h-full w-full max-w-[320px] overflow-y-auto border-l border-fc-border bg-white shadow-fc-lg lg:hidden"
-            role="dialog"
-            aria-label="Mobile menu"
-          >
-            <div className="flex flex-col gap-8 p-4 pt-20">
-              {mobile.sections.map((section) => (
-                <div key={section.title} className="flex flex-col gap-3">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-fc-muted">
-                    {section.title}
-                  </p>
-                  <div className="flex flex-col gap-1">
-                    {section.items.map(({ href, label }) => (
+      {mounted &&
+        mobileOpen &&
+        createPortal(
+          <>
+            <div
+              className="fixed inset-0 z-[200] bg-fc-brand/20 backdrop-blur-sm lg:hidden"
+              aria-hidden
+              onClick={() => setMobileOpen(false)}
+            />
+            <div
+              id="mobile-nav-panel"
+              ref={panelRef}
+              className="fixed top-0 right-0 z-[210] h-full w-full max-w-[320px] overflow-y-auto border-l border-fc-border bg-white shadow-fc-lg lg:hidden"
+              role="dialog"
+              aria-label="Mobile menu"
+            >
+              <div className="flex flex-col gap-8 p-4 pt-20">
+                {mobile.sections.map((section) => (
+                  <div key={section.title} className="flex flex-col gap-3">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-fc-muted">
+                      {section.title}
+                    </p>
+                    <div className="flex flex-col gap-1">
+                      {section.items.map(({ href, label }) => (
+                        <Link
+                          key={href + label}
+                          href={href}
+                          prefetch={false}
+                          className="flex items-center justify-between rounded-lg px-3 py-2.5 text-base font-medium text-fc-brand hover:bg-fc-surface-muted"
+                          onClick={() => scheduleCloseMobileMenu(setMobileOpen)}
+                        >
+                          {label}
+                          <MoveRight className="h-4 w-4 text-fc-muted" />
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <div className="flex flex-col gap-2 border-t border-fc-border pt-6">
+                  {mobile.auth.map(({ href, label, ...rest }) =>
+                    "primary" in rest && rest.primary ? (
                       <Link
-                        key={href + label}
+                        key={href}
                         href={href}
-                        className="flex items-center justify-between rounded-lg px-3 py-2.5 text-base font-medium text-fc-brand hover:bg-fc-surface-muted"
-                        onClick={() => setMobileOpen(false)}
+                        prefetch={false}
+                        onClick={() => scheduleCloseMobileMenu(setMobileOpen)}
+                        className={cn(
+                          buttonVariants(),
+                          "h-11 w-full justify-center bg-fc-brand text-white hover:bg-fc-brand/90",
+                        )}
                       >
                         {label}
-                        <MoveRight className="h-4 w-4 text-fc-muted" />
                       </Link>
-                    ))}
-                  </div>
+                    ) : (
+                      <Link
+                        key={href}
+                        href={href}
+                        prefetch={false}
+                        onClick={() => scheduleCloseMobileMenu(setMobileOpen)}
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "h-11 w-full justify-center border-fc-border",
+                        )}
+                      >
+                        {label}
+                      </Link>
+                    ),
+                  )}
                 </div>
-              ))}
-              <div className="flex flex-col gap-2 border-t border-fc-border pt-6">
-                {mobile.auth.map(({ href, label, ...rest }) =>
-                  "primary" in rest && rest.primary ? (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={() => setMobileOpen(false)}
-                      className={cn(
-                        buttonVariants(),
-                        "h-11 w-full justify-center bg-fc-brand text-white hover:bg-fc-brand/90",
-                      )}
-                    >
-                      {label}
-                    </Link>
-                  ) : (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={() => setMobileOpen(false)}
-                      className={cn(
-                        buttonVariants({ variant: "outline" }),
-                        "h-11 w-full justify-center border-fc-border",
-                      )}
-                    >
-                      {label}
-                    </Link>
-                  ),
-                )}
               </div>
             </div>
-          </div>
-        </>
-      )}
+          </>,
+          document.body,
+        )}
     </header>
   );
 }

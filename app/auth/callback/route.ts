@@ -6,8 +6,8 @@ import { toErrorMessage } from "@/lib/to-error-message";
 
 /**
  * OAuth callback (e.g. Google). Supabase redirects here with ?code=...
- * Exchange the code for a session and redirect to the app.
- * The "next" param is restricted to relative paths to avoid open redirects.
+ * Primary exchange runs in middleware (see lib/supabase/middleware.ts) so PKCE
+ * runs before getUser(); this route remains as a fallback if middleware is skipped.
  */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);

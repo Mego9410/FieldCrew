@@ -7,6 +7,8 @@ interface StepLayoutProps {
   totalSteps: number;
   title: string;
   description?: string;
+  /** Short trust line under the description (e.g. “This takes about 60 seconds”). */
+  reassurance?: string;
   onBack?: () => void;
   onNext?: () => void;
   nextLabel?: string;
@@ -20,6 +22,7 @@ export function StepLayout({
   totalSteps,
   title,
   description,
+  reassurance,
   onBack,
   onNext,
   nextLabel = "Next",
@@ -48,6 +51,11 @@ export function StepLayout({
         {description && (
           <p className="mt-2 text-fc-muted">
             {description}
+          </p>
+        )}
+        {reassurance && (
+          <p className="mt-3 text-sm text-fc-muted-strong">
+            {reassurance}
           </p>
         )}
       </div>

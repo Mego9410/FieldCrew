@@ -320,10 +320,13 @@ export function FeaturedCrmDemoSection({ className }: { className?: string }) {
               aria-selected={selected}
               onClick={() => setActive(v.id)}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[10px] font-semibold transition-colors sm:gap-2 sm:px-3 sm:text-xs",
+                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[10px] font-semibold outline-none transition-[background-color,color,box-shadow] duration-200 sm:gap-2 sm:px-3 sm:text-xs",
+                "motion-reduce:animate-none",
+                "hover:[animation-play-state:paused] hover:shadow-md",
+                "focus-visible:ring-2 focus-visible:ring-fc-accent focus-visible:ring-offset-2",
                 selected
-                  ? "bg-fc-accent text-white shadow-sm"
-                  : "bg-white text-slate-600 ring-1 ring-slate-200/90 hover:bg-slate-50",
+                  ? "motion-safe:animate-fc-demo-tab-active border border-slate-900/25 bg-fc-accent text-white hover:bg-fc-accent"
+                  : "motion-safe:animate-fc-demo-tab-idle border border-slate-200/90 bg-white text-slate-600 hover:bg-slate-50",
               )}
             >
               <Icon className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />

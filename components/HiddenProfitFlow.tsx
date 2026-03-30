@@ -8,8 +8,8 @@ import {
   type LeakageInputs,
   type LeakageOutputs,
 } from "@/lib/leakageCalculator";
+import { routes } from "@/lib/routes";
 import { track } from "@/lib/tracking";
-import { SampleProfitReport } from "./SampleProfitReport";
 
 const INPUT_LABELS: Record<keyof LeakageInputs, string> = {
   techs: "Number of field techs",
@@ -22,12 +22,7 @@ const INPUT_LABELS: Record<keyof LeakageInputs, string> = {
   jobsPerTechPerWeek: "Jobs per tech per week",
 };
 
-interface HiddenProfitFlowProps {
-  auditUrl?: string;
-}
-
-export function HiddenProfitFlow({ auditUrl = "/sample-report" }: HiddenProfitFlowProps) {
-  const [step, setStep] = useState<1 | 2>(1);
+export function HiddenProfitFlow() {
   const [inputs, setInputs] = useState<LeakageInputs>(DEFAULT_LEAKAGE_INPUTS);
   const [outputs, setOutputs] = useState<LeakageOutputs | null>(null);
   const [showLeadCapture, setShowLeadCapture] = useState(false);
@@ -81,21 +76,6 @@ export function HiddenProfitFlow({ auditUrl = "/sample-report" }: HiddenProfitFl
     }
   };
 
-  const handleSeeReport = () => {
-    setOutputs((prev) => prev ?? calculateLeakage(inputs));
-    setStep(2);
-    track("hidden_profit_report_viewed");
-  };
-
-  const handlePrint = () => {
-    track("hidden_profit_download_clicked");
-    window.print();
-  };
-
-  const handleAuditClick = () => {
-    track("hidden_profit_audit_clicked");
-  };
-
   const currentOutputs = outputs ?? calculateLeakage(inputs);
 
   const inputGroups: { title: string; keys: (keyof LeakageInputs)[] }[] = [
@@ -125,17 +105,14 @@ export function HiddenProfitFlow({ auditUrl = "/sample-report" }: HiddenProfitFl
             Labour leakage calculator
           </p>
           <h1 className="mt-3 font-display text-3xl font-bold tracking-tight text-fc-brand sm:text-4xl">
-            {step === 1 ? "How Much Labour Profit Are You Losing?" : "Sample Monthly Labour Profit Report"}
+            How Much Labour Profit Are You Losing?
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base text-fc-muted">
-            {step === 1
-              ? "Adjust the levers below. Your estimate updates live."
-              : "Your estimate plus a real example from a 10-tech HVAC company."}
+            Adjust the levers below. Your estimate updates live.
           </p>
         </header>
 
         <main className="mt-12">
-        {step === 1 ? (
           <>
             {/* Input panels — grouped, panel aesthetic */}
             <div className="space-y-8">
@@ -262,13 +239,13 @@ export function HiddenProfitFlow({ auditUrl = "/sample-report" }: HiddenProfitFl
 
             {/* CTAs */}
             <div className="mt-12 flex flex-wrap items-center justify-center gap-4 border-t border-slate-200/80 pt-10">
-              <button
-                type="button"
-                onClick={handleSeeReport}
-                className="inline-flex min-h-[48px] items-center justify-center rounded-md bg-fc-accent px-8 py-3 text-base font-semibold text-white shadow-fc-md hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
+              <Link
+                href={routes.public.sampleReport}
+                onClick={() => track("hidden_profit_report_viewed")}
+                className="relative z-10 inline-flex min-h-[48px] shrink-0 items-center justify-center rounded-md bg-fc-accent px-8 py-3 text-base font-semibold text-white shadow-fc-md hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
               >
                 See a Real Example Report
-              </button>
+              </Link>
               <button
                 type="button"
                 onClick={() => setShowLeadCapture(true)}
@@ -284,25 +261,6 @@ export function HiddenProfitFlow({ auditUrl = "/sample-report" }: HiddenProfitFl
               </Link>
             </div>
           </>
-        ) : (
-          <>
-            <SampleProfitReport
-              userEstimate={currentOutputs}
-              auditUrl={auditUrl}
-              onAuditClick={handleAuditClick}
-              onDownloadClick={handlePrint}
-            />
-            <div className="mt-6 print:hidden">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="text-sm font-medium text-slate-600 underline hover:text-fc-brand"
-              >
-                ← Back to calculator
-              </button>
-            </div>
-          </>
-        )}
       </main>
       </div>
     </div>

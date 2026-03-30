@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -12,8 +13,8 @@ import {
   type LeakageInputs,
   type LeakageOutputs,
 } from "@/lib/leakageCalculator";
+import { routes } from "@/lib/routes";
 import { track } from "@/lib/tracking";
-import { SampleProfitReport } from "./SampleProfitReport";
 
 const INPUT_LABELS: Record<keyof LeakageInputs, string> = {
   techs: "Number of field techs",
@@ -29,15 +30,12 @@ const INPUT_LABELS: Record<keyof LeakageInputs, string> = {
 interface HiddenProfitModalProps {
   isOpen: boolean;
   onClose: () => void;
-  auditUrl?: string;
 }
 
 export function HiddenProfitModal({
   isOpen,
   onClose,
-  auditUrl = "/sample-report",
 }: HiddenProfitModalProps) {
-  const [step, setStep] = useState<1 | 2>(1);
   const [inputs, setInputs] = useState<LeakageInputs>(DEFAULT_LEAKAGE_INPUTS);
   const [outputs, setOutputs] = useState<LeakageOutputs | null>(null);
   const [showLeadCapture, setShowLeadCapture] = useState(false);
@@ -75,7 +73,7 @@ export function HiddenProfitModal({
     return () => {
       if (previousActiveRef.current?.focus) previousActiveRef.current.focus();
     };
-  }, [isOpen, step]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -126,22 +124,6 @@ export function HiddenProfitModal({
     }
   };
 
-  const handleSeeReport = () => {
-    if (!outputs) runCalculation();
-    setOutputs((prev) => prev ?? calculateLeakage(inputs));
-    setStep(2);
-    track("hidden_profit_report_viewed");
-  };
-
-  const handlePrint = () => {
-    track("hidden_profit_download_clicked");
-    window.print();
-  };
-
-  const handleAuditClick = () => {
-    track("hidden_profit_audit_clicked");
-  };
-
   if (!isOpen) return null;
 
   const currentOutputs = outputs ?? calculateLeakage(inputs);
@@ -161,7 +143,7 @@ export function HiddenProfitModal({
       >
         <div className="border-b border-slate-200/60 px-4 py-3 flex items-center justify-between">
           <h1 id="hidden-profit-modal-title" className="font-display text-lg font-bold text-fc-brand">
-            {step === 1 ? "How Much Labour Profit Are You Losing?" : "Sample Monthly Labour Profit Report"}
+            How Much Labour Profit Are You Losing?
           </h1>
           <button
             type="button"
@@ -174,8 +156,7 @@ export function HiddenProfitModal({
         </div>
 
         <div className="max-h-[calc(100vh-8rem)] overflow-y-auto p-4 print:max-h-none print:overflow-visible">
-          {step === 1 ? (
-            <>
+          <>
               <p className="text-sm text-slate-600">
                 Estimate hidden labour leakage from overtime, untracked time, and job overruns.
               </p>
@@ -280,13 +261,13 @@ export function HiddenProfitModal({
               ) : null}
 
               <div className="mt-6 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={handleSeeReport}
-                  className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md bg-fc-accent px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
+                <Link
+                  href={routes.public.sampleReport}
+                  onClick={() => track("hidden_profit_report_viewed")}
+                  className="relative z-10 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-md bg-fc-accent px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2"
                 >
                   See a Real Example Report
-                </button>
+                </Link>
                 <button
                   type="button"
                   onClick={() => setShowLeadCapture(true)}
@@ -302,26 +283,7 @@ export function HiddenProfitModal({
                   Not now
                 </button>
               </div>
-            </>
-          ) : (
-            <>
-              <SampleProfitReport
-                userEstimate={currentOutputs}
-                auditUrl={auditUrl}
-                onAuditClick={handleAuditClick}
-                onDownloadClick={handlePrint}
-              />
-              <div className="mt-4 print:hidden">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="text-sm font-medium text-slate-600 underline hover:text-fc-brand"
-                >
-                  ← Back to calculator
-                </button>
-              </div>
-            </>
-          )}
+          </>
         </div>
       </div>
     </div>

@@ -53,9 +53,14 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const searchParams = request.nextUrl.searchParams;
 
-  // When Supabase redirects to Site URL (/) with ?code=..., exchange the code here
-  // so session cookies are set on the redirect response and the user is created.
-  if (pathname === "/" && searchParams.has("code")) {
+  // Exchange OAuth PKCE code before getUser(). If we call getUser() first, the server
+  // auth client can sync storage and drop the PKCE verifier cookie, and the later
+  // /auth/callback route handler then fails with "PKCE code verifier not found".
+  const isOAuthCodeReturn =
+    searchParams.has("code") &&
+    (pathname === "/" || pathname === "/auth/callback");
+
+  if (isOAuthCodeReturn) {
     const code = searchParams.get("code")!;
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 

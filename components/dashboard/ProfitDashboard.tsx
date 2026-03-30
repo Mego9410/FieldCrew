@@ -30,7 +30,11 @@ import {
 import { getJobs, getWorkers, getTimeEntries, getJobTypes } from "@/lib/data";
 import { toErrorMessage } from "@/lib/to-error-message";
 
-export function ProfitDashboard() {
+export function ProfitDashboard({
+  showLiveDataTransitionNote = false,
+}: {
+  showLiveDataTransitionNote?: boolean;
+}) {
   const [timeframe, setTimeframe] = useState<"this_week" | "last_week" | "last_30_days">("this_week");
   const [dashboardData, setDashboardData] = useState<{
     revenueThisWeek: number;
@@ -47,6 +51,7 @@ export function ProfitDashboard() {
   } | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [liveNoteDismissed, setLiveNoteDismissed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -168,6 +173,24 @@ export function ProfitDashboard() {
   return (
     <div className="min-h-full bg-fc-page">
       <div className="px-4 py-6 md:px-6">
+        {showLiveDataTransitionNote && !liveNoteDismissed && (
+          <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-950 sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-medium">You&apos;re now seeing live labour data.</p>
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await fetch("/api/onboarding/dismiss-live-data-note", { method: "POST" });
+                } finally {
+                  setLiveNoteDismissed(true);
+                }
+              }}
+              className="shrink-0 rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-xs font-medium text-emerald-900 hover:bg-emerald-100"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="font-display text-xl font-semibold text-fc-brand">Dashboard</h1>
           <div className="flex rounded-lg border border-fc-border bg-fc-surface shadow-fc-sm">

@@ -11,6 +11,8 @@ export type InviteStatus = "not_sent" | "sent" | "accepted";
 
 export interface CompanySettings {
   onboardingStep?: number;
+  /** User dismissed the “live data” banner after estimates transitioned away. */
+  estimatedInsightDismissed?: boolean;
   otAfterHoursPerDay?: number;
   otAfterHoursPerWeek?: number;
   weekendMultiplier?: number;
@@ -38,6 +40,8 @@ export interface Company {
   stripeSubscriptionId?: string | null;
   subscriptionStatus?: string | null;
   workerLimit?: number;
+  /** True while dashboard may show estimated first insight (before enough real job/time data). */
+  usingEstimatedInsight?: boolean;
 }
 
 export interface OwnerUser {
@@ -56,6 +60,7 @@ export interface Worker {
   role?: WorkerRole;
   overtimeRate?: number | null;
   inviteStatus?: InviteStatus;
+  createdViaOnboarding?: boolean;
 }
 
 export interface WorkerInvite {
@@ -101,6 +106,7 @@ export interface Job {
   workerIds?: string[];   // assigned workers (multiselect)
   status?: "scheduled" | "in_progress" | "completed" | "overdue";
   instructions?: string;  // notes for crew (access, scope, contact)
+  createdViaOnboarding?: boolean;
 }
 
 export type TimeEntryCategory = "billable" | "travel" | "admin" | "idle";
