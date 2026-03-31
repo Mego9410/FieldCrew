@@ -21,9 +21,10 @@ export function createClient() {
     cookies: {
       getAll() {
         if (typeof document === "undefined") return [];
-        return Object.entries(parse(document.cookie ?? "")).map(([name, value]) => ({
+        const parsed = parse(document.cookie ?? "") as Record<string, string>;
+        return Object.keys(parsed).map((name) => ({
           name,
-          value,
+          value: parsed[name] ?? "",
         }));
       },
       setAll(cookiesToSet) {
