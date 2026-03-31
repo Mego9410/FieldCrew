@@ -15,6 +15,12 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+function getSiteOrigin() {
+  const envOrigin = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+  if (envOrigin) return envOrigin;
+  return typeof window !== "undefined" ? window.location.origin : "";
+}
+
 export function LoginClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -95,8 +101,7 @@ export function LoginClient() {
     setLoading("google");
 
     const supabase = createClient();
-    const origin =
-      typeof window !== "undefined" ? window.location.origin : "";
+    const origin = getSiteOrigin();
     const next = searchParams.get("next");
     const nextPath = next?.startsWith("/") && !next.startsWith("//") ? next : routes.owner.home;
     const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;

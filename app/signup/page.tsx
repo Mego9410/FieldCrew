@@ -7,6 +7,12 @@ import { createClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
 import { Mail, Lock, Loader2 } from "lucide-react";
 
+function getSiteOrigin() {
+  const envOrigin = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+  if (envOrigin) return envOrigin;
+  return typeof window !== "undefined" ? window.location.origin : "";
+}
+
 function getNextRedirect(searchParams: URLSearchParams): string {
   const next = searchParams.get("next");
   if (next?.startsWith("/") && !next.startsWith("//")) return next;
@@ -35,7 +41,7 @@ export default function SignUpPage() {
     setSuccessMessage(null);
     setLoading("email");
 
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const origin = getSiteOrigin();
     const callbackNext = `${origin}/auth/callback?next=${encodeURIComponent(nextRedirect)}`;
 
     const supabase = createClient();
@@ -70,8 +76,7 @@ export default function SignUpPage() {
     setLoading("google");
 
     const supabase = createClient();
-    const origin =
-      typeof window !== "undefined" ? window.location.origin : "";
+    const origin = getSiteOrigin();
     const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextRedirect)}`;
 
     const { error: signInError } = await supabase.auth.signInWithOAuth({

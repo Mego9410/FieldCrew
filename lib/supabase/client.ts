@@ -1,4 +1,4 @@
-import { createBrowserClient } from "@supabase/ssr";
+import { createBrowserClient, parse, serialize } from "@supabase/ssr";
 
 /**
  * Supabase browser client for Client Components.
@@ -15,5 +15,24 @@ function getSupabaseAnonKey() {
 export function createClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const key = getSupabaseAnonKey();
-  return createBrowserClient(url, key);
+  const isSecure =
+    typeof window !== "undefined" && window.location?.protocol === "https:";
+  return createBrowserClient(url, key, {
+    cookies: {
+      getAll() {
+        if (typeof document === "undefined") return [];
+        return Object.entries(parse(document.cookie ?? "")).map(([name, value]) => ({
+          name,
+          value,
+        }));
+      },
+      setAll(cookiesToSet) {
+        if (typeof document === "undefined") return;
+        cookiesToSet.forEach(({ name, value, options }) => {
+          document.cookie = serialize(name, value, { path: "/", ...options });
+        });
+      },
+    },
+    cookieOptions: { path: "/", sameSite: "lax", secure: isSecure },
+  });
 }
