@@ -17,7 +17,8 @@ export async function POST(request: Request) {
   }
   let event: Stripe.Event;
   try {
-    const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
+    // Don't hardcode apiVersion; use account default to avoid runtime mismatch.
+    const stripe = new Stripe(stripeKey);
     event = stripe.webhooks.constructEvent(body, sig, secret);
   } catch (err) {
     console.error("[stripe/webhook] constructEvent failed:", err);
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
         let workerLimit = 5;
         if (subId && stripeKey) {
           try {
-            const stripe = new Stripe(stripeKey, { apiVersion: "2026-02-25.clover" });
+            const stripe = new Stripe(stripeKey);
             const sub = await stripe.subscriptions.retrieve(subId);
             const wl = sub.metadata?.worker_limit;
             if (wl != null) workerLimit = parseInt(String(wl), 10) || 5;

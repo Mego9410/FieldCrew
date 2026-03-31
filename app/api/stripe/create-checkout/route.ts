@@ -61,7 +61,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Company not found" }, { status: 404 });
   }
 
-  const stripe = new Stripe(secret, { apiVersion: "2026-02-25.clover" });
+  // Don't hardcode apiVersion; use account default to avoid runtime mismatch.
+  const stripe = new Stripe(secret);
   const baseUrl = getBaseUrl(request);
 
   let customerId = company.stripeCustomerId ?? null;
