@@ -109,7 +109,7 @@ export default async function Home() {
         "@type": "WebPage",
         "@id": "https://fieldcrew.com/#webpage",
         url: "https://fieldcrew.com/",
-        name: "FieldCrew — Recover hidden labour profit",
+        name: "FieldCrew — Recover hidden labor profit",
         isPartOf: { "@id": "https://fieldcrew.com/#website" },
         about: { "@id": "https://fieldcrew.com/#organization" },
       },
@@ -130,7 +130,6 @@ export default async function Home() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <h1 className="sr-only">FieldCrew — Recover hidden labour profit</h1>
         <Hero regionName={visitorRegionName} />
         <section
           aria-labelledby="homepage-seo-copy"
@@ -141,7 +140,7 @@ export default async function Home() {
               id="homepage-seo-copy"
               className="font-display text-2xl font-bold text-fc-brand sm:text-3xl"
             >
-              Find where labour profit disappears (and recover it)
+              Find where labor profit disappears (and recover it)
             </h2>
             <div className="prose prose-slate mt-5 max-w-3xl">
               <p>
@@ -156,7 +155,7 @@ export default async function Home() {
                 If you manage 5–20 technicians, those small overruns repeat across
                 dozens of jobs per month. One callback, one install that goes
                 60–90 minutes over, one day where the crew loses an hour to parts
-                or paperwork — it adds up. The result is labour cost drifting past
+                or paperwork — it adds up. The result is labor cost drifting past
                 what you billed, and payroll eating the margin you expected to
                 keep.
               </p>
@@ -169,11 +168,26 @@ export default async function Home() {
                 only option.
               </p>
               <p>
+                This isn’t time tracking for the sake of tracking. It’s a simple,
+                owner-friendly way to connect field reality to the numbers that
+                matter: labor efficiency, overtime exposure, and the true cost of
+                each job type. When you can see the variance clearly, it becomes
+                easier to coach, adjust dispatch, improve job scope notes, and set
+                expectations with customers before the schedule gets compressed.
+              </p>
+              <p>
                 Start with a quick calculator to estimate the monthly impact, then
                 use the same workflow to build a practical recovery cadence. The
                 goal isn’t more spreadsheets — it’s clarity: where the money is
                 going, what to change next, and how to protect your margins as you
                 grow.
+              </p>
+              <p>
+                Whether you’re operating in a single market or expanding into new
+                territory, the underlying issue is the same: small, repeated
+                inefficiencies become large, predictable losses. FieldCrew gives
+                you a repeatable system to spot them early, tighten your process,
+                and keep more of what you earn — without slowing down the crew.
               </p>
             </div>
 
@@ -190,7 +204,15 @@ export default async function Home() {
                   </li>
                   <li>
                     <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.hiddenProfit}>
-                      Hidden labour profit calculator
+                      Hidden labor profit calculator
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline"
+                      href="#how-it-works"
+                    >
+                      How it works
                     </Link>
                   </li>
                   <li>
@@ -199,8 +221,28 @@ export default async function Home() {
                     </Link>
                   </li>
                   <li>
+                    <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.owner.subscribe}>
+                      Pricing
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.blog}>
+                      Blog for HVAC owners
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.about}>
+                      About FieldCrew
+                    </Link>
+                  </li>
+                  <li>
                     <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.docs}>
                       Documentation
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.support}>
+                      Support
                     </Link>
                   </li>
                   <li>
@@ -233,7 +275,7 @@ export default async function Home() {
                 <div className="mt-4">
                   <ShareLinks
                     url="https://fieldcrew.com/"
-                    title="FieldCrew — Recover hidden labour profit"
+                    title="FieldCrew — Recover hidden labor profit"
                     ariaLabel="Share FieldCrew homepage"
                   />
                 </div>
