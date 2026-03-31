@@ -12,6 +12,8 @@ import {
   SUBSCRIPTION_PLANS,
   type PlanId,
 } from "@/lib/pricing-plans";
+import { BILLING_PLANS } from "@/lib/billing/plans";
+import { PromoBadge } from "@/components/billing/PromoBadge";
 
 const PLAN_FEATURE_TITLES = FEATURES_LIST.slice(0, 4).map((f) => f.title);
 
@@ -36,14 +38,11 @@ export function PricingSection4({
   const reduceMotion = useReducedMotion();
   const isSubscribe = variant === "subscribe";
 
-  const heading =
-    variant === "marketing"
-      ? "Recover $6,000. Pay $149."
-      : "Choose your plan";
+  const heading = variant === "marketing" ? "Get your first month for $9" : "Choose your plan";
   const subheading =
     variant === "marketing"
-      ? "One recovered job overrun pays for this."
-      : "Monthly subscription. Cancel anytime.";
+      ? "Choose your plan now and your first month is just $9. Standard monthly pricing starts after that."
+      : "First month for $9. Then standard monthly pricing. Cancel anytime.";
 
   const HeadingTag = variant === "subscribe" ? "h1" : "h2";
 
@@ -83,6 +82,9 @@ export function PricingSection4({
             className="mx-auto mb-4 block h-1 w-12 rounded-full bg-gradient-to-r from-fc-orange-500 to-amber-400"
             aria-hidden
           />
+          <div className="mb-4 flex justify-center">
+            <PromoBadge>Launch offer</PromoBadge>
+          </div>
           <HeadingTag
             id="pricing-heading"
             className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl"
@@ -91,6 +93,9 @@ export function PricingSection4({
           </HeadingTag>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-400">
             {subheading}
+          </p>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-500">
+            Applies to first month only.
           </p>
         </ScrollReveal>
 
@@ -107,6 +112,7 @@ export function PricingSection4({
           {SUBSCRIPTION_PLANS.map((plan, index) => {
             const href = `${routes.owner.subscribe}?plan=${plan.id}`;
             const showLoader = isSubscribe && loadingPlanId === plan.id;
+            const promo = BILLING_PLANS[plan.id];
 
             return (
               <motion.div
@@ -141,9 +147,14 @@ export function PricingSection4({
                 )}
 
                 <div className={cn("flex flex-1 flex-col", plan.highlighted && "pt-1")}>
-                  <h3 className="font-display text-xl font-bold text-white">
-                    {plan.name}
-                  </h3>
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="font-display text-xl font-bold text-white">
+                      {plan.name}
+                    </h3>
+                    <span className="inline-flex shrink-0 items-center rounded-full border border-fc-orange-500/40 bg-fc-orange-500/10 px-2.5 py-1 text-[11px] font-semibold text-fc-orange-200">
+                      {promo.promoBadge}
+                    </span>
+                  </div>
                   <p className="mt-1 text-sm text-slate-400">{plan.workers}</p>
 
                   <p className="mt-6 font-display text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
@@ -152,6 +163,10 @@ export function PricingSection4({
                       /month
                     </span>
                   </p>
+                  <p className="mt-2 text-sm font-semibold text-fc-orange-200">
+                    {promo.promoLine}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">{promo.afterPromoLine}</p>
 
                   <ul className="mt-6 flex flex-1 flex-col gap-2.5 text-sm text-slate-300">
                     {PLAN_FEATURE_TITLES.map((title) => (
@@ -179,7 +194,7 @@ export function PricingSection4({
                             : "border border-white/20 bg-white/5 text-white hover:bg-white/10",
                         )}
                       >
-                        {showLoader ? "Redirecting…" : `Start with ${plan.name}`}
+                        {showLoader ? "Redirecting…" : `Start ${plan.name} for $9`}
                       </button>
                     ) : plan.highlighted ? (
                       <MagneticButton
@@ -187,21 +202,21 @@ export function PricingSection4({
                         variant="primary"
                         className="w-full justify-center text-base"
                       >
-                        Start with {plan.name}
+                        Start {plan.name} for $9
                       </MagneticButton>
                     ) : (
                       <Link
                         href={href}
                         className="inline-flex min-h-[48px] w-full items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-center text-sm font-bold text-white transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fc-orange-400 focus:ring-offset-2 focus:ring-offset-slate-950"
                       >
-                        Start with {plan.name}
+                        Start {plan.name} for $9
                       </Link>
                     )}
                   </div>
 
                   {plan.highlighted && (
                     <p className="mt-3 text-center text-xs text-slate-500">
-                      1 recovered overrun pays for this.
+                      Applies to the first month only.
                     </p>
                   )}
                 </div>

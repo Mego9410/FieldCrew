@@ -3,23 +3,12 @@ import Stripe from "stripe";
 import { createClient } from "@/lib/supabase/server";
 import { getCompanyForCurrentUser, getOwnerUserById } from "@/lib/data";
 import { routes } from "@/lib/routes";
+import { getBillingPlan } from "@/lib/billing/plans";
 
-const PLAN_CONFIG: Record<"starter" | "growth" | "pro", { priceId: string; workerLimit: number; planName: string }> = {
-  starter: {
-    priceId: process.env.STRIPE_PRICE_STARTER ?? "",
-    workerLimit: 5,
-    planName: "Starter",
-  },
-  growth: {
-    priceId: process.env.STRIPE_PRICE_GROWTH ?? "",
-    workerLimit: 15,
-    planName: "Growth",
-  },
-  pro: {
-    priceId: process.env.STRIPE_PRICE_PRO ?? "",
-    workerLimit: 30,
-    planName: "Pro",
-  },
+const WORKER_LIMITS: Record<"starter" | "growth" | "pro", number> = {
+  starter: 5,
+  growth: 15,
+  pro: 30,
 };
 
 function getBaseUrl(request: Request): string {
@@ -40,19 +29,25 @@ export async function POST(request: Request) {
   if (!secret) {
     return NextResponse.json({ error: "Stripe is not configured" }, { status: 503 });
   }
-  let body: { planId?: string };
+  let body: { planId?: string; plan?: string };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  const planId = body.planId?.toLowerCase() as keyof typeof PLAN_CONFIG | undefined;
-  const config = planId && PLAN_CONFIG[planId] ? PLAN_CONFIG[planId] : undefined;
-  if (!config || !config.priceId) {
+  const plan = getBillingPlan(body.planId ?? body.plan);
+  if (!plan) {
     return NextResponse.json(
-      { error: "Invalid plan or Stripe price not configured" },
+      { error: "Invalid plan" },
       { status: 400 }
     );
+  }
+  if (!plan.stripePriceId) {
+    return NextResponse.json({ error: "Stripe price not configured for plan" }, { status: 503 });
+  }
+  if (!plan.stripePromotionCodeId) {
+    // Safety requirement: never silently create a full-price session.
+    return NextResponse.json({ error: "Launch offer is temporarily unavailable. Please try again later." }, { status: 503 });
   }
 
   const supabase = await createClient();
@@ -88,19 +83,23 @@ export async function POST(request: Request) {
     );
   }
 
+  const workerLimit = WORKER_LIMITS[plan.id];
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
-    line_items: [{ price: config.priceId, quantity: 1 }],
+    line_items: [{ price: plan.stripePriceId, quantity: 1 }],
     success_url: `${baseUrl}${routes.owner.onboarding}?payment=success`,
     cancel_url: `${baseUrl}${routes.owner.subscribe}`,
     client_reference_id: company.id,
-    allow_promotion_codes: true,
+    allow_promotion_codes: false,
+    discounts: [{ promotion_code: plan.stripePromotionCodeId }],
     subscription_data: {
       metadata: {
         company_id: company.id,
-        worker_limit: String(config.workerLimit),
-        plan_name: config.planName,
+        worker_limit: String(workerLimit),
+        plan_name: plan.name,
+        promo: "first_month_9_usd",
+        promo_plan: plan.id,
       },
     },
   });

@@ -42,7 +42,7 @@ function getMobileNavLinks(pathname: string) {
     ],
     auth: [
       { href: "/login", label: "Log in" },
-      { href: routes.owner.subscribe, label: "Get Started", primary: true as const },
+      { href: routes.owner.subscribe, label: "Start for $9", primary: true as const },
     ],
   };
 }
@@ -174,7 +174,7 @@ export function Nav() {
                               "mt-6 inline-flex w-fit bg-fc-brand text-white hover:bg-fc-navy-800",
                             )}
                           >
-                            Get started
+                            Start for $9
                           </Link>
                         </div>
                         <div className="flex h-full flex-col justify-end text-sm">
@@ -292,7 +292,7 @@ export function Nav() {
                   : "bg-fc-brand text-white hover:bg-fc-brand/90",
               )}
             >
-              Get Started
+              Start for $9
             </Link>
 
             <button
