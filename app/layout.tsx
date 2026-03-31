@@ -36,9 +36,30 @@ const shareTechMono = Share_Tech_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FieldCrew — Recover Hidden Labour Profit | HVAC Payroll & Margin",
+  metadataBase: new URL("https://fieldcrew.com"),
+  title: {
+    default: "FieldCrew — Recover hidden labour profit",
+    template: "%s — FieldCrew",
+  },
   description:
-    "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labour inefficiency. FieldCrew shows you exactly where. Built for 5–20 tech owners in Texas, Florida & Arizona.",
+    "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labour inefficiency. FieldCrew shows you where and how to recover it.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "FieldCrew",
+    title: "FieldCrew — Recover hidden labour profit",
+    description:
+      "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labour inefficiency. FieldCrew shows you where and how to recover it.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FieldCrew — Recover hidden labour profit",
+    description:
+      "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labour inefficiency. FieldCrew shows you where and how to recover it.",
+  },
 };
 
 export const viewport = {

@@ -51,7 +51,7 @@ export function Hero({ regionName }: HeroProps) {
   };
 
   const headlineBlock = (
-    <h1 className="font-display font-extrabold tracking-tight text-white fc-hero-h1 text-balance max-w-[40rem] min-w-0 lg:max-w-[34rem]">
+    <h2 className="font-display font-extrabold tracking-tight text-white fc-hero-h1 text-balance max-w-[40rem] min-w-0 lg:max-w-[34rem]">
       <span className="block text-fc-steel-500">
         Most HVAC Businesses
         {regionName ? ` in ${regionName}` : ""}
@@ -64,7 +64,7 @@ export function Hero({ regionName }: HeroProps) {
         </span>
       </span>
       <span className="mt-2 block text-white">Every month without realising</span>
-    </h1>
+    </h2>
   );
 
   const subcopy = (

@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   // Avoid Next 15 devtools segment explorer RSC manifest errors in dev (SegmentViewNode).
   experimental: {
     devtoolSegmentExplorer: false,
