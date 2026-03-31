@@ -140,7 +140,7 @@ export function PricingSection4({
                       className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-fc-orange-500 to-amber-400"
                       aria-hidden
                     />
-                    <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-wider text-fc-orange-400">
+                    <p className="mb-2 text-center text-[11px] font-bold uppercase tracking-wider text-slate-200/60">
                       {plan.badge}
                     </p>
                   </>
@@ -151,7 +151,7 @@ export function PricingSection4({
                     <h3 className="font-display text-xl font-bold text-white">
                       {plan.name}
                     </h3>
-                    <span className="inline-flex shrink-0 items-center rounded-full border border-fc-orange-500/40 bg-fc-orange-500/10 px-2.5 py-1 text-[11px] font-semibold text-fc-orange-200">
+                    <span className="inline-flex shrink-0 items-center rounded-full border border-white/25 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-100/90">
                       {promo.promoBadge}
                     </span>
                   </div>
