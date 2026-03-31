@@ -45,10 +45,7 @@ export async function POST(request: Request) {
   if (!plan.stripePriceId) {
     return NextResponse.json({ error: "Stripe price not configured for plan" }, { status: 503 });
   }
-  if (!plan.stripePromotionCodeId) {
-    // Safety requirement: never silently create a full-price session.
-    return NextResponse.json({ error: "Launch offer is temporarily unavailable. Please try again later." }, { status: 503 });
-  }
+  const promotionCodeId = plan.stripePromotionCodeId || null;
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -92,14 +89,15 @@ export async function POST(request: Request) {
     cancel_url: `${baseUrl}${routes.owner.subscribe}`,
     client_reference_id: company.id,
     allow_promotion_codes: false,
-    discounts: [{ promotion_code: plan.stripePromotionCodeId }],
+    ...(promotionCodeId ? { discounts: [{ promotion_code: promotionCodeId }] } : {}),
     subscription_data: {
       metadata: {
         company_id: company.id,
         worker_limit: String(workerLimit),
         plan_name: plan.name,
-        promo: "first_month_9_usd",
-        promo_plan: plan.id,
+        ...(promotionCodeId
+          ? { promo: "first_month_9_usd", promo_plan: plan.id }
+          : { promo: "none" }),
       },
     },
   });
