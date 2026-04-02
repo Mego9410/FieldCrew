@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Menu, MoveRight, X } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
+import { Logo } from "@/components/brand/Logo";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -141,17 +142,18 @@ export function Nav() {
         <div className="flex min-h-20 w-full items-center gap-3 lg:grid lg:grid-cols-3 lg:items-center lg:gap-4">
           {/* Col 1: mobile logo OR desktop nav */}
           <div className="flex min-w-0 flex-1 items-center gap-2 lg:min-w-0">
-            <Link
-              href="/"
-              className={cn(
-                "font-display text-lg font-bold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded-md min-h-[44px] inline-flex items-center lg:hidden",
-                darkNav
-                  ? "text-white hover:text-fc-orange-500 focus:ring-offset-fc-navy-950"
-                  : "text-fc-brand hover:text-fc-accent",
-              )}
-            >
-              FieldCrew
-            </Link>
+            <div className="lg:hidden">
+              <Logo
+                href="/"
+                size="md"
+                onDark={darkNav}
+                priority
+                className={cn(
+                  "min-h-[44px]",
+                  darkNav ? "focus:ring-offset-fc-navy-950" : "focus:ring-offset-white",
+                )}
+              />
+            </div>
 
             <div className="hidden justify-start lg:flex">
               <NavigationMenu className="flex justify-start">
@@ -164,7 +166,7 @@ export function Nav() {
                           <div className="flex flex-col">
                             <p className="text-base font-medium text-fc-brand">Product</p>
                             <p className="text-sm text-muted-foreground">
-                              See where labour profit leaks and what to do about it.
+                              See where labor profit leaks and what to do about it.
                             </p>
                           </div>
                           <Link
@@ -235,17 +237,13 @@ export function Nav() {
 
           {/* Col 2: centered brand (desktop) */}
           <div className="hidden justify-center lg:flex">
-            <Link
+            <Logo
               href="/"
-              className={cn(
-                "font-display text-lg font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded-md",
-                darkNav
-                  ? "text-white hover:text-fc-orange-500 focus:ring-offset-fc-navy-950"
-                  : "text-fc-brand hover:text-fc-accent",
-              )}
-            >
-              FieldCrew
-            </Link>
+              size="lg"
+              onDark={darkNav}
+              priority
+              className={cn(darkNav ? "focus:ring-offset-fc-navy-950" : "focus:ring-offset-white")}
+            />
           </div>
 
           {/* Col 3: CTAs + mobile menu */}

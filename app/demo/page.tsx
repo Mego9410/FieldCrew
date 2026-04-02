@@ -12,7 +12,7 @@ import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
   title: "Watch Demo — FieldCrew",
-  description: "Explore FieldCrew product highlights and see how owner views and labour profit reports work for HVAC teams.",
+  description: "Explore FieldCrew product highlights and see how owner views and labor profit reports work for HVAC teams.",
 };
 
 export default function DemoPage() {
@@ -23,12 +23,12 @@ export default function DemoPage() {
         <PublicPageHero
           eyebrow="Conversion"
           title="Product demo highlights"
-          description="A focused overview of owner workflows and where labour margin risk appears first."
+          description="A focused overview of owner workflows and where labor margin risk appears first."
         />
         <PublicSection title="What you will see">
           <FeatureGrid
             items={[
-              "Weekly labour leak estimate and trend signal",
+              "Weekly labor leak estimate and trend signal",
               "Job and worker performance views",
               "Actionable recovery priorities by impact",
             ]}

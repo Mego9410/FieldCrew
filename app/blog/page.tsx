@@ -11,7 +11,7 @@ const baseUrl = SITE_URL.startsWith("http") ? SITE_URL : `https://${SITE_URL}`;
 export const metadata: Metadata = {
   title: "Field Notes — FieldCrew Blog | Profit Recovery & Operational Control",
   description:
-    "HVAC field notes on payroll leakage, job costing, time tracking, and recovering 8–15% hidden labour profit. Practical insights for contractors.",
+    "HVAC field notes on payroll leakage, job costing, time tracking, and recovering 8–15% hidden labor profit. Practical insights for contractors.",
   alternates: { canonical: `${baseUrl}/blog` },
   openGraph: {
     title: "Field Notes — FieldCrew Blog",
@@ -51,7 +51,7 @@ export default function BlogIndexPage() {
             </h1>
             <p className="mt-4 text-lg text-fc-muted">
               Practical insights for HVAC owners: payroll leakage, job costing,
-              time tracking, and how to see labour spend per job in real time.
+              time tracking, and how to see labor spend per job in real time.
             </p>
           </div>
         </div>

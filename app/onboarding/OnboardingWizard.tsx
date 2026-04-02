@@ -497,7 +497,7 @@ export function OnboardingWizard({
           step={6}
           totalSteps={TOTAL_STEPS}
           title="Setup complete"
-          description="Your first labour snapshot is ready and your workspace is set up for week one."
+          description="Your first labor snapshot is ready and your workspace is set up for week one."
         >
           <OnboardingReadyStep
             workersAdded={workersAddedCount}
@@ -520,7 +520,7 @@ export function OnboardingWizard({
           step={1}
           totalSteps={TOTAL_STEPS}
           title="Tell us about your team"
-          description="We'll use this to create your first labour snapshot."
+          description="We'll use this to create your first labor snapshot."
           reassurance="This takes about 60 seconds. You can change this later."
           onNext={() => {
             setApiError(null);
@@ -548,8 +548,8 @@ export function OnboardingWizard({
           step={2}
           totalSteps={TOTAL_STEPS}
           title="How does a normal week usually look?"
-          description="Just rough numbers. We'll turn this into an estimated labour picture."
-          reassurance="We'll use this to generate your first labour snapshot. You can change this later."
+          description="Just rough numbers. We'll turn this into an estimated labor picture."
+          reassurance="We'll use this to generate your first labor snapshot. You can change this later."
           onBack={() => setStep(1)}
           onNext={() => void handleGenerateInsight()}
           nextLabel="Generate my first insight"

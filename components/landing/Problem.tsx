@@ -16,7 +16,7 @@ const painRows = [
   },
   {
     youThink: "Our margins are fine.",
-    reality: "Without job-level labour data, you're assuming — not measuring.",
+    reality: "Without job-level labor data, you're assuming — not measuring.",
     result: "Underpriced jobs and overruns eat profit. You don't see which ones.",
   },
 ];
@@ -43,7 +43,7 @@ export function Problem() {
             id="pain-heading"
             className="font-display font-bold text-fc-brand fc-section-h2"
           >
-            Payroll isn&apos;t your problem. Uncontrolled labour is.
+            Payroll isn&apos;t your problem. Uncontrolled labor is.
           </h2>
         </ScrollReveal>
 

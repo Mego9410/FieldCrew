@@ -224,7 +224,7 @@ export default function JobDetailPage({
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-fc-muted">
-              Labour cost
+              Labor cost
             </p>
             <p className="mt-0.5 text-lg font-bold text-fc-brand">
               {entries.length > 0
@@ -285,7 +285,7 @@ export default function JobDetailPage({
           </div>
         </div>
 
-        {/* Job details + Labour – compact two columns */}
+        {/* Job details + Labor – compact two columns */}
         <div className="grid gap-6 p-6 sm:grid-cols-2">
           <section>
             <h2 className="mb-3 text-sm font-semibold text-fc-brand">Job details</h2>
@@ -351,7 +351,7 @@ export default function JobDetailPage({
           </section>
 
           <section>
-            <h2 className="mb-3 text-sm font-semibold text-fc-brand">Labour</h2>
+            <h2 className="mb-3 text-sm font-semibold text-fc-brand">Labor</h2>
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between gap-2">
                 <dt className="flex items-center gap-1.5 text-fc-muted">
@@ -386,7 +386,7 @@ export default function JobDetailPage({
                 </dd>
               </div>
               <div className="flex justify-between gap-2">
-                <dt className="text-fc-muted">Revenue per labour hour</dt>
+                <dt className="text-fc-muted">Revenue per labor hour</dt>
                 <dd className="font-medium text-fc-brand text-right">
                   {snapshot.rplh != null && snapshot.rplh > 0
                     ? `$${Math.round(snapshot.rplh)}`

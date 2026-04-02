@@ -40,7 +40,7 @@ export default function PrivacyPage() {
               <div className="mt-4 space-y-4 text-fc-muted">
                 <p>
                   FieldCrew is a software platform that helps field service businesses track
-                  job-based labour, payroll, and operational performance.
+                  job-based labor, payroll, and operational performance.
                 </p>
                 <p>
                   <strong className="text-fc-brand">Legal entity:</strong> FieldCrew Ltd
@@ -108,7 +108,7 @@ export default function PrivacyPage() {
                     Operational and platform data
                   </h3>
                   <ul className="mt-2 list-disc space-y-2 pl-5">
-                    <li>Job records, timesheets, and labour tracking data.</li>
+                    <li>Job records, timesheets, and labor tracking data.</li>
                     <li>Reporting outputs and performance metrics.</li>
                     <li>System logs, timestamps, and usage activity.</li>
                     <li>Configuration settings for payroll and workflows.</li>

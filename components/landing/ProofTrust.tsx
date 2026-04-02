@@ -71,7 +71,7 @@ export function ProofTrust() {
             href="/sample-report"
             className="text-sm font-semibold text-fc-accent underline decoration-fc-accent underline-offset-2 hover:no-underline focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 rounded"
           >
-            See a sample labour profit report
+            See a sample labor profit report
           </Link>
         </p>
       </div>

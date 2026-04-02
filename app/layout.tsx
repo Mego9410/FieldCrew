@@ -38,11 +38,11 @@ const shareTechMono = Share_Tech_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://fieldcrew.com"),
   title: {
-    default: "FieldCrew — Recover hidden labour profit",
+    default: "FieldCrew — Recover hidden labor profit",
     template: "%s — FieldCrew",
   },
   description:
-    "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labour inefficiency. FieldCrew shows you where and how to recover it.",
+    "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labor inefficiency. FieldCrew shows you where and how to recover it.",
   alternates: {
     canonical: "/",
   },
@@ -50,15 +50,15 @@ export const metadata: Metadata = {
     type: "website",
     url: "/",
     siteName: "FieldCrew",
-    title: "FieldCrew — Recover hidden labour profit",
+    title: "FieldCrew — Recover hidden labor profit",
     description:
-      "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labour inefficiency. FieldCrew shows you where and how to recover it.",
+      "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labor inefficiency. FieldCrew shows you where and how to recover it.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "FieldCrew — Recover hidden labour profit",
+    title: "FieldCrew — Recover hidden labor profit",
     description:
-      "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labour inefficiency. FieldCrew shows you where and how to recover it.",
+      "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labor inefficiency. FieldCrew shows you where and how to recover it.",
   },
 };
 

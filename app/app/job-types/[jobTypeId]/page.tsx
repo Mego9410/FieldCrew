@@ -27,7 +27,7 @@ import {
 type Timeframe = "this_week" | "last_week" | "last_30_days";
 
 function formatCurrency(value: number): string {
-  return `£${Math.round(value).toLocaleString("en-GB", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  return `$${Math.round(value).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
 function parseDate(dateStr: string): Date {
@@ -206,7 +206,7 @@ export default function JobTypeDetailPage() {
         {typeName ?? "…"}
       </h1>
       <p className="mt-1.5 text-sm text-fc-muted">
-        Revenue, labour cost, and margin for this job type in the selected period.
+        Revenue, labor cost, and margin for this job type in the selected period.
       </p>
 
       <div className="mt-6 flex flex-wrap items-center gap-4">
@@ -256,7 +256,7 @@ export default function JobTypeDetailPage() {
                 <p className="mt-1 font-display text-xl font-bold text-fc-brand">{formatCurrency(summary.revenue)}</p>
               </div>
               <div className="rounded-lg border border-fc-border bg-fc-surface p-4 shadow-fc-sm">
-                <p className="text-xs font-semibold uppercase tracking-widest text-fc-muted">Labour cost</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-fc-muted">Labor cost</p>
                 <p className="mt-1 font-display text-xl font-bold text-fc-brand">{formatCurrency(summary.labourCost)}</p>
               </div>
               <div className="rounded-lg border border-fc-border bg-fc-surface p-4 shadow-fc-sm">
@@ -282,7 +282,7 @@ export default function JobTypeDetailPage() {
                   <TableRow>
                     <TableHead>Job</TableHead>
                     <TableHead align="right">Revenue</TableHead>
-                    <TableHead align="right">Labour cost</TableHead>
+                    <TableHead align="right">Labor cost</TableHead>
                     <TableHead align="right">Margin %</TableHead>
                   </TableRow>
                 </TableHeader>

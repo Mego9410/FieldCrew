@@ -31,7 +31,7 @@ export default function ProfitLeakPage() {
           className="py-8 sm:py-10 lg:py-12"
           eyebrow="Calculator"
           title="Profit leak calculator"
-          description="Estimate monthly recoverable labour profit from under-quoted work and overtime pressure in under a minute."
+          description="Estimate monthly recoverable labor profit from under-quoted work and overtime pressure in under a minute."
         />
         <ProfitLeakCalculator />
         <PublicSection

@@ -150,12 +150,12 @@ export default function NotificationsSettingsPage() {
       >
         <SettingsSectionCard
           title="Admin / Owner alerts"
-          description="Alerts for labour summaries, overtime, and timesheets."
+          description="Alerts for labor summaries, overtime, and timesheets."
         >
           <div className="divide-y divide-fc-border">
             <ToggleRow
-              label="Weekly labour summary"
-              description="Email summary of labour hours"
+              label="Weekly labor summary"
+              description="Email summary of labor hours"
               checked={prefs.weeklyLabourSummaryEmail}
               onChange={(v) => update("weeklyLabourSummaryEmail", v)}
             />

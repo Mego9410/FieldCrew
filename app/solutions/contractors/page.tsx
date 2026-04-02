@@ -5,7 +5,7 @@ import { ContractorsSolutionsContent } from "@/components/solutions/ContractorsS
 
 export const metadata: Metadata = {
   title: "Contractor Operations — FieldCrew",
-  description: "Operational visibility tools for contractor teams managing field labour and margin.",
+  description: "Operational visibility tools for contractor teams managing field labor and margin.",
 };
 
 export default function SolutionsContractorsPage() {

@@ -207,7 +207,7 @@ export default async function BlogPostPage({ params }: Props) {
               What to do next
             </h2>
             <ul className="list-disc list-inside space-y-2 text-fc-muted">
-              <li>Review labour cost per job in your last month</li>
+              <li>Review labor cost per job in your last month</li>
               <li>Identify jobs that ran over estimate</li>
               <li>
                 Try job-coded time tracking —{" "}
@@ -233,7 +233,7 @@ export default async function BlogPostPage({ params }: Props) {
               id="post-cta-heading"
               className="font-display text-lg font-bold text-white"
             >
-              Recover 8–15% hidden labour profit
+              Recover 8–15% hidden labor profit
             </h2>
             <p className="mt-2 text-sm text-slate-300">
               See where every hour goes. Get a sample report.

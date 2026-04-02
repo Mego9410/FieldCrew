@@ -70,7 +70,7 @@ function TierCard({
           </span>
         </div>
         <p className="mt-3 text-xs font-medium leading-snug text-fc-muted/90">
-          Estimated hidden labour leak
+          Estimated hidden labor leak
         </p>
       </div>
       <div

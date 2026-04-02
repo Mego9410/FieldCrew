@@ -12,9 +12,9 @@ export default function RevenueLabourPage() {
         <ArrowLeft className="h-4 w-4" />
         Back to dashboard
       </Link>
-      <h1 className="font-display text-xl font-bold text-fc-brand">Revenue vs Labour</h1>
+      <h1 className="font-display text-xl font-bold text-fc-brand">Revenue vs Labor</h1>
       <p className="mt-1 text-sm text-fc-muted">
-        Compare revenue and labour costs side-by-side with detailed breakdowns.
+        Compare revenue and labor costs side-by-side with detailed breakdowns.
       </p>
 
       <div className="mt-6 grid gap-4 md:grid-cols-3">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { footerLinkGroups, socialLinks } from "@/lib/site-links";
+import { Logo } from "@/components/brand/Logo";
 
 export function Footer() {
   return (
@@ -7,9 +8,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-10 py-10 sm:py-12 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-4">
-            <p className="font-display text-lg font-bold text-white">
-              FieldCrew
-            </p>
+            <Logo href="/" size="lg" onDark priority />
             <p className="mt-3 max-w-sm text-base leading-relaxed text-slate-400/95">
               Job-based payroll intelligence for HVAC crews.
             </p>

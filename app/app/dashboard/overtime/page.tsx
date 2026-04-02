@@ -100,7 +100,7 @@ export default function OvertimePage() {
       </Link>
       <h1 className="font-display text-xl font-bold text-fc-brand">Overtime Analysis</h1>
       <p className="mt-1 text-sm text-fc-muted">
-        Track overtime costs, trends, and identify opportunities to reduce premium labour costs.
+        Track overtime costs, trends, and identify opportunities to reduce premium labor costs.
       </p>
 
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

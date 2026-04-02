@@ -40,7 +40,7 @@ export default function TermsPage() {
               <div className="mt-4 space-y-4 text-fc-muted">
                 <p>
                   FieldCrew is a software platform that helps field service businesses manage
-                  job-based labour, payroll insights, and operational performance.
+                  job-based labor, payroll insights, and operational performance.
                 </p>
                 <p>
                   <strong className="text-fc-brand">Legal entity:</strong> FieldCrew Ltd

@@ -5,7 +5,7 @@ import { HvacSolutionsContent } from "@/components/solutions/HvacSolutionsConten
 
 export const metadata: Metadata = {
   title: "HVAC Solution — FieldCrew",
-  description: "How FieldCrew helps HVAC businesses recover hidden labour profit.",
+  description: "How FieldCrew helps HVAC businesses recover hidden labor profit.",
 };
 
 export default function SolutionsHvacPage() {

@@ -242,7 +242,7 @@ export default function WorkerDetailPage() {
               )}
             </div>
             <div className="rounded-lg border border-fc-border bg-white p-4">
-              <p className="text-sm font-medium text-fc-muted">Earnings (labour cost)</p>
+              <p className="text-sm font-medium text-fc-muted">Earnings (labor cost)</p>
               <p className="mt-1 text-2xl font-bold text-fc-brand">
                 ${snapshot.labourCost.toLocaleString("en-US", { maximumFractionDigits: 0 })}
               </p>
@@ -254,7 +254,7 @@ export default function WorkerDetailPage() {
                 ${snapshot.revenueGenerated.toLocaleString("en-US", { maximumFractionDigits: 0 })}
               </p>
               <p className="mt-0.5 text-xs text-fc-muted">
-                Revenue per labour hour: ${snapshot.revenuePerLabourHour.toFixed(0)}/hr
+                Revenue per labor hour: ${snapshot.revenuePerLabourHour.toFixed(0)}/hr
               </p>
               {showBelowTargetBadge && (
                 <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
@@ -289,7 +289,7 @@ export default function WorkerDetailPage() {
       {/* Charts */}
       <div className="mb-6 grid gap-6 lg:grid-cols-2">
         <section id="chart-rplh" className="rounded-lg border border-fc-border bg-white p-4">
-          <h3 className="mb-4 font-semibold text-fc-brand">Revenue per labour hour (trend)</h3>
+          <h3 className="mb-4 font-semibold text-fc-brand">Revenue per labor hour (trend)</h3>
           {rplhTrend.length === 0 ? (
             <p className="py-8 text-center text-sm text-fc-muted">No time entries in this period.</p>
           ) : (
@@ -423,7 +423,7 @@ export default function WorkerDetailPage() {
                     <th className="px-4 py-3 font-semibold text-fc-brand">Actual hrs</th>
                     <th className="px-4 py-3 font-semibold text-fc-brand">Variance</th>
                     <th className="px-4 py-3 font-semibold text-fc-brand">Revenue</th>
-                    <th className="px-4 py-3 font-semibold text-fc-brand">Labour cost</th>
+                    <th className="px-4 py-3 font-semibold text-fc-brand">Labor cost</th>
                     <th className="px-4 py-3 font-semibold text-fc-brand">RPLH</th>
                   </tr>
                 </thead>

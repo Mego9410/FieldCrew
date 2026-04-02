@@ -128,7 +128,7 @@ export default function JobsPage() {
         <div>
           <h1 className="font-display text-xl font-bold text-fc-brand">Jobs</h1>
           <p className="mt-0.5 text-sm text-fc-muted">
-            Manage jobs and see labour cost per job.
+            Manage jobs and see labor cost per job.
           </p>
         </div>
         <Button type="button" onClick={() => setShowAddModal(true)}>

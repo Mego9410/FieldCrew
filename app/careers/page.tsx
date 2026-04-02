@@ -24,7 +24,7 @@ export default function CareersPage() {
                 Build practical software for real operations teams
               </h1>
               <p className="mt-4 text-lg text-fc-muted">
-                FieldCrew exists to help HVAC owners run stronger businesses with clearer labour and job visibility.
+                FieldCrew exists to help HVAC owners run stronger businesses with clearer labor and job visibility.
                 We are looking for people who care about useful products and measurable customer outcomes.
               </p>
             </div>

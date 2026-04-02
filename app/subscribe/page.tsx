@@ -41,7 +41,7 @@ const CORE_WORKFLOW_CARDS: ProofCard[] = [
     icon: BarChart3,
     title: "See which jobs are making money — and which aren’t",
     paragraphs: [
-      "Labour hours and cost, broken down per job.",
+      "Labor hours and cost, broken down per job.",
       "No spreadsheets, no digging.",
     ],
   },
@@ -52,7 +52,7 @@ const WEEKLY_CONTROL_CARDS: ProofCard[] = [
     icon: FileSpreadsheet,
     title: "Payroll that actually matches what happened in the field",
     paragraphs: [
-      "Export clean, job-linked labour data.",
+      "Export clean, job-linked labor data.",
       "No fixing timesheets at the end of the week.",
     ],
   },
@@ -60,7 +60,7 @@ const WEEKLY_CONTROL_CARDS: ProofCard[] = [
     icon: Mail,
     title: "A weekly report you’ll actually read",
     paragraphs: [
-      "“Last week’s labour by job.”",
+      "“Last week’s labor by job.”",
       "Simple, clear, and immediately useful.",
     ],
   },
@@ -287,7 +287,7 @@ export default function SubscribePage() {
               />
               <div className="relative">
                 <h3 className="font-display text-xl font-bold tracking-tight text-fc-brand sm:text-2xl">
-                  This isn&apos;t time tracking. It&apos;s job-based labour
+                  This isn&apos;t time tracking. It&apos;s job-based labor
                   clarity.
                 </h3>
                 <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-fc-muted sm:text-lg">

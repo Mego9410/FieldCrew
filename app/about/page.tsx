@@ -24,7 +24,7 @@ export default function AboutPage() {
                 The problem we are solving for HVAC owners
               </h1>
               <p className="mt-4 text-lg text-fc-muted">
-                HVAC teams often have the work, the demand, and the people - but still lose margin quietly through labour leakage.
+                HVAC teams often have the work, the demand, and the people - but still lose margin quietly through labor leakage.
                 We built FieldCrew to make that leakage visible and fixable.
               </p>
             </div>
@@ -38,12 +38,12 @@ export default function AboutPage() {
               <div className="mt-4 space-y-4 text-fc-muted">
                 <p>
                   Most businesses do not lose profit in one obvious event. It disappears gradually:
-                  jobs run over estimated labour, overtime is used to recover schedule, and leaders
+                  jobs run over estimated labor, overtime is used to recover schedule, and leaders
                   only see the full impact after payroll has already landed.
                 </p>
                 <p>
                   The core issue is visibility. Owners can see activity, but they cannot easily see
-                  which jobs, workflows, and labour patterns are driving margin down week after week.
+                  which jobs, workflows, and labor patterns are driving margin down week after week.
                 </p>
               </div>
             </section>
@@ -52,7 +52,7 @@ export default function AboutPage() {
               <h2 className="font-display text-2xl font-bold text-fc-brand">What we are doing to solve it</h2>
               <div className="mt-4 space-y-4 text-fc-muted">
                 <p>
-                  FieldCrew connects job execution and labour signals into one operating view so you can
+                  FieldCrew connects job execution and labor signals into one operating view so you can
                   spot where profit is leaking first, not last.
                 </p>
                 <p>
@@ -67,11 +67,11 @@ export default function AboutPage() {
               <h2 className="font-display text-2xl font-bold text-fc-brand">How we work with customers</h2>
               <div className="mt-4 space-y-4 text-fc-muted">
                 <p>
-                  We start with your current workflow, establish a baseline labour leak estimate, and then
+                  We start with your current workflow, establish a baseline labor leak estimate, and then
                   help your team run a repeatable review cadence that improves margin over time.
                 </p>
                 <p>
-                  The goal is simple: clearer control of labour spend, better execution decisions, and stronger
+                  The goal is simple: clearer control of labor spend, better execution decisions, and stronger
                   confidence in where profit is gained or lost.
                 </p>
               </div>
@@ -103,7 +103,7 @@ export default function AboutPage() {
             <section className="rounded-lg border border-fc-border bg-fc-brand p-6">
               <h2 className="font-display text-lg font-bold text-white">See it on your numbers</h2>
               <p className="mt-2 text-sm text-slate-300">
-                Estimate your current labour leak and review a practical recovery path.
+                Estimate your current labor leak and review a practical recovery path.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Link

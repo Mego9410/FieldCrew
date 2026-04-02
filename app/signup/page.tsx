@@ -102,7 +102,7 @@ export default function SignUpPage() {
             Create your account
           </h1>
           <p className="mt-3 text-fc-muted">
-            Set up your workspace and start tracking labour performance with meaningful weekly visibility.
+            Set up your workspace and start tracking labor performance with meaningful weekly visibility.
           </p>
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
             {[

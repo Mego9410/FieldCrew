@@ -12,14 +12,14 @@ export default function MarginPage() {
         <ArrowLeft className="h-4 w-4" />
         Back to dashboard
       </Link>
-      <h1 className="font-display text-xl font-bold text-fc-brand">Labour Margin Analysis</h1>
+      <h1 className="font-display text-xl font-bold text-fc-brand">Labor Margin Analysis</h1>
       <p className="mt-1 text-sm text-fc-muted">
-        Detailed breakdown of revenue vs labour costs and margin trends.
+        Detailed breakdown of revenue vs labor costs and margin trends.
       </p>
 
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         {[
-          "Gross margin signal: compare labour cost pressure against billed work.",
+          "Gross margin signal: compare labor cost pressure against billed work.",
           "Quote discipline: track where estimates consistently miss actual effort.",
           "Crew utilization: spot jobs where extra hours are not improving outcomes.",
         ].map((item) => (
@@ -44,7 +44,7 @@ export default function MarginPage() {
             href={routes.owner.dashboard.revenueLabour}
             className="text-sm font-medium text-fc-accent hover:underline"
           >
-            Compare revenue vs labour
+            Compare revenue vs labor
           </Link>
         </div>
       </div>

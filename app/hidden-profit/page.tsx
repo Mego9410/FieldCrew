@@ -11,9 +11,9 @@ import {
 import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
-  title: "Hidden Labour Profit Calculator — FieldCrew",
+  title: "Hidden Labor Profit Calculator — FieldCrew",
   description:
-    "Estimate how much labour profit you're losing to overtime, untracked time, and job overruns. See a real sample report.",
+    "Estimate how much labor profit you're losing to overtime, untracked time, and job overruns. See a real sample report.",
 };
 
 export default function HiddenProfitPage() {
@@ -29,7 +29,7 @@ export default function HiddenProfitPage() {
       <PublicPageShell>
         <PublicPageHero
           eyebrow="Calculator"
-          title="Hidden labour profit calculator"
+          title="Hidden labor profit calculator"
           description="Estimate losses from overtime, untracked time, and overruns, then turn that estimate into a practical recovery plan."
         />
         <HiddenProfitFlow />

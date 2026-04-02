@@ -102,10 +102,10 @@ export function HiddenProfitFlow() {
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         <header className="text-center">
           <p className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-fc-accent">
-            Labour leakage calculator
+            Labor leakage calculator
           </p>
           <h1 className="mt-3 font-display text-3xl font-bold tracking-tight text-fc-brand sm:text-4xl">
-            How Much Labour Profit Are You Losing?
+            How Much Labor Profit Are You Losing?
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base text-fc-muted">
             Adjust the levers below. Your estimate updates live.
@@ -174,7 +174,7 @@ export function HiddenProfitFlow() {
               aria-live="polite"
             >
               <p className="font-display text-xs font-semibold uppercase tracking-wider text-fc-accent">
-                Estimated monthly labour leakage
+                Estimated monthly labor leakage
               </p>
               <p className="mt-2 font-display text-4xl font-bold tabular-nums text-fc-brand sm:text-5xl">
                 {currentOutputs.formatted.totalRecoverableProfit}

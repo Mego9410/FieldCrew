@@ -27,7 +27,7 @@ type Timeframe = "this_week" | "last_week" | "last_30_days";
 type SortKey = "margin_asc" | "margin_desc" | "revenue" | "labourCost" | "jobsCount";
 
 function formatCurrency(value: number): string {
-  return `£${Math.round(value).toLocaleString("en-GB", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  return `$${Math.round(value).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
 function sortRows(rows: JobTypeMargin[], sort: SortKey): JobTypeMargin[] {
@@ -106,7 +106,7 @@ export default function JobTypesPage() {
         Margin by job type
       </h1>
       <p className="mt-1.5 text-sm text-fc-muted">
-        Revenue, labour cost, and margin % by job type for the selected period.
+        Revenue, labor cost, and margin % by job type for the selected period.
       </p>
 
       <div className="mt-6 flex flex-wrap items-center gap-4">
@@ -174,7 +174,7 @@ export default function JobTypesPage() {
                     href={sortHref("labourCost")}
                     className={sortParam === "labourCost" ? "text-fc-accent" : "hover:text-fc-accent"}
                   >
-                    Labour cost
+                    Labor cost
                   </Link>
                 </TableHead>
                 <TableHead align="right">

@@ -22,21 +22,21 @@ export const FEATURES_LIST = [
   },
   {
     icon: BarChart3,
-    title: "Job labour summary",
+    title: "Job labor summary",
     description:
-      "See labour hours and cost per job. This is the core retention screen. Owners don't buy time tracking. They buy visibility into profit.",
+      "See labor hours and cost per job. This is the core retention screen. Owners don't buy time tracking. They buy visibility into profit.",
   },
   {
     icon: FileSpreadsheet,
     title: "Payroll export",
     description:
-      "CSV with job attribution and labour cost. QuickBooks-friendly. No more spreadsheet gymnastics.",
+      "CSV with job attribution and labor cost. QuickBooks-friendly. No more spreadsheet gymnastics.",
   },
   {
     icon: Mail,
-    title: "Weekly labour email",
+    title: "Weekly labor email",
     description:
-      "Every week you receive: \"Last week's labour cost by job.\" Margin awareness becomes habit.",
+      "Every week you receive: \"Last week's labor cost by job.\" Margin awareness becomes habit.",
   },
   {
     icon: ShieldAlert,
@@ -66,10 +66,10 @@ export function Features() {
             Built for owners who care about margin
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-xl text-fc-muted">
-            FieldCrew exists for one reason: <strong className="text-fc-brand">Expose hidden labour cost.</strong>
+            FieldCrew exists for one reason: <strong className="text-fc-brand">Expose hidden labor cost.</strong>
           </p>
           <p className="mx-auto mt-3 max-w-2xl text-lg text-fc-muted">
-            Success is when you rely on FieldCrew to understand labour cost per job and run payroll through it.
+            Success is when you rely on FieldCrew to understand labor cost per job and run payroll through it.
           </p>
         </div>
         <ul className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

@@ -119,7 +119,7 @@ export function LoginClient() {
   };
 
   const featureItems = [
-    { label: "Weekly labour leak snapshot", icon: Activity },
+    { label: "Weekly labor leak snapshot", icon: Activity },
     { label: "Overrun and overtime visibility", icon: Clock },
     { label: "Worker and job-level drill-downs", icon: Layers2 },
     { label: "Recovery opportunity tracking", icon: TrendingUp },

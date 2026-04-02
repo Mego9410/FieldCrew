@@ -60,7 +60,7 @@ export default function DataPage() {
       <div className="mb-6">
         <h1 className="font-display text-xl font-bold text-fc-brand">Create</h1>
         <p className="mt-0.5 text-sm text-fc-muted">
-          Add a project, worker, job, or time entry to organise work and track labour.
+          Add a project, worker, job, or time entry to organize work and track labor.
         </p>
         <Link
           href={routes.owner.home}

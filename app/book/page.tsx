@@ -12,7 +12,7 @@ import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
   title: "Getting Started Guide — FieldCrew",
-  description: "Follow a self-guided path to estimate hidden labour leakage and review practical next steps.",
+  description: "Follow a self-guided path to estimate hidden labor leakage and review practical next steps.",
 };
 
 export default function BookPage() {
@@ -29,7 +29,7 @@ export default function BookPage() {
           <FeatureGrid
             items={[
               "Run the profit leak estimate with your current team numbers",
-              "Review the sample labour profit report format",
+              "Review the sample labor profit report format",
               "Identify the first workflow improvements to make internally",
             ]}
           />

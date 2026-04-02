@@ -35,7 +35,7 @@ export function Solution() {
             How FieldCrew Helps
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-fc-muted sm:text-[1.0625rem] fc-body-air">
-            Follow the same path in the app — from setup to seeing where labour
+            Follow the same path in the app — from setup to seeing where labor
             profit disappears.
           </p>
         </ScrollReveal>

@@ -32,7 +32,7 @@ const VIEWS: {
   },
   {
     id: "labour",
-    label: "Labour cost",
+    label: "Labor cost",
     path: "/app/dashboard/labour-cost-trend",
     icon: BarChart3,
   },
@@ -84,7 +84,7 @@ function MockOverview() {
           </p>
         </div>
         <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800 ring-1 ring-amber-200/80">
-          Labour leakage
+          Labor leakage
         </span>
       </div>
       <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -151,7 +151,7 @@ function MockMargin() {
   );
 }
 
-/** Sample week: labour cost index vs weekly plan (illustrative, not live data). */
+/** Sample week: labor cost index vs weekly plan (illustrative, not live data). */
 const LABOUR_WEEK_DEMO: { day: string; actual: number }[] = [
   { day: "Mon", actual: 48 },
   { day: "Tue", actual: 55 },
@@ -174,7 +174,7 @@ function MockLabour() {
     <div className="space-y-4">
       <div>
         <h3 className="font-display text-base font-bold tracking-tight text-fc-brand sm:text-lg">
-          Labour cost vs plan
+          Labor cost vs plan
         </h3>
         <div className="mt-2 flex flex-wrap items-center gap-4 text-[10px] text-slate-500 sm:text-xs">
           <span className="inline-flex items-center gap-1.5">
@@ -295,7 +295,7 @@ function DemoViewport({ id }: { id: DemoViewId }) {
 
 /**
  * Interactive browser-style preview of FieldCrew app surfaces (dashboard,
- * margin, labour, overtime). Registry install for ruixen featured-crm-demo-section
+ * margin, labor, overtime). Registry install for ruixen featured-crm-demo-section
  * is often incomplete; this matches the intent with FieldCrew routes and tokens.
  */
 export function FeaturedCrmDemoSection({ className }: { className?: string }) {
