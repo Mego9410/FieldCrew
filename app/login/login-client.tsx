@@ -16,9 +16,10 @@ import {
 } from "lucide-react";
 
 function getSiteOrigin() {
-  const envOrigin = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
-  if (envOrigin) return envOrigin;
-  return typeof window !== "undefined" ? window.location.origin : "";
+  // In the browser, always use the current origin so OAuth PKCE cookies/local state
+  // are written/read on the same host (avoids "PKCE code verifier not found").
+  if (typeof window !== "undefined") return window.location.origin;
+  return process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "";
 }
 
 export function LoginClient() {
