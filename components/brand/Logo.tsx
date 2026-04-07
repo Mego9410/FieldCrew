@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-import fieldcrewLogo from "@/Assets/fieldcrew_logo_top_left-(1)-Firefly-Upscaler-4x-scale.png";
+import fieldcrewLogo from "@/Assets/Gemini_Generated_Image_f32b2gf32b2gf32b-Firefly-Upscaler-2x-scale.png";
 
 type LogoProps = {
   /**
@@ -42,8 +42,7 @@ export function Logo({
     <span
       className={cn(
         "inline-flex items-center justify-center",
-        onDark &&
-          "rounded-md bg-white/95 px-2 py-1 shadow-[0_10px_30px_-18px_rgba(0,0,0,0.75)] ring-1 ring-white/10",
+        onDark && "drop-shadow-[0_12px_26px_rgba(0,0,0,0.55)]",
         className,
       )}
     >
