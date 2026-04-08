@@ -148,7 +148,6 @@ export default function SubscribePage() {
   const searchParams = useSearchParams();
   const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [promoCode, setPromoCode] = useState<string>("STARTER9");
   const autoStarted = useRef(false);
 
   const handleSelectPlan = useCallback(async (planId: PlanId) => {
@@ -167,7 +166,7 @@ export default function SubscribePage() {
       const res = await fetch("/api/stripe/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId, promoCode }),
+        body: JSON.stringify({ planId }),
         credentials: "include",
       });
       const data = await res.json().catch(() => ({}));
@@ -189,7 +188,7 @@ export default function SubscribePage() {
     } finally {
       setLoadingPlan(null);
     }
-  }, [promoCode]);
+  }, []);
 
   useEffect(() => {
     const plan = searchParams.get("plan")?.toLowerCase();
@@ -215,9 +214,6 @@ export default function SubscribePage() {
         loadingPlanId={loadingPlan}
         onSelectPlan={handleSelectPlan}
         error={error}
-        promoCode={promoCode}
-        onPromoCodeChange={setPromoCode}
-        onPromoCodeClear={() => setPromoCode("")}
       />
 
       <section
