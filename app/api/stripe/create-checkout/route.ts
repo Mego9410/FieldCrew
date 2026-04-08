@@ -111,8 +111,9 @@ export async function POST(request: Request) {
       success_url: `${baseUrl}${routes.owner.onboarding}?payment=success`,
       cancel_url: `${baseUrl}${routes.owner.subscribe}`,
       client_reference_id: company.id,
-      allow_promotion_codes: false,
-      ...(promotionCodeId ? { discounts: [{ promotion_code: promotionCodeId }] } : {}),
+      ...(promotionCodeId
+        ? { discounts: [{ promotion_code: promotionCodeId }] }
+        : { allow_promotion_codes: true }),
       subscription_data: {
         metadata: {
           company_id: company.id,
