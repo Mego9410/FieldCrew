@@ -1,5 +1,6 @@
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { getCompanyForCurrentUser, ensureOwnerUserForAuthUser } from "@/lib/data";
+import { SiteChrome } from "@/components/landing/SiteChrome";
 
 export default async function OnboardingLayout({
   children,
@@ -22,8 +23,6 @@ export default async function OnboardingLayout({
   }
   // Completed owners are redirected from /onboarding in page.tsx unless ?edit=1 (see onboarding/page.tsx).
   return (
-    <div className="min-h-screen bg-[var(--fc-bg-page)]">
-      {children}
-    </div>
+    <SiteChrome>{children}</SiteChrome>
   );
 }

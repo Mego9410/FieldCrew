@@ -4,6 +4,7 @@ import { OnboardingWizard } from "./OnboardingWizard";
 import type { Company } from "@/lib/entities";
 import { routes } from "@/lib/routes";
 import { redirect } from "next/navigation";
+import { OnboardingAuthGate } from "@/components/onboarding/OnboardingAuthGate";
 
 const DEMO_COMPANY: Company = {
   id: "demo",
@@ -23,6 +24,10 @@ export default async function OnboardingPage(props: PageProps) {
     searchParams.edit === "1" || searchParams.edit === "true" || searchParams.edit === "yes";
 
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return <OnboardingAuthGate />;
+  }
   const company = await getCompanyForCurrentUser(supabase);
   const isPreview = !company;
   const initialCompany = company ?? DEMO_COMPANY;

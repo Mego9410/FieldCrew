@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
 import { Mail, Lock, Loader2 } from "lucide-react";
+import { Nav } from "@/components/landing/Nav";
+import { Footer } from "@/components/landing/Footer";
 
 function getSiteOrigin() {
   // In the browser, always use the current origin so OAuth PKCE cookies/local state
@@ -18,7 +20,7 @@ function getNextRedirect(searchParams: URLSearchParams): string {
   const next = searchParams.get("next");
   if (next?.startsWith("/") && !next.startsWith("//")) return next;
   const plan = searchParams.get("plan");
-  if (plan) return `${routes.owner.subscribe}?plan=${plan}`;
+  if (plan) return routes.owner.onboarding;
   return routes.owner.home;
 }
 
@@ -93,173 +95,173 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-fc-surface px-4 py-10 sm:py-14">
-      <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-        <section className="rounded-2xl border border-fc-border bg-white p-7 shadow-fc-sm sm:p-9">
-          <p className="font-display text-xs font-semibold uppercase tracking-[0.16em] text-fc-accent">
-            Get started
-          </p>
-          <h1 className="mt-3 font-display text-3xl font-bold text-fc-brand sm:text-4xl">
-            Create your account
-          </h1>
-          <p className="mt-3 text-fc-muted">
-            Set up your workspace and start tracking labor performance with meaningful weekly visibility.
-          </p>
-          <div className="mt-8 grid gap-3 sm:grid-cols-2">
-            {[
-              "Fast onboarding for teams",
-              "Operational dashboards",
-              "Job and worker performance tracking",
-              "Recovery-focused reporting",
-            ].map((item) => (
-              <article key={item} className="rounded-lg border border-fc-border bg-fc-surface p-3 text-sm text-fc-brand">
-                {item}
-              </article>
-            ))}
-          </div>
-        </section>
+    <div className="min-h-screen bg-fc-surface">
+      <Nav />
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+          <section className="rounded-2xl border border-fc-border bg-white p-7 shadow-fc-sm sm:p-9">
+            <p className="font-display text-xs font-semibold uppercase tracking-[0.16em] text-fc-accent">
+              Get started
+            </p>
+            <h1 className="mt-3 font-display text-3xl font-bold text-fc-brand sm:text-4xl">
+              Create your account
+            </h1>
+            <p className="mt-3 text-fc-muted">
+              Set up your workspace and start tracking labor performance with meaningful weekly visibility.
+            </p>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              {[
+                "Fast onboarding for teams",
+                "Operational dashboards",
+                "Job and worker performance tracking",
+                "Recovery-focused reporting",
+              ].map((item) => (
+                <article
+                  key={item}
+                  className="rounded-lg border border-fc-border bg-fc-surface p-3 text-sm text-fc-brand"
+                >
+                  {item}
+                </article>
+              ))}
+            </div>
+          </section>
 
-        <div className="w-full border border-fc-border bg-fc-surface p-8">
-          <h2 className="font-display text-2xl font-bold text-fc-brand">
-            Sign up
-          </h2>
-          <p className="mt-2 text-sm text-fc-muted">
-            Create an account with email or Google.
-          </p>
+          <div className="w-full rounded-2xl border border-fc-border bg-fc-surface p-8 shadow-fc-sm">
+            <h2 className="font-display text-2xl font-bold text-fc-brand">
+              Sign up
+            </h2>
+            <p className="mt-2 text-sm text-fc-muted">
+              Create an account with email or Google.
+            </p>
 
-          {error && (
-            <div
-              className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
-              role="alert"
-            >
-              {error}
-            </div>
-          )}
-          {successMessage && (
-            <div
-              className="mt-4 rounded-lg border border-fc-border bg-slate-50 px-3 py-2 text-sm text-fc-brand"
-              role="status"
-            >
-              {successMessage}
-            </div>
-          )}
-
-          <form onSubmit={handleEmailSubmit} className="mt-6 space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="mb-1.5 block text-sm font-medium text-fc-brand"
-            >
-              Email
-            </label>
-            <div className="relative">
-              <Mail
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fc-muted"
-                aria-hidden
-              />
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
-                required
-                className="w-full rounded-lg border border-fc-border bg-white py-2.5 pl-10 pr-3 text-fc-brand placeholder:text-fc-muted focus:border-fc-accent focus:outline-none focus:ring-1 focus:ring-fc-accent"
-                disabled={loading !== null}
-              />
-            </div>
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-1.5 block text-sm font-medium text-fc-brand"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <Lock
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fc-muted"
-                aria-hidden
-              />
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                minLength={6}
-                className="w-full rounded-lg border border-fc-border bg-white py-2.5 pl-10 pr-3 text-fc-brand placeholder:text-fc-muted focus:border-fc-accent focus:outline-none focus:ring-1 focus:ring-fc-accent"
-                disabled={loading !== null}
-              />
-            </div>
-          </div>
-          <button
-            type="submit"
-            disabled={loading !== null}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-fc-brand px-4 py-2.5 font-medium text-white transition-colors hover:bg-fc-brand/90 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 disabled:opacity-70"
-          >
-            {loading === "email" ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                Signing up…
-              </>
-            ) : (
-              "Sign up with email"
+            {error && (
+              <div
+                className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+                role="alert"
+              >
+                {error}
+              </div>
             )}
-          </button>
-          </form>
+            {successMessage && (
+              <div
+                className="mt-4 rounded-lg border border-fc-border bg-slate-50 px-3 py-2 text-sm text-fc-brand"
+                role="status"
+              >
+                {successMessage}
+              </div>
+            )}
 
-          <div className="relative my-6">
-          <span className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-fc-border" />
-          </span>
-          <span className="relative flex justify-center text-xs uppercase tracking-wide text-fc-muted">
-            or
-          </span>
+            <form onSubmit={handleEmailSubmit} className="mt-6 space-y-4">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-1.5 block text-sm font-medium text-fc-brand"
+                >
+                  Email
+                </label>
+                <div className="relative">
+                  <Mail
+                    className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fc-muted"
+                    aria-hidden
+                  />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    required
+                    className="w-full rounded-lg border border-fc-border bg-white py-2.5 pl-10 pr-3 text-fc-brand placeholder:text-fc-muted focus:border-fc-accent focus:outline-none focus:ring-1 focus:ring-fc-accent"
+                    disabled={loading !== null}
+                  />
+                </div>
+              </div>
+              <div>
+                <label
+                  htmlFor="password"
+                  className="mb-1.5 block text-sm font-medium text-fc-brand"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock
+                    className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fc-muted"
+                    aria-hidden
+                  />
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    minLength={6}
+                    className="w-full rounded-lg border border-fc-border bg-white py-2.5 pl-10 pr-3 text-fc-brand placeholder:text-fc-muted focus:border-fc-accent focus:outline-none focus:ring-1 focus:ring-fc-accent"
+                    disabled={loading !== null}
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                disabled={loading !== null}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-fc-brand px-4 py-2.5 font-medium text-white transition-colors hover:bg-fc-brand/90 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 disabled:opacity-70"
+              >
+                {loading === "email" ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    Signing up…
+                  </>
+                ) : (
+                  "Sign up with email"
+                )}
+              </button>
+            </form>
+
+            <div className="relative my-6">
+              <span className="absolute inset-0 flex items-center" aria-hidden>
+                <span className="w-full border-t border-fc-border" />
+              </span>
+              <span className="relative flex justify-center text-xs uppercase tracking-wide text-fc-muted">
+                or
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={loading !== null}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-fc-border bg-white px-4 py-2.5 font-medium text-fc-brand transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 disabled:opacity-70"
+            >
+              {loading === "google" ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  Redirecting…
+                </>
+              ) : (
+                <>
+                  <GoogleIcon className="h-5 w-5" aria-hidden />
+                  Continue with Google
+                </>
+              )}
+            </button>
+
+            <p className="mt-6 text-center text-sm text-fc-muted">
+              Already have an account?{" "}
+              <Link
+                href={routes.public.login}
+                className="font-medium text-fc-accent underline underline-offset-2 hover:text-fc-accent-dark"
+              >
+                Sign in
+              </Link>
+            </p>
           </div>
-
-          <button
-            type="button"
-            onClick={handleGoogleSignIn}
-            disabled={loading !== null}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-fc-border bg-white px-4 py-2.5 font-medium text-fc-brand transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 disabled:opacity-70"
-          >
-          {loading === "google" ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              Redirecting…
-            </>
-          ) : (
-            <>
-              <GoogleIcon className="h-5 w-5" aria-hidden />
-              Sign up with Google
-            </>
-          )}
-          </button>
-
-          <p className="mt-6 text-center text-sm text-fc-muted">
-          Already have an account?{" "}
-          <Link
-            href={routes.public.login}
-            className="font-medium text-fc-accent underline underline-offset-2 hover:text-fc-accent-dark"
-          >
-            Sign in
-          </Link>
-          {" · "}
-          <Link
-            href={routes.public.home}
-            className="text-fc-accent underline underline-offset-2 hover:text-fc-accent-dark"
-          >
-            Back to home
-          </Link>
-          </p>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }
