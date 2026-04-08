@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Bricolage_Grotesque, IBM_Plex_Sans, Oswald, Share_Tech_Mono, Geist } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -78,6 +79,20 @@ export default function RootLayout({
       lang="en"
       className={cn("antialiased", bricolage.variable, ibmPlexSans.variable, oswald.variable, shareTechMono.variable, "font-sans", geist.variable)}
     >
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-NPC12VKRV9"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NPC12VKRV9');
+          `}
+        </Script>
+      </head>
       <body className="min-h-screen bg-fc-page font-body text-fc-brand">
         {children}
         <Analytics />
