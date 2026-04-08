@@ -6,6 +6,19 @@ export function isPlanId(value: string): value is PlanId {
   return (VALID_PLAN_IDS as readonly string[]).includes(value);
 }
 
+export const WORKER_LIMIT_BY_PLAN_ID: Record<PlanId, number> = {
+  starter: 5,
+  growth: 15,
+  pro: 30,
+};
+
+export function suggestPlanIdForWorkers(workerCount: number): PlanId {
+  const n = Math.max(0, Math.floor(workerCount) || 0);
+  if (n <= WORKER_LIMIT_BY_PLAN_ID.starter) return "starter";
+  if (n <= WORKER_LIMIT_BY_PLAN_ID.growth) return "growth";
+  return "pro";
+}
+
 /** Display + checkout plan config (matches Stripe create-checkout and marketing copy). */
 export const SUBSCRIPTION_PLANS = [
   {

@@ -7,7 +7,6 @@ import { StepLayout } from "@/components/onboarding/StepLayout";
 import { TeamBasicsStep } from "@/components/onboarding/TeamBasicsStep";
 import { WorkloadBasicsStep } from "@/components/onboarding/WorkloadBasicsStep";
 import { InsightGeneratingLoader } from "@/components/onboarding/InsightGeneratingLoader";
-import { InsightReviewStep } from "@/components/onboarding/InsightReviewStep";
 import {
   SeedWorkersStep,
   createEmptyWorkerRow,
@@ -20,14 +19,17 @@ import {
   type AssignableWorker,
 } from "@/components/onboarding/SeedJobsStep";
 import { OnboardingReadyStep } from "@/components/onboarding/OnboardingReadyStep";
+import { SavingsStep } from "@/components/onboarding/SavingsStep";
+import { SuggestedPlanStep } from "@/components/onboarding/SuggestedPlanStep";
 import { Button } from "@/components/ui/Button";
 import { generateEstimatedSnapshot } from "@/lib/insights/generateEstimatedSnapshot";
 import { routes } from "@/lib/routes";
+import { suggestPlanIdForWorkers } from "@/lib/pricing-plans";
 import type { Company, Worker } from "@/lib/entities";
 import type { CompanyOnboardingProfile, EstimatedSnapshot, OnboardingInsightInputs } from "@/types/onboarding";
 
 const LOADER_MS = 1500;
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 7;
 
 type TeamForm = Pick<
   OnboardingInsightInputs,
@@ -146,6 +148,7 @@ export function OnboardingWizard({
       setSnapshot(snap);
       setStep(3);
       await new Promise((r) => setTimeout(r, LOADER_MS));
+      // After insight generation, move into worker details (requested flow).
       setStep(4);
     },
     []
@@ -219,6 +222,17 @@ export function OnboardingWizard({
     setStep(1);
     setApiError(null);
   };
+
+  const inferredWorkerCount = useMemo(() => {
+    const fallback = (team.fieldTechCount ?? 0) + (team.officeStaffCount ?? 0);
+    const fromSeeded = assignableWorkers.length;
+    return Math.max(0, Math.max(fromSeeded, fallback));
+  }, [assignableWorkers.length, team.fieldTechCount, team.officeStaffCount]);
+
+  const suggestedPlanId = useMemo(
+    () => suggestPlanIdForWorkers(inferredWorkerCount),
+    [inferredWorkerCount]
+  );
 
   const filledWorkerRows = useMemo(
     () =>
@@ -328,42 +342,18 @@ export function OnboardingWizard({
     );
   }
 
-  if (step === 4 && snapshot) {
-    return (
-      <>
-        {paymentSuccessBanner}
-        {previewBanner}
-        <div className="mx-auto max-w-3xl px-4 py-10 sm:py-12">
-          {apiError && (
-            <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
-              {apiError}
-            </p>
-          )}
-          <InsightReviewStep
-            snapshot={snapshot}
-            onPrimary={() => setStep(5)}
-            onSecondary={handleEditAnswers}
-            primaryLabel="Continue"
-            secondaryLabel="Edit my answers"
-            isLoading={busy}
-          />
-        </div>
-      </>
-    );
-  }
-
-  if (step === 5) {
+  if (step === 4) {
     return (
       <>
         {paymentSuccessBanner}
         {previewBanner}
         <StepLayout
-          step={4}
+          step={3}
           totalSteps={TOTAL_STEPS}
           title="Add your first workers"
           description="Start with the people you want to track first. You can add the rest later."
           reassurance="Most teams start with 2–5 workers."
-          onBack={() => setStep(4)}
+          onBack={() => setStep(2)}
           onNext={async () => {
             try {
               setBusy(true);
@@ -374,7 +364,7 @@ export function OnboardingWizard({
                 return;
               }
               await saveWorkers(filledWorkerRows);
-              setStep(6);
+              setStep(5);
             } catch (e) {
               setApiError(e instanceof Error ? e.message : "Could not save workers");
             } finally {
@@ -403,7 +393,7 @@ export function OnboardingWizard({
                   setBusy(true);
                   setApiError(null);
                   await saveWorkers([]);
-                  setStep(6);
+                  setStep(5);
                 } catch (e) {
                   setApiError(e instanceof Error ? e.message : "Could not skip workers");
                 } finally {
@@ -420,7 +410,36 @@ export function OnboardingWizard({
     );
   }
 
-  if (step === 6) {
+  if (step === 5 && snapshot) {
+    return (
+      <>
+        {paymentSuccessBanner}
+        {previewBanner}
+        <StepLayout
+          step={4}
+          totalSteps={TOTAL_STEPS}
+          title="Your first savings estimate"
+          description="Here’s the immediate value you can expect from job-linked labor tracking."
+          onBack={() => setStep(4)}
+        >
+          {apiError && (
+            <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+              {apiError}
+            </p>
+          )}
+          <SavingsStep
+            snapshot={snapshot}
+            onBack={() => setStep(4)}
+            onEditAnswers={handleEditAnswers}
+            onContinue={() => setStep(6)}
+            isLoading={busy}
+          />
+        </StepLayout>
+      </>
+    );
+  }
+
+  if (step === 6 && snapshot) {
     return (
       <>
         {paymentSuccessBanner}
@@ -428,9 +447,42 @@ export function OnboardingWizard({
         <StepLayout
           step={5}
           totalSteps={TOTAL_STEPS}
+          title="Choose a plan"
+          description="We’ll suggest the right plan for your team size."
+          onBack={() => setStep(5)}
+        >
+          {apiError && (
+            <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+              {apiError}
+            </p>
+          )}
+          <SuggestedPlanStep
+            workerCount={inferredWorkerCount}
+            suggestedPlanId={suggestedPlanId}
+            onBack={() => setStep(5)}
+            isLoading={busy}
+            onSelectPlan={(planId) => {
+              setBusy(true);
+              // Hand off to the existing subscribe flow, which will start Stripe Checkout.
+              window.location.href = `${routes.owner.subscribe}?plan=${planId}`;
+            }}
+          />
+        </StepLayout>
+      </>
+    );
+  }
+
+  if (step === 7) {
+    return (
+      <>
+        {paymentSuccessBanner}
+        {previewBanner}
+        <StepLayout
+          step={6}
+          totalSteps={TOTAL_STEPS}
           title="Add your first jobs"
           description="Set up a few upcoming jobs so your team can start tracking real time immediately."
-          onBack={() => setStep(5)}
+          onBack={() => setStep(6)}
           onNext={async () => {
             try {
               setBusy(true);
@@ -441,7 +493,7 @@ export function OnboardingWizard({
                 return;
               }
               await saveJobs(filledJobRows);
-              setStep(7);
+              setStep(8);
             } catch (e) {
               setApiError(e instanceof Error ? e.message : "Could not save jobs");
             } finally {
@@ -471,7 +523,7 @@ export function OnboardingWizard({
                   setBusy(true);
                   setApiError(null);
                   await saveJobs([]);
-                  setStep(7);
+                  setStep(8);
                 } catch (e) {
                   setApiError(e instanceof Error ? e.message : "Could not skip jobs");
                 } finally {
@@ -488,13 +540,13 @@ export function OnboardingWizard({
     );
   }
 
-  if (step === 7 && snapshot) {
+  if (step === 8 && snapshot) {
     return (
       <>
         {paymentSuccessBanner}
         {previewBanner}
         <StepLayout
-          step={6}
+          step={7}
           totalSteps={TOTAL_STEPS}
           title="Setup complete"
           description="Your first labor snapshot is ready and your workspace is set up for week one."
