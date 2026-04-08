@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Stripe is not configured" }, { status: 503 });
     }
 
-    let body: { planId?: string; plan?: string };
+    let body: { planId?: string; plan?: string; promoCode?: string | null };
     try {
       body = await request.json();
     } catch {
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     if (!plan.stripePriceId) {
       return NextResponse.json({ error: "Stripe price not configured for plan" }, { status: 503 });
     }
-    const promotionCodeId = plan.stripePromotionCodeId || null;
+    const defaultPromotionCodeId = plan.stripePromotionCodeId || null;
 
     const supabase = await createClient();
     const {
@@ -86,6 +86,22 @@ export async function POST(request: Request) {
     // Don't hardcode apiVersion; use account default to avoid runtime mismatch.
     const stripe = new Stripe(secret);
     const baseUrl = getBaseUrl(request);
+
+    const promoCode = typeof body.promoCode === "string" ? body.promoCode.trim() : "";
+    let appliedPromotionCodeId: string | null = null;
+    if (promoCode) {
+      const found = await stripe.promotionCodes.list({
+        code: promoCode,
+        active: true,
+        limit: 1,
+      });
+      appliedPromotionCodeId = found.data[0]?.id ?? null;
+      if (!appliedPromotionCodeId) {
+        return NextResponse.json({ error: "Invalid discount code" }, { status: 400 });
+      }
+    } else {
+      appliedPromotionCodeId = defaultPromotionCodeId;
+    }
 
     let customerId = company.stripeCustomerId ?? null;
     if (!customerId) {
@@ -111,16 +127,16 @@ export async function POST(request: Request) {
       success_url: `${baseUrl}${routes.owner.onboarding}?payment=success`,
       cancel_url: `${baseUrl}${routes.owner.subscribe}`,
       client_reference_id: company.id,
-      ...(promotionCodeId
-        ? { discounts: [{ promotion_code: promotionCodeId }] }
+      ...(appliedPromotionCodeId
+        ? { discounts: [{ promotion_code: appliedPromotionCodeId }] }
         : { allow_promotion_codes: true }),
       subscription_data: {
         metadata: {
           company_id: company.id,
           worker_limit: String(workerLimit),
           plan_name: plan.name,
-          ...(promotionCodeId
-            ? { promo: "first_month_9_usd", promo_plan: plan.id }
+          ...(appliedPromotionCodeId
+            ? { promo: "first_month_9_usd", promo_plan: plan.id, promo_code_entered: promoCode || "default" }
             : { promo: "none" }),
         },
       },
