@@ -325,10 +325,10 @@ export function LoginClient() {
 
           <p className="mt-5 text-center">
             <Link
-              href={routes.owner.onboarding}
+              href={routes.owner.subscribe}
               className="text-xs text-fc-muted underline underline-offset-2 transition-colors hover:text-fc-accent"
             >
-              Go to onboarding (no sign-in)
+              Start onboarding
             </Link>
           </p>
         </div>

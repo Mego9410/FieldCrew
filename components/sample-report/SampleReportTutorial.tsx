@@ -281,7 +281,7 @@ export function SampleReportTutorial() {
           This is what’s happening in your business right now — ready to fix it?
         </p>
         <Link
-          href={`${routes.owner.subscribe}?plan=pro`}
+          href={routes.owner.subscribe}
           className="inline-flex min-h-[44px] min-w-[56px] items-center justify-center rounded-md bg-fc-accent px-6 py-3 text-base font-semibold text-white shadow-fc-sm transition-colors hover:bg-fc-accent-dark focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 print:no-underline"
         >
           Start tracking my jobs properly

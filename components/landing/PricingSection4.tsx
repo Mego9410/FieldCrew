@@ -230,6 +230,30 @@ export function PricingSection4({
             );
           })}
         </div>
+
+        {isSubscribe && typeof promoCode === "string" && (
+          <div className="mx-auto mt-12 max-w-xl rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-md sm:mt-14 sm:p-5">
+            <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
+              Discount code (optional)
+            </label>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                value={promoCode}
+                onChange={(e) => onPromoCodeChange?.(e.target.value)}
+                placeholder="Enter code"
+                autoCapitalize="characters"
+                className="w-full rounded-xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white shadow-sm outline-none transition focus:border-fc-orange-400/60 focus:ring-4 focus:ring-fc-orange-500/15"
+              />
+              <button
+                type="button"
+                onClick={() => onPromoCodeClear?.()}
+                className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-200 transition hover:bg-white/10"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

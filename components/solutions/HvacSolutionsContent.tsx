@@ -284,7 +284,7 @@ export function HvacSolutionsContent() {
               See a sample report
             </Link>
             <Link
-              href={routes.public.signup}
+              href={routes.owner.subscribe}
               className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-fc-brand hover:bg-slate-100"
             >
               Get started
