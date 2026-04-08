@@ -25,6 +25,9 @@ export type PricingSection4Props = {
   loadingPlanId?: PlanId | null;
   onSelectPlan?: (planId: PlanId) => void;
   error?: string | null;
+  promoCode?: string;
+  onPromoCodeChange?: (value: string) => void;
+  onPromoCodeClear?: () => void;
   className?: string;
 };
 
@@ -33,6 +36,9 @@ export function PricingSection4({
   loadingPlanId = null,
   onSelectPlan,
   error,
+  promoCode,
+  onPromoCodeChange,
+  onPromoCodeClear,
   className,
 }: PricingSection4Props) {
   const reduceMotion = useReducedMotion();
@@ -225,15 +231,28 @@ export function PricingSection4({
           })}
         </div>
 
-        {isSubscribe && (
-          <p className="mt-10 text-center text-sm text-slate-500">
-            <Link
-              href={routes.public.home}
-              className="text-fc-orange-400 underline-offset-4 hover:text-fc-orange-300 hover:underline"
-            >
-              Back to home
-            </Link>
-          </p>
+        {isSubscribe && typeof promoCode === "string" && (
+          <div className="mx-auto mt-12 max-w-xl rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-md sm:mt-14 sm:p-5">
+            <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
+              Discount code (optional)
+            </label>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                value={promoCode}
+                onChange={(e) => onPromoCodeChange?.(e.target.value)}
+                placeholder="Enter code"
+                autoCapitalize="characters"
+                className="w-full rounded-xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white shadow-sm outline-none transition focus:border-fc-orange-400/60 focus:ring-4 focus:ring-fc-orange-500/15"
+              />
+              <button
+                type="button"
+                onClick={() => onPromoCodeClear?.()}
+                className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-200 transition hover:bg-white/10"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </section>

@@ -210,39 +210,14 @@ export default function SubscribePage() {
 
   return (
     <>
-      <section className="bg-slate-950">
-        <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-md sm:p-5">
-            <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
-              Discount code (optional)
-            </label>
-            <div className="mt-2 flex items-center gap-2">
-              <input
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value)}
-                placeholder="Enter code"
-                autoCapitalize="characters"
-                className="w-full rounded-xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white shadow-sm outline-none transition focus:border-fc-orange-400/60 focus:ring-4 focus:ring-fc-orange-500/15"
-              />
-              <button
-                type="button"
-                onClick={() => setPromoCode("")}
-                className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-200 transition hover:bg-white/10"
-              >
-                Clear
-              </button>
-            </div>
-            <p className="mt-2 text-xs text-slate-400">
-              This gets applied before redirecting to Stripe Checkout. (Stripe doesn’t support an “editable prefilled” promo field.)
-            </p>
-          </div>
-        </div>
-      </section>
       <PricingSection4
         variant="subscribe"
         loadingPlanId={loadingPlan}
         onSelectPlan={handleSelectPlan}
         error={error}
+        promoCode={promoCode}
+        onPromoCodeChange={setPromoCode}
+        onPromoCodeClear={() => setPromoCode("")}
       />
 
       <section
