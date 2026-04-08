@@ -464,7 +464,7 @@ export function OnboardingWizard({
             onSelectPlan={(planId) => {
               setBusy(true);
               // Hand off to the existing subscribe flow, which will start Stripe Checkout.
-              window.location.href = `${routes.owner.subscribe}?plan=${planId}`;
+              window.location.href = `${routes.owner.subscribe}?plan=${planId}&checkout=1`;
             }}
           />
         </StepLayout>

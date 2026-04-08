@@ -150,7 +150,7 @@ export default function SubscribePage() {
   const [error, setError] = useState<string | null>(null);
   const autoStarted = useRef(false);
 
-  const handleSelectPlan = useCallback(async (planId: PlanId) => {
+  const startCheckout = useCallback(async (planId: PlanId) => {
     setError(null);
     setLoadingPlan(planId);
     try {
@@ -190,9 +190,20 @@ export default function SubscribePage() {
     }
   }, []);
 
+  const handleSelectPlan = useCallback((planId: PlanId) => {
+    // Pricing buttons should start onboarding (Stripe happens later).
+    const params = new URLSearchParams();
+    params.set("plan", planId);
+    window.location.href = `${routes.owner.onboarding}?${params.toString()}`;
+  }, []);
+
   useEffect(() => {
     const plan = searchParams.get("plan")?.toLowerCase();
+    const shouldCheckout =
+      searchParams.get("checkout") === "1" ||
+      searchParams.get("checkout") === "true";
     if (autoStarted.current || !plan || !isPlanId(plan)) return;
+    if (!shouldCheckout) return;
 
     let cancelled = false;
     createClient()
@@ -200,12 +211,12 @@ export default function SubscribePage() {
       .then(({ data: { session } }) => {
         if (cancelled || !session) return;
         autoStarted.current = true;
-        handleSelectPlan(plan);
+        startCheckout(plan);
       });
     return () => {
       cancelled = true;
     };
-  }, [searchParams, handleSelectPlan]);
+  }, [searchParams, startCheckout]);
 
   return (
     <>
