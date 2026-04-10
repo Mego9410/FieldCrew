@@ -6,8 +6,6 @@ import Image from "next/image"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-import plansImage from "../../Assets/Smiling_Man_With_Tool_Belt_Holding_Toolbox_original_3818113.jpg"
-
 type PlansScrollPromptProps = {
   /** DOM id of the hero wrapper to observe */
   heroId?: string
@@ -15,43 +13,31 @@ type PlansScrollPromptProps = {
   pricingId?: string
   /** Where the CTA should go */
   href?: string
-  /** Storage key for dismissal */
-  storageKey?: string
+  /** Public URL to an image shown at top (recommended: place under `public/`) */
+  imageSrc?: string
+  imageAlt?: string
   className?: string
-}
-
-function safeGetLocalStorage(key: string) {
-  try {
-    return window.localStorage.getItem(key)
-  } catch {
-    return null
-  }
-}
-
-function safeSetLocalStorage(key: string, value: string) {
-  try {
-    window.localStorage.setItem(key, value)
-  } catch {
-    // ignore
-  }
 }
 
 export function PlansScrollPrompt({
   heroId = "homepage-hero",
   pricingId = "pricing",
   href = "/#pricing",
-  storageKey = "fc_plans_prompt_dismissed_v1",
+  // Use a tracked public image so deploys are reliable.
+  imageSrc = "/blog/manual-vs-digital-time-tracking.jpg",
+  imageAlt = "HVAC technician with tools",
   className,
 }: PlansScrollPromptProps) {
   const [ready, setReady] = React.useState(false)
-  const [dismissed, setDismissed] = React.useState(true)
+  // Session-only dismissal: hides until refresh.
+  const [dismissed, setDismissed] = React.useState(false)
   const [heroInView, setHeroInView] = React.useState(true)
   const [pricingInView, setPricingInView] = React.useState(false)
+  const [imageOk, setImageOk] = React.useState(true)
 
   React.useEffect(() => {
     setReady(true)
-    setDismissed(safeGetLocalStorage(storageKey) === "1")
-  }, [storageKey])
+  }, [])
 
   React.useEffect(() => {
     if (!ready) return
@@ -126,27 +112,37 @@ export function PlansScrollPrompt({
         )}
       >
         <div className="flex h-full min-h-0 flex-col p-4">
-          <div className="relative overflow-hidden rounded-xl border border-white/10">
-            <div className="relative aspect-[4/3] w-full">
-              <Image
-                src={plansImage}
-                alt="HVAC technician with tools"
-                fill
-                priority={false}
-                sizes="(min-width: 1024px) 300px, (min-width: 640px) 280px, 360px"
-                className="object-cover"
-              />
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent"
-                aria-hidden
-              />
-              <div className="absolute bottom-3 left-3 right-3">
-                <p className="inline-flex items-center rounded-full border border-white/15 bg-slate-950/50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-100 backdrop-blur">
-                  Plans & pricing
-                </p>
+          {imageOk && imageSrc ? (
+            <div className="relative overflow-hidden rounded-xl border border-white/10">
+              <div className="relative aspect-[4/3] w-full">
+                <Image
+                  src={imageSrc}
+                  alt={imageAlt}
+                  fill
+                  priority={false}
+                  sizes="(min-width: 1024px) 300px, (min-width: 640px) 280px, 360px"
+                  className="object-cover"
+                  onError={() => setImageOk(false)}
+                />
+                <div
+                  className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent"
+                  aria-hidden
+                />
+                <div className="absolute bottom-3 left-3 right-3">
+                  <p className="inline-flex items-center rounded-full border border-white/15 bg-slate-950/50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-100 backdrop-blur">
+                    Plans & pricing
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div
+              className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950"
+              aria-hidden
+            >
+              <div className="aspect-[4/3] w-full" />
+            </div>
+          )}
 
           <div className="mt-4 flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -157,17 +153,14 @@ export function PlansScrollPrompt({
                 Pick the right team size and get started in minutes.
               </p>
             </div>
-          <button
-            type="button"
-            onClick={() => {
-              setDismissed(true)
-              safeSetLocalStorage(storageKey, "1")
-            }}
+            <button
+              type="button"
+              onClick={() => setDismissed(true)}
               className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fc-orange-400 focus:ring-offset-2 focus:ring-offset-slate-950"
-            aria-label="Dismiss pricing prompt"
-          >
-            <X className="h-4 w-4" aria-hidden />
-          </button>
+              aria-label="Dismiss pricing prompt"
+            >
+              <X className="h-4 w-4" aria-hidden />
+            </button>
         </div>
 
           <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] p-3">
@@ -193,10 +186,7 @@ export function PlansScrollPrompt({
               </Link>
               <button
                 type="button"
-                onClick={() => {
-                  setDismissed(true)
-                  safeSetLocalStorage(storageKey, "1")
-                }}
+                onClick={() => setDismissed(true)}
                 className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-white/15 bg-white/5 px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fc-orange-400 focus:ring-offset-2 focus:ring-offset-slate-950"
               >
                 Not now
