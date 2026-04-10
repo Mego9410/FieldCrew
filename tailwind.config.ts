@@ -137,21 +137,21 @@ const config: Config = {
         "fc-demo-tab-idle": {
           "0%, 100%": {
             boxShadow:
-              "0 1px 2px rgb(15 23 42 / 0.05), 0 0 0 0 rgb(249 115 22 / 0)",
+              "0 1px 2px rgb(15 23 42 / 0.06), 0 0 0 0 rgb(249 115 22 / 0), 0 0 0 0 rgb(249 115 22 / 0)",
           },
           "50%": {
             boxShadow:
-              "0 1px 3px rgb(15 23 42 / 0.06), 0 0 0 3px rgb(249 115 22 / 0.11)",
+              "0 2px 6px rgb(15 23 42 / 0.08), 0 0 0 5px rgb(249 115 22 / 0.16), 0 0 22px rgb(249 115 22 / 0.18)",
           },
         },
         "fc-demo-tab-active": {
           "0%, 100%": {
             boxShadow:
-              "0 1px 2px rgb(15 23 42 / 0.08), 0 0 0 0 rgb(249 115 22 / 0.35)",
+              "0 1px 3px rgb(15 23 42 / 0.10), 0 0 0 2px rgb(249 115 22 / 0.18), 0 0 18px rgb(249 115 22 / 0.20)",
           },
           "50%": {
             boxShadow:
-              "0 2px 8px rgb(249 115 22 / 0.28), 0 0 0 2px rgb(249 115 22 / 0.12)",
+              "0 8px 24px rgb(249 115 22 / 0.34), 0 0 0 6px rgb(249 115 22 / 0.18), 0 0 34px rgb(249 115 22 / 0.22)",
           },
         },
         /** Login page staggered reveal */

@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { cn } from "@/lib/utils";
+import { SectionBand, SectionHeader } from "@/components/landing/PublicPagePrimitives";
 
 const tiers = [
   { step: 1, title: "5-10 techs", range: "$2,000-$5,000" },
@@ -85,33 +86,27 @@ export function RelatableBusinessImpact() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section
-      className="relative border-b border-fc-border bg-gradient-to-b from-slate-100/95 via-white to-slate-50/40 py-16 sm:py-24 lg:py-28"
-      aria-labelledby="relatable-impact-heading"
+    <SectionBand
+      variant="muted"
+      className="py-16 sm:py-24 lg:py-28"
+      labelledBy="relatable-impact-heading"
     >
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_-15%,rgba(249,115,22,0.07),transparent)]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_70%_40%_at_70%_100%,rgba(249,115,22,0.04),transparent)]"
-        aria-hidden
-      />
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <div className="absolute -left-28 top-[-3rem] h-72 w-72 rounded-full bg-fc-accent/[0.06] blur-3xl" />
+        <div className="absolute -right-24 bottom-[-4rem] h-72 w-72 rounded-full bg-slate-400/[0.06] blur-3xl" />
+      </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal className="text-center">
           <span className="fc-accent-stripe mx-auto mb-4 block" aria-hidden />
-          <h2
-            id="relatable-impact-heading"
-            className="font-display font-bold text-fc-brand fc-section-h2"
-          >
-            What This Looks Like In A Real Business
-          </h2>
+          <SectionHeader
+            titleId="relatable-impact-heading"
+            title="What This Looks Like In A Real Business"
+            description="For many HVAC companies, the leak scales with team size — and stays hidden in the noise."
+            align="center"
+            className="mx-auto max-w-4xl"
+          />
         </ScrollReveal>
-
-        <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-fc-muted fc-body-air">
-          For many HVAC companies, the leak looks something like this:
-        </p>
 
         {/* Progressive scale — timeline-adjacent rhythm without replacing copy */}
         <div
@@ -162,6 +157,6 @@ export function RelatableBusinessImpact() {
           disappears across dozens of jobs.
         </p>
       </div>
-    </section>
+    </SectionBand>
   );
 }

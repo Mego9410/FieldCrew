@@ -6,6 +6,8 @@ import { ArrowRight } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { ShapeLandingHeroBackground } from "@/components/ui/shape-landing-hero";
+import { HeroViewSwitcher } from "@/components/landing/HeroViewSwitcher";
+import { LogoStrip, MockAppFrame } from "@/components/landing/PublicPagePrimitives";
 
 const transition = { duration: 0.4, ease: [0.2, 0.8, 0.2, 1] as const };
 
@@ -35,6 +37,15 @@ const staticReveal = {
 type HeroProps = {
   regionName?: string | null;
 };
+
+const poweredBadges = [
+  "QuickBooks-ready exports",
+  "Job-based time capture",
+  "Overrun + OT leakage alerts",
+  "Owner-friendly weekly pulse",
+  "No app installs for workers",
+  "Practical margin recovery cadence",
+] as const;
 
 export function Hero({ regionName }: HeroProps) {
   const reduceMotion = useReducedMotion();
@@ -81,6 +92,12 @@ export function Hero({ regionName }: HeroProps) {
       <MagneticButton href="/profit-leak" variant="primary">
         See What You&apos;re Losing
       </MagneticButton>
+      <Link
+        href="/demo"
+        className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950"
+      >
+        Watch 2‑minute demo
+      </Link>
     </div>
   );
 
@@ -118,7 +135,7 @@ export function Hero({ regionName }: HeroProps) {
 
   return (
     <section
-      className="relative min-h-0 overflow-x-hidden border-b border-fc-navy-800 bg-fc-navy-950"
+      className="relative min-h-0 overflow-x-hidden bg-transparent"
       aria-label="Hero"
     >
       <ShapeLandingHeroBackground
@@ -131,7 +148,7 @@ export function Hero({ regionName }: HeroProps) {
         aria-hidden
         style={{
           background:
-            "radial-gradient(ellipse 80% 60% at 50% 20%, rgba(15,23,42,0.6) 0%, transparent 50%), radial-gradient(ellipse 100% 100% at 50% 100%, rgba(3,7,18,0.9) 0%, transparent 40%)",
+            "radial-gradient(ellipse 90% 70% at 50% 18%, rgba(249,115,22,0.16) 0%, transparent 55%), radial-gradient(ellipse 100% 100% at 50% 100%, rgba(3,7,18,0.92) 0%, transparent 45%)",
         }}
       />
       <div
@@ -167,11 +184,24 @@ export function Hero({ regionName }: HeroProps) {
               {subcopy}
               {ctaBlock}
               {microcopy}
+              <div className="w-full pt-2">
+                <LogoStrip
+                  label="Fits your existing stack"
+                  items={[
+                    "ServiceTitan",
+                    "Housecall Pro",
+                    "Jobber",
+                    "QuickBooks",
+                    "Google Sheets",
+                    "FieldPulse",
+                  ]}
+                />
+              </div>
             </AnimatedGroup>
           </div>
 
           <motion.div
-            className="relative z-20 mx-auto w-full max-w-xl min-w-0 overflow-hidden lg:mx-0 lg:ml-auto"
+            className="relative z-20 mx-auto w-full max-w-xl min-w-0 lg:mx-0 lg:ml-auto"
             initial={reduceMotion ? false : { opacity: 0, y: 16, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ ...transition, delay: reduceMotion ? 0 : 0.25 }}
@@ -185,54 +215,33 @@ export function Hero({ regionName }: HeroProps) {
               }}
               aria-hidden
             />
-            <div className="relative overflow-hidden rounded-2xl border border-fc-navy-800 bg-fc-navy-900/95 shadow-2xl shadow-black/40 ring-1 ring-white/[0.07]">
-              <div>
-                <div className="border-b border-fc-navy-800 bg-fc-navy-800/50 px-5 py-3">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-fc-steel-500">
-                    Estimated monthly loss
-                  </p>
-                </div>
-                <div className="px-5 py-6">
-                  <p className="fc-display-number text-4xl font-extrabold tabular-nums text-white">
-                    $4,280
-                  </p>
-                  <p className="mt-2 text-sm text-slate-300">
-                    Likely profit leakage from the stuff you already feel.
-                  </p>
-
-                  <div className="mt-6 space-y-3">
-                    <div className="flex items-start justify-between gap-4">
-                      <p className="text-sm font-semibold text-slate-200">Loss from under-quoting</p>
-                      <p className="font-display text-lg font-extrabold text-fc-orange-500 tabular-nums">
-                        $3,100
-                      </p>
-                    </div>
-                    <div className="flex items-start justify-between gap-4">
-                      <p className="text-sm font-semibold text-slate-200">
-                        Loss from overtime spillover
-                      </p>
-                      <p className="font-display text-lg font-extrabold text-fc-orange-500 tabular-nums">
-                        $1,180
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 rounded-xl border border-fc-navy-800 bg-fc-navy-950/40 px-4 py-3">
-                    <p className="text-xs font-semibold text-slate-200">
-                      Matches how cold leads describe the leak:
-                    </p>
-                    <ul className="mt-2 space-y-1 text-xs text-slate-400">
-                      <li>Quoted vs actual time</li>
-                      <li>Labor overruns</li>
-                      <li>Overtime used to catch up</li>
-                    </ul>
-                  </div>
-                </div>
+            <MockAppFrame title="FieldCrew" subtitle="Preview">
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                <HeroViewSwitcher />
               </div>
-            </div>
+            </MockAppFrame>
           </motion.div>
         </div>
+
+        <div className="mt-14 sm:mt-16">
+          <div className="mx-auto max-w-5xl">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+              Built for owner‑operators who want clear labour answers
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {poweredBadges.map((b) => (
+                <div
+                  key={b}
+                  className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-slate-200 backdrop-blur-md"
+                >
+                  {b}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
+
     </section>
   );
 }

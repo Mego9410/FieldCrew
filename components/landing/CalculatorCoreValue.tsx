@@ -9,6 +9,7 @@ import {
   useProfitLeakEstimate,
 } from "@/components/landing/profit-leak-estimate";
 import { cn } from "@/lib/utils";
+import { RailHeader } from "@/components/landing/PublicPagePrimitives";
 
 function LossResultCard({
   formatTotal,
@@ -98,31 +99,32 @@ export function CalculatorCoreValue() {
   return (
     <section
       id="calculator"
-      className="relative overflow-hidden border-b border-fc-border bg-gradient-to-b from-slate-50/90 via-white to-slate-50/70 py-14 sm:py-20 lg:py-24"
+      className="relative overflow-hidden bg-transparent py-14 sm:py-20 lg:py-24"
       aria-labelledby="calculator-core-heading"
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(249,115,22,0.09),transparent)]"
+        className="pointer-events-none absolute inset-0"
         aria-hidden
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(3,7,18,0.0) 0%, rgba(248,250,252,0.85) 26%, rgba(248,250,252,1) 60%)",
+          backgroundSize: "100% 500%",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "0 0",
+        }}
       />
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-fc-accent/25 to-transparent"
-        aria-hidden
-      />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" aria-hidden />
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <ScrollReveal className="text-center">
-          <span className="fc-accent-stripe mx-auto mb-4 block" aria-hidden />
-          <h2
-            id="calculator-core-heading"
-            className="font-display font-bold text-fc-brand fc-section-h2"
-          >
-            In 60 Seconds, See Your Number
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-fc-muted sm:text-[1.0625rem] fc-body-air hyphens-none break-normal">
-            Answer a few simple questions and FieldCrew will estimate how much
-            profit may be leaking from under-quoted labor and overtime.
-          </p>
+        <ScrollReveal>
+          <RailHeader
+            eyebrow="Quick estimate"
+            titleId="calculator-core-heading"
+            title="In 60 Seconds, See Your Number"
+            description="Answer a few simple questions and FieldCrew will estimate how much profit may be leaking from under-quoted labor and overtime."
+            tone="dark"
+            className="mx-auto max-w-6xl"
+          />
         </ScrollReveal>
 
         <motion.div

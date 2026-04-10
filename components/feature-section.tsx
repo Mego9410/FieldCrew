@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { MockAppFrame } from "@/components/landing/PublicPagePrimitives"
 
 export interface FeatureStepItem {
   step: string
@@ -154,26 +155,34 @@ export function FeatureSteps({
                     index === currentFeature && (
                       <motion.div
                         key={index}
-                        className="absolute inset-0 overflow-hidden rounded-lg"
+                        className="absolute inset-0"
                         initial={{ y: 100, opacity: 0, rotateX: -20 }}
                         animate={{ y: 0, opacity: 1, rotateX: 0 }}
                         exit={{ y: -100, opacity: 0, rotateX: 20 }}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
                       >
-                        {feature.slide != null ? (
-                          <div className="h-full w-full">{feature.slide}</div>
-                        ) : feature.image ? (
-                          <>
-                            <Image
-                              src={feature.image}
-                              alt={feature.title || feature.step}
-                              className="h-full w-full object-cover transition-transform"
-                              width={1000}
-                              height={500}
-                            />
-                            <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-background via-background/50 to-transparent" />
-                          </>
-                        ) : null}
+                        <MockAppFrame
+                          title="FieldCrew"
+                          subtitle={feature.title || feature.step}
+                          className="h-full w-full"
+                        >
+                          <div className={cn("h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]")}>
+                            {feature.slide != null ? (
+                              <div className="h-full w-full">{feature.slide}</div>
+                            ) : feature.image ? (
+                              <div className="relative h-full w-full">
+                                <Image
+                                  src={feature.image}
+                                  alt={feature.title || feature.step}
+                                  className="h-full w-full object-cover transition-transform"
+                                  width={1000}
+                                  height={500}
+                                />
+                                <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                              </div>
+                            ) : null}
+                          </div>
+                        </MockAppFrame>
                       </motion.div>
                     ),
                 )}
@@ -190,7 +199,7 @@ export function FeatureSteps({
 
 const industryProblemStats = [
   {
-    value: "$450M-$2.1B",
+    value: "$450M-$600M",
     label: "lost annually",
     emphasis: true,
   },
@@ -245,7 +254,7 @@ export function IndustryProblemFeatureSection({
   return (
     <section
       className={cn(
-        "border-b border-fc-border bg-fc-surface-muted py-14 sm:py-20 lg:py-24",
+        "border-b border-fc-border bg-gradient-to-b from-slate-50 via-white to-slate-50/60 py-14 sm:py-20 lg:py-24",
         className,
       )}
       aria-labelledby="industry-problem-heading"
@@ -259,8 +268,8 @@ export function IndustryProblemFeatureSection({
         headingClassName="font-display font-bold text-fc-brand fc-section-h2"
         lead={
           <p className="mx-auto max-w-3xl text-center text-lg text-fc-muted fc-body-air">
-            Across the US, HVAC contractors lose between $450 million and $2.1
-            billion every year from under-quoted labor, jobs running over time,
+            Across the US, HVAC contractors lose between $450 million and $600
+            million every year from under-quoted labor, jobs running over time,
             and overtime used to recover the schedule.
           </p>
         }

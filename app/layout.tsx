@@ -77,6 +77,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cn("antialiased", bricolage.variable, ibmPlexSans.variable, oswald.variable, shareTechMono.variable, "font-sans", geist.variable)}
     >
       <head>
@@ -93,7 +94,7 @@ gtag('config', 'G-C1W6ME1LTW');
           `}
         </Script>
       </head>
-      <body className="min-h-screen bg-fc-page font-body text-fc-brand">
+      <body suppressHydrationWarning className="min-h-screen bg-fc-page font-body text-fc-brand">
         {children}
         <Analytics />
         <SpeedInsights />

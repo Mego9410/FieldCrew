@@ -58,8 +58,8 @@ const steps: Step[] = [
 
 function sectionClass(active: boolean) {
   return active
-    ? "mt-10 rounded-lg border-2 border-fc-accent/40 bg-fc-accent/5 p-3 shadow-fc-sm transition print:mt-8"
-    : "mt-10 print:mt-8";
+    ? "mt-10 scroll-mt-24 md:scroll-mt-28 lg:scroll-mt-32 rounded-lg border-2 border-fc-accent/40 bg-fc-accent/5 p-3 shadow-fc-sm transition print:mt-8"
+    : "mt-10 scroll-mt-24 md:scroll-mt-28 lg:scroll-mt-32 print:mt-8";
 }
 
 export function SampleReportTutorial() {

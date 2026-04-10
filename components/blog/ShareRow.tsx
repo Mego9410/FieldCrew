@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { safeClipboardWriteText } from "@/lib/safe-clipboard";
 
 interface ShareRowProps {
   url: string;
@@ -11,12 +12,10 @@ export function ShareRow({ url, title }: ShareRowProps) {
   const [copied, setCopied] = useState(false);
 
   const copyLink = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(url);
+    const ok = await safeClipboardWriteText(url);
+    if (ok) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Clipboard can fail (e.g. permission, non-HTTPS). Don't throw or we get [object Event] in overlay.
     }
   }, [url]);
 

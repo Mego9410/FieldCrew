@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { safeClipboardWriteText } from "@/lib/safe-clipboard";
 
 type ShareLinksProps = {
   url: string;
@@ -21,12 +22,10 @@ export function ShareLinks({ url, title, ariaLabel = "Share this page" }: ShareL
   }, [title, url]);
 
   const copyLink = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(url);
+    const ok = await safeClipboardWriteText(url);
+    if (ok) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Clipboard can fail (e.g. permission, non-HTTPS). Don't throw.
     }
   }, [url]);
 

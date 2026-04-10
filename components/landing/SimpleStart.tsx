@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { BentoCard, RailHeader, SplitBand } from "@/components/landing/PublicPagePrimitives";
 
 const bullets = [
   "No rip-and-replace setup",
@@ -14,46 +15,53 @@ export function SimpleStart() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section
-      className="border-b border-fc-border bg-fc-surface-muted py-14 sm:py-20 lg:py-24"
-      aria-labelledby="simple-start-heading"
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <ScrollReveal className="text-center">
-            <span className="fc-accent-stripe mx-auto mb-4 block" aria-hidden />
-            <h2
-              id="simple-start-heading"
-              className="font-display font-bold text-fc-brand fc-section-h2"
-            >
-              Built For Busy HVAC Teams, Not Software Experts
-            </h2>
-          </ScrollReveal>
-          <motion.div
-            className="mt-10 rounded-[var(--fc-radius)] border border-fc-border bg-white px-6 py-8 shadow-fc-sm"
-            initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ amount: 0.2, once: true }}
-            transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
-          >
-            <ul className="space-y-3 text-left text-fc-muted">
+    <SplitBand
+      variant="dark"
+      labelledBy="simple-start-heading"
+      className="py-0"
+      left={
+        <motion.div
+          initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ amount: 0.2, once: true }}
+          transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+        >
+          <BentoCard className="text-left border-white/10 bg-white/[0.05] ring-1 ring-white/[0.08] shadow-[0_22px_60px_-34px_rgba(0,0,0,0.75)]">
+            <ul className="grid gap-3 text-white/70 sm:grid-cols-2">
               {bullets.map((b) => (
-                <li key={b} className="flex items-start gap-2">
+                <li key={b} className="flex items-start gap-2.5">
                   <span
                     className="mt-2 h-2 w-2 shrink-0 rounded-full bg-fc-accent"
                     aria-hidden
                   />
-                  <span className="text-sm font-semibold">{b}</span>
+                  <span className="text-sm font-semibold text-white/85">{b}</span>
                 </li>
               ))}
             </ul>
-            <p className="mt-7 text-center text-lg font-semibold text-fc-muted">
+            <div
+              className="my-6 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent"
+              aria-hidden
+            />
+            <p className="text-center text-lg font-semibold text-white/70">
               If you can use a phone, you can use FieldCrew.
             </p>
-          </motion.div>
+          </BentoCard>
+        </motion.div>
+      }
+      right={
+        <div>
+          <ScrollReveal>
+            <RailHeader
+              eyebrow="Simple start"
+              titleId="simple-start-heading"
+              title="Built for busy HVAC teams, not software experts"
+              description="No rip-and-replace. No long training. Just enough structure to make labour leakage visible."
+              tone="dark"
+            />
+          </ScrollReveal>
         </div>
-      </div>
-    </section>
+      }
+    />
   );
 }
 
