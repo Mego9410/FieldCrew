@@ -8,7 +8,7 @@ const metrics = [
   { label: "Revenue", value: 320000, prefix: "$", sub: "/mo" },
   { label: "Payroll", value: 148000, prefix: "$", sub: "/mo" },
   { label: "Overtime", value: 12480, prefix: "$", sub: "/mo" },
-  { label: "Unbilled labour", value: 42, sub: " hrs" },
+  { label: "Unbilled labor", value: 42, sub: " hrs" },
   { label: "Jobs exceeding estimate", value: 37, suffix: "%", sub: "" },
 ];
 

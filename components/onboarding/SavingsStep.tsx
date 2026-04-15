@@ -42,7 +42,7 @@ export function SavingsStep({
 
       <div className="grid gap-4 sm:grid-cols-3">
         <MiniStat label="Jobs / week" value={String(snapshot.estimatedJobsPerWeek)} />
-        <MiniStat label="Labour hours (est.)" value={String(snapshot.estimatedTotalLabourHours)} />
+        <MiniStat label="Labor hours (est.)" value={String(snapshot.estimatedTotalLabourHours)} />
         <MiniStat
           label="Leakage (est.) / week"
           value={currency.format(snapshot.estimatedLeakageDollars)}

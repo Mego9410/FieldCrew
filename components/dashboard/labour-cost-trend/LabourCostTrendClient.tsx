@@ -129,7 +129,7 @@ function PanelBTrendChart({
   if (!hasTrend) {
     return (
       <div className="rounded-xl border border-fc-border bg-fc-surface p-6 shadow-fc-sm">
-        <p className="text-sm font-medium text-fc-muted">Average labour cost per job</p>
+        <p className="text-sm font-medium text-fc-muted">Average labor cost per job</p>
         <p className="mt-4 text-center text-sm text-fc-muted">No trend data for this range.</p>
       </div>
     );
@@ -150,7 +150,7 @@ function PanelBTrendChart({
   return (
     <div className="rounded-xl border border-fc-border bg-fc-surface p-4 shadow-fc-sm md:p-6">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-fc-brand">Average labour cost per job</p>
+        <p className="text-sm font-semibold text-fc-brand">Average labor cost per job</p>
         <div className="flex items-center gap-3 text-xs text-fc-muted">
           <span>
             vs prev: <DeltaBadge deltaPct={deltaPct} />
@@ -175,8 +175,8 @@ function PanelBTrendChart({
               tick={chartTheme.axis.tick}
               tickFormatter={(v) =>
                 payload.granularity === "week"
-                  ? new Date(v).toLocaleDateString("en-GB", { month: "short", day: "numeric" })
-                  : new Date(v).toLocaleDateString("en-GB", { month: "short", year: "2-digit" })
+                  ? new Date(v).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                  : new Date(v).toLocaleDateString("en-US", { month: "short", year: "2-digit" })
               }
             />
             <YAxis
@@ -186,7 +186,7 @@ function PanelBTrendChart({
             />
             <Tooltip
               contentStyle={chartTheme.tooltip.contentStyle}
-              labelFormatter={(v) => new Date(v).toLocaleDateString("en-GB")}
+              labelFormatter={(v) => new Date(v).toLocaleDateString("en-US")}
               formatter={(value: number | undefined) =>
                 value != null
                   ? [formatCurrency(value, payload.currency), "Avg cost/job"]
@@ -228,7 +228,7 @@ function PanelBTrendChart({
 function PanelCKPIs({ kpis, currency }: { kpis: KPIBlock; currency: string }) {
   const items = [
     {
-      label: "Avg labour cost/job",
+      label: "Avg labor cost/job",
       value: formatCurrency(kpis.avgLabourCostPerJob.value, currency),
       deltaPct: kpis.avgLabourCostPerJob.deltaPct,
       pulse: Math.abs(kpis.avgLabourCostPerJob.deltaPct) >= 10,
@@ -246,7 +246,7 @@ function PanelCKPIs({ kpis, currency }: { kpis: KPIBlock; currency: string }) {
       pulse: Math.abs(kpis.overtimeCost.deltaPct) >= 10,
     },
     {
-      label: "Overtime % of labour",
+      label: "Overtime % of labor",
       value: `${kpis.overtimePctOfLabour.value.toFixed(1)}%`,
       deltaPct: kpis.overtimePctOfLabour.deltaPct,
       pulse: Math.abs(kpis.overtimePctOfLabour.deltaPct) >= 5,
@@ -653,10 +653,10 @@ export function LabourCostTrendClient() {
         Back to dashboard
       </Link>
       <h1 className="font-display text-2xl font-bold tracking-tight text-fc-brand sm:text-3xl">
-        Labour cost per job trend
+        Labor cost per job trend
       </h1>
       <p className="mt-1.5 text-sm text-fc-muted">
-        Track average labour cost per job, leakage vs target, and what’s driving it.
+        Track average labor cost per job, leakage vs target, and what’s driving it.
       </p>
 
       {/* Panel A: Profit leakage strip — always visible */}

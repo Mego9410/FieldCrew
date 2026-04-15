@@ -87,7 +87,7 @@ export function TeamBasicsStep({ value, onChange, errors }: TeamBasicsStepProps)
         <p className="text-sm font-medium text-fc-brand">
           Main trade / service type <span className="text-red-600">*</span>
         </p>
-        <p className="mt-0.5 text-xs text-fc-muted">We’ll use this for a realistic loaded labour rate estimate.</p>
+        <p className="mt-0.5 text-xs text-fc-muted">We’ll use this for a realistic loaded labor rate estimate.</p>
         <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {TRADES.map((t) => (
             <button

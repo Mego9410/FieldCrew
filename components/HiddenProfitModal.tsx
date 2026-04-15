@@ -143,7 +143,7 @@ export function HiddenProfitModal({
       >
         <div className="border-b border-slate-200/60 px-4 py-3 flex items-center justify-between">
           <h1 id="hidden-profit-modal-title" className="font-display text-lg font-bold text-fc-brand">
-            How Much Labour Profit Are You Losing?
+            How Much Labor Profit Are You Losing?
           </h1>
           <button
             type="button"
@@ -158,7 +158,7 @@ export function HiddenProfitModal({
         <div className="max-h-[calc(100vh-8rem)] overflow-y-auto p-4 print:max-h-none print:overflow-visible">
           <>
               <p className="text-sm text-slate-600">
-                Estimate hidden labour leakage from overtime, untracked time, and job overruns.
+                Estimate hidden labor leakage from overtime, untracked time, and job overruns.
               </p>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -200,7 +200,7 @@ export function HiddenProfitModal({
 
               <div className="mt-6 rounded-md border border-slate-200/60 bg-slate-50/50 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Estimated monthly labour leakage
+                  Estimated monthly labor leakage
                 </p>
                 <p className="mt-1 text-2xl font-bold text-fc-brand">
                   {currentOutputs.formatted.totalRecoverableProfit}

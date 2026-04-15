@@ -100,7 +100,7 @@ function CostPerJobView() {
           <div className="mt-3 space-y-2">
             <div>
               <div className="flex justify-between text-xs">
-                <span className="text-fc-steel-500">Labour</span>
+                <span className="text-fc-steel-500">Labor</span>
                 <span className="text-slate-300">$312</span>
               </div>
               <div className="mt-0.5 h-1.5 overflow-hidden rounded-full bg-fc-navy-900">
@@ -142,7 +142,7 @@ function CostPerJobView() {
             </div>
           </div>
           <p className="mt-3 text-xs">
-            <span className="text-fc-steel-500">Labour Margin </span>
+            <span className="text-fc-steel-500">Labor Margin </span>
             <span className="font-bold text-fc-orange-500">52%</span>
           </p>
         </div>
@@ -444,7 +444,7 @@ export function HeroViewSwitcher() {
         }}
       />
 
-      {/* App window top bar — Labour Control System */}
+      {/* App window top bar — Labor Control System */}
       <div className="relative flex items-center justify-between border-b border-fc-navy-800 bg-fc-navy-800 px-3 py-2">
         <div className="flex items-center gap-3">
           <div className="flex gap-1.5">
@@ -468,7 +468,7 @@ export function HeroViewSwitcher() {
       {/* Tabs — sliding underline */}
       <div
         role="tablist"
-        aria-label="Labour control views"
+        aria-label="Labor control views"
         className="relative flex flex-wrap gap-0 border-b border-fc-navy-800 bg-fc-navy-800/70 px-2 py-0 overflow-x-auto scrollbar-dark"
         onKeyDown={handleKeyDown}
       >

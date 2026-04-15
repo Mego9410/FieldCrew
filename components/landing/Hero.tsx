@@ -8,6 +8,8 @@ import { AnimatedGroup } from "@/components/ui/animated-group";
 import { ShapeLandingHeroBackground } from "@/components/ui/shape-landing-hero";
 import { HeroViewSwitcher } from "@/components/landing/HeroViewSwitcher";
 import { LogoStrip, MockAppFrame } from "@/components/landing/PublicPagePrimitives";
+import { DemoVideoModal } from "@/components/landing/DemoVideoModal";
+import { useState } from "react";
 
 const transition = { duration: 0.4, ease: [0.2, 0.8, 0.2, 1] as const };
 
@@ -49,6 +51,7 @@ const poweredBadges = [
 
 export function Hero({ regionName }: HeroProps) {
   const reduceMotion = useReducedMotion();
+  const [isDemoOpen, setIsDemoOpen] = useState(false);
   const itemVariants = reduceMotion ? staticReveal : springReveal;
   const containerVariants = {
     hidden: { opacity: 1 },
@@ -74,7 +77,7 @@ export function Hero({ regionName }: HeroProps) {
           <span className="text-white/95">/month</span>
         </span>
       </span>
-      <span className="mt-2 block text-white">Every month without realising</span>
+      <span className="mt-2 block text-white">Without realizing</span>
     </h1>
   );
 
@@ -92,12 +95,13 @@ export function Hero({ regionName }: HeroProps) {
       <MagneticButton href="/profit-leak" variant="primary">
         See What You&apos;re Losing
       </MagneticButton>
-      <Link
-        href="/demo"
+      <button
+        type="button"
+        onClick={() => setIsDemoOpen(true)}
         className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950"
       >
         Watch 2‑minute demo
-      </Link>
+      </button>
     </div>
   );
 
@@ -138,6 +142,7 @@ export function Hero({ regionName }: HeroProps) {
       className="relative min-h-0 overflow-x-hidden bg-transparent"
       aria-label="Hero"
     >
+      <DemoVideoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
       <ShapeLandingHeroBackground
         reduceMotion={!!reduceMotion}
         className="z-0 opacity-[0.55] md:opacity-70"
@@ -226,7 +231,7 @@ export function Hero({ regionName }: HeroProps) {
         <div className="mt-14 sm:mt-16">
           <div className="mx-auto max-w-5xl">
             <p className="text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-              Built for owner‑operators who want clear labour answers
+              Built for owner‑operators who want clear labor answers
             </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {poweredBadges.map((b) => (

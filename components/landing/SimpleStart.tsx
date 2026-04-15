@@ -55,7 +55,7 @@ export function SimpleStart() {
               eyebrow="Simple start"
               titleId="simple-start-heading"
               title="Built for busy HVAC teams, not software experts"
-              description="No rip-and-replace. No long training. Just enough structure to make labour leakage visible."
+              description="No rip-and-replace. No long training. Just enough structure to make labor leakage visible."
               tone="dark"
             />
           </ScrollReveal>

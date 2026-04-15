@@ -12,7 +12,7 @@ export default function RevenuePerLabourHourPage() {
         <ArrowLeft className="h-4 w-4" />
         Back to dashboard
       </Link>
-      <h1 className="font-display text-xl font-bold text-fc-brand">Revenue per Labour Hour</h1>
+      <h1 className="font-display text-xl font-bold text-fc-brand">Revenue per Labor Hour</h1>
       <p className="mt-1 text-sm text-fc-muted">
         Track revenue productivity per hour worked to identify if crews are productive or just busy.
       </p>

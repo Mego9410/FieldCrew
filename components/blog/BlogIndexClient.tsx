@@ -110,7 +110,7 @@ export function BlogIndexClient({ posts }: BlogIndexClientProps) {
               id="blog-cta-heading"
               className="font-display text-lg font-bold text-white"
             >
-              Recover 8–15% hidden labour profit
+              Recover 8–15% hidden labor profit
             </h2>
             <p className="mt-2 text-sm text-slate-300">
               See where every hour goes. Get a sample report.

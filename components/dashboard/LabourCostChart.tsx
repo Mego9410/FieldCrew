@@ -26,7 +26,7 @@ export function LabourCostChart({ data, href = routes.owner.dashboard.labourCost
     <div className="rounded-xl border border-fc-border bg-fc-surface p-4 shadow-fc-sm">
       <div className="mb-3 flex items-center justify-between">
         <p className="text-xs font-medium uppercase tracking-wide text-fc-muted">
-          Labour cost per job
+          Labor cost per job
         </p>
         {href && (
           <span className="text-xs font-medium text-fc-accent hover:underline">

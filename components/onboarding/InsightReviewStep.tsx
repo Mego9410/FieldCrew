@@ -49,7 +49,7 @@ export function InsightReviewStep({
           sublabel="Based on your answers"
         />
         <MetricCard
-          label="Estimated labour hours"
+          label="Estimated labor hours"
           value={`${snapshot.estimatedTotalLabourHours}`}
           sublabel="Includes typical overrun stretch"
         />
@@ -59,7 +59,7 @@ export function InsightReviewStep({
           sublabel="Combined overrun + OT pattern"
         />
         <MetricCard
-          label="Estimated labour leakage"
+          label="Estimated labor leakage"
           value={currency.format(snapshot.estimatedLeakageDollars)}
           sublabel="Loaded cost • indicative"
           highlight
@@ -68,7 +68,7 @@ export function InsightReviewStep({
 
       <div className="rounded-2xl border border-fc-border bg-fc-surface-muted/60 px-5 py-4 text-sm leading-relaxed text-fc-muted-strong">
         For a team of {techs} field techs handling around {jobs} jobs a week, even small overruns can
-        quietly create extra labour cost and overtime pressure. This gives you a starting point before real
+        quietly create extra labor cost and overtime pressure. This gives you a starting point before real
         job tracking begins.
       </div>
 
@@ -79,7 +79,7 @@ export function InsightReviewStep({
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           <FrictionCard title="Jobs taking longer than planned" />
           <FrictionCard title="Overtime used to recover the schedule" />
-          <FrictionCard title="Labour cost not clearly tied back to each job" />
+          <FrictionCard title="Labor cost not clearly tied back to each job" />
         </div>
       </div>
 

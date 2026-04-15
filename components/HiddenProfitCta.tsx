@@ -5,7 +5,7 @@ import { track } from "@/lib/tracking";
 
 const DEFAULT_LABELS = [
   "Show Me The Hidden Profit",
-  "See a Real Labour Profit Report",
+  "See a Real Labor Profit Report",
   "See Where $6,420 Was Recovered",
 ] as const;
 

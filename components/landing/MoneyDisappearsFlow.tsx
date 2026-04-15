@@ -62,7 +62,7 @@ export function MoneyDisappearsFlow() {
             Now repeat that across 50, 100, or 200 jobs.
           </p>
           <p className="mt-2 hyphens-none break-normal text-left text-base text-fc-muted fc-body-air">
-            That&apos;s where thousands of dollars disappear each month.
+            That&apos;s where thousands of dollars disappear over time.
           </p>
         </div>
       }

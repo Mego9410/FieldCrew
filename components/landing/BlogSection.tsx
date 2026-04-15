@@ -29,7 +29,7 @@ export function BlogSection({ posts }: BlogSectionProps) {
               From the blog
             </h2>
             <p className="mt-2 text-fc-muted max-w-xl">
-              Labour cost, job costing, and payroll tips for HVAC owners.
+              Labor cost, job costing, and payroll tips for HVAC owners.
             </p>
           </div>
           <Link

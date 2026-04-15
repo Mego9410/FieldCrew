@@ -6,6 +6,7 @@ import { addWorker, updateWorker, WorkerLimitError } from "@/lib/data";
 import { useCompanies } from "@/lib/hooks/useData";
 import { routes } from "@/lib/routes";
 import type { Worker, WorkerInput } from "@/lib/entities";
+import { isValidUsPhoneE164 } from "@/lib/phone";
 import { FormField, FormInput } from "./FormField";
 import { PhoneInput } from "./PhoneInput";
 
@@ -35,6 +36,10 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
     }
     if (!phone.trim()) {
       setError("Phone is required");
+      return;
+    }
+    if (!isValidUsPhoneE164(phone)) {
+      setError("Phone must be a valid US/CA mobile number (10 digits).");
       return;
     }
     const rate = parseFloat(hourlyRate);

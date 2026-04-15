@@ -11,7 +11,7 @@ interface InlineCTAProps {
 }
 
 export function InlineCTA({
-  heading = "Recover 8–15% hidden labour profit",
+  heading = "Recover 8–15% hidden labor profit",
   description = "See where every hour goes. Get a sample report.",
   buttonLabel = "Show Me The Hidden Profit",
   className = "",

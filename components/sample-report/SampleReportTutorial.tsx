@@ -22,7 +22,7 @@ const steps: Step[] = [
     id: "summary",
     title: "Start with the Summary",
     description:
-      "This gives you the monthly picture fast: revenue, labour cost, margin, overtime, and the top-line recoverable profit.",
+      "This gives you the monthly picture fast: revenue, labor cost, margin, overtime, and the top-line recoverable profit.",
   },
   {
     id: "overtime",
@@ -123,7 +123,7 @@ export function SampleReportTutorial() {
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 print:max-w-4xl print:py-6">
       <header className="border-b border-fc-border pb-6 print:border-fc-border">
         <h1 className="font-display text-2xl font-bold text-fc-brand sm:text-3xl">
-          Monthly Labour Profit Report
+          Monthly Labor Profit Report
         </h1>
         <p className="mt-2 text-lg font-medium text-fc-brand">{data.company}</p>
         <p className="text-sm text-fc-muted">
@@ -146,13 +146,13 @@ export function SampleReportTutorial() {
             </p>
           </div>
           <div className="rounded-md border border-fc-border bg-white p-4 shadow-fc-sm">
-            <p className="text-xs font-semibold uppercase text-fc-muted">Total Labour Cost</p>
+            <p className="text-xs font-semibold uppercase text-fc-muted">Total Labor Cost</p>
             <p className="mt-1 font-display text-xl font-bold text-fc-brand">
               {formatUSD(data.summary.totalLabourCost)}
             </p>
           </div>
           <div className="rounded-md border border-fc-border bg-white p-4 shadow-fc-sm">
-            <p className="text-xs font-semibold uppercase text-fc-muted">Gross Labour Margin</p>
+            <p className="text-xs font-semibold uppercase text-fc-muted">Gross Labor Margin</p>
             <p className="mt-1 font-display text-xl font-bold text-fc-brand">
               {data.summary.grossLabourMarginPct}%
             </p>
@@ -164,7 +164,7 @@ export function SampleReportTutorial() {
             </p>
           </div>
           <div className="rounded-md border border-fc-border bg-white p-4 shadow-fc-sm">
-            <p className="text-xs font-semibold uppercase text-fc-muted">Unbilled Labour Hours</p>
+            <p className="text-xs font-semibold uppercase text-fc-muted">Unbilled Labor Hours</p>
             <p className="mt-1 font-display text-xl font-bold text-fc-brand">
               {data.summary.unbilledLabourHours}
             </p>
@@ -221,7 +221,7 @@ export function SampleReportTutorial() {
                 <th className="px-4 py-3 font-semibold text-fc-brand">Est. Hrs</th>
                 <th className="px-4 py-3 font-semibold text-fc-brand">Actual Hrs</th>
                 <th className="px-4 py-3 font-semibold text-fc-brand">Overrun Hrs</th>
-                <th className="px-4 py-3 font-semibold text-fc-brand">Labour $ Impact</th>
+                <th className="px-4 py-3 font-semibold text-fc-brand">Labor $ Impact</th>
                 <th className="px-4 py-3 font-semibold text-fc-brand">Notes</th>
               </tr>
             </thead>

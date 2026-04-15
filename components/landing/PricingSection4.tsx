@@ -101,6 +101,9 @@ export function PricingSection4({
             {subheading}
           </p>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-500">
+            All plans include the same core features — pricing scales with team size (worker limit).
+          </p>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-500">
             Applies to first month only.
           </p>
         </ScrollReveal>
@@ -169,10 +172,12 @@ export function PricingSection4({
                       /month
                     </span>
                   </p>
-                  <p className="mt-2 text-sm font-semibold text-fc-orange-200">
-                    {promo.promoLine}
+                  <p className="mt-2 text-sm font-semibold text-white">
+                    {promo.promoLine}{" "}
+                    <span className="font-medium text-slate-200/80">
+                      {promo.afterPromoLine}
+                    </span>
                   </p>
-                  <p className="mt-1 text-xs text-slate-500">{promo.afterPromoLine}</p>
 
                   <ul className="mt-6 flex flex-1 flex-col gap-2.5 text-sm text-slate-300">
                     {PLAN_FEATURE_TITLES.map((title) => (
@@ -220,11 +225,6 @@ export function PricingSection4({
                     )}
                   </div>
 
-                  {plan.highlighted && (
-                    <p className="mt-3 text-center text-xs text-slate-500">
-                      Applies to the first month only.
-                    </p>
-                  )}
                 </div>
               </motion.div>
             );

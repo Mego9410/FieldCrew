@@ -1,7 +1,7 @@
 "use client";
 
 const rows = [
-  { others: "Tracks time", fieldcrew: "Tracks labour profitability" },
+  { others: "Tracks time", fieldcrew: "Tracks labor profitability" },
   { others: "Payroll export", fieldcrew: "Margin recovery report" },
   { others: "Admin tool", fieldcrew: "Owner control system" },
   { others: "Generic reporting", fieldcrew: "HVAC-specific insight" },

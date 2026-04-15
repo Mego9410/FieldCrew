@@ -134,7 +134,7 @@ export function FeatureSteps({
             {!play ? (
               <div
                 className="flex h-full min-h-[inherit] flex-col justify-center gap-4 rounded-lg border border-fc-border bg-white p-6 shadow-fc-sm"
-                aria-label="Summary of labour profit losses"
+                aria-label="Summary of labor profit losses"
               >
                 {features.map((feature, index) => (
                   <div

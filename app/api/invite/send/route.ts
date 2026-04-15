@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCompanyForCurrentUser, getWorker, getWorkerInvitesByCompany, addWorkerInvite, updateWorkerInvite, updateWorker } from "@/lib/data";
 import { createShortLink } from "@/lib/shortLink";
+import { isValidUsPhoneE164 } from "@/lib/phone";
 import { sendSms } from "@/lib/twilio";
 import { NextResponse } from "next/server";
 
@@ -57,6 +58,13 @@ export async function POST(request: Request) {
   const shortCode = await createShortLink(supabase, fullPath);
   const link = `${origin}/s/${shortCode}`;
   const message = `You're invited to FieldCrew. Open this link to get started: ${link}`;
+
+  if (!isValidUsPhoneE164(worker.phone)) {
+    return NextResponse.json(
+      { error: "Worker phone must be a valid US/CA mobile number (E.164 +1XXXXXXXXXX) to send SMS." },
+      { status: 400 }
+    );
+  }
 
   const sent = await sendSms(worker.phone, message);
   if (!sent) {

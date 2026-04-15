@@ -23,7 +23,7 @@ export function SampleProfitReport({
     <div className="space-y-6 print:block">
       <header className="border-b border-slate-200/60 pb-4">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-          Sample Monthly Labour Profit Report
+          Sample Monthly Labor Profit Report
         </h2>
         <p className="mt-1 font-display text-lg font-bold text-fc-brand">
           {sample.companyLabel} — {sample.location} — {sample.month}
@@ -79,7 +79,7 @@ export function SampleProfitReport({
 
       <section className="rounded-md border-2 border-fc-accent/40 bg-fc-accent/5 p-4 shadow-sm">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-600">
-          Total identified labour leakage
+          Total identified labor leakage
         </h3>
         <p className="mt-2 text-2xl font-bold text-fc-brand">
           Total Monthly Recoverable Profit: {formatUSD(sample.totalRecoverableProfit)}

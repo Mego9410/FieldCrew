@@ -1,5 +1,5 @@
 /**
- * Small demos of the software in action — job picker, clock, labour cost, export.
+ * Small demos of the software in action — job picker, clock, labor cost, export.
  */
 export function ProductDemos() {
   return (
@@ -28,8 +28,8 @@ export function ProductDemos() {
             You see:
           </p>
           <ul className="mx-auto mt-2 max-w-md list-inside list-disc text-lg text-slate-300">
-            <li>Labour hours per job</li>
-            <li>Labour cost per job</li>
+            <li>Labor hours per job</li>
+            <li>Labor cost per job</li>
             <li>Margin pressure in real time</li>
           </ul>
           <p className="mx-auto mt-4 text-xl font-medium text-white">
@@ -89,14 +89,14 @@ export function ProductDemos() {
             </div>
           </div>
 
-          {/* 3. Owner: Labour cost per job */}
+          {/* 3. Owner: Labor cost per job */}
           <div className="group cursor-pointer rounded-lg border border-slate-700 bg-slate-900/50 p-6 shadow-fc-md transition-all duration-200 hover:border-fc-accent/40">
             <p className="mb-4 font-body text-sm font-medium text-slate-400">
-              Owner — Labour by job
+              Owner — Labor by job
             </p>
             <div className="overflow-hidden rounded-lg border border-slate-700 bg-slate-800 text-left shadow-lg">
               <div className="border-b border-slate-700 bg-slate-900 px-3 py-2.5 font-body text-xs text-slate-300">
-                Job · Hours · Labour
+                Job · Hours · Labor
               </div>
               <div className="divide-y divide-slate-700 font-body text-sm p-3">
                 <div className="flex justify-between py-2 text-white">

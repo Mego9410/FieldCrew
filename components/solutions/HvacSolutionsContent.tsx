@@ -92,7 +92,7 @@ export function HvacSolutionsContent() {
               Built for HVAC teams that are busy... but still losing money on jobs
             </h1>
             <p className="mt-4 max-w-xl text-lg text-slate-700">
-              FieldCrew shows you exactly where labour hours slip, where overtime gets created, and
+              FieldCrew shows you exactly where labor hours slip, where overtime gets created, and
               which jobs are quietly killing your margin.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
@@ -100,7 +100,7 @@ export function HvacSolutionsContent() {
                 href={routes.public.sampleReport}
                 className="inline-flex min-h-[44px] items-center justify-center rounded-md bg-fc-accent px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-fc-accent-dark"
               >
-                See a real labour profit report
+                See a real labor profit report
               </Link>
               <Link
                 href="/#how-it-works"
@@ -271,7 +271,7 @@ export function HvacSolutionsContent() {
       <section className="py-14 sm:py-16">
         <div className="mx-auto max-w-4xl rounded-2xl border border-slate-300 bg-slate-100 px-6 py-8 text-center shadow-[0_18px_34px_-24px_rgba(15,23,42,0.5)] sm:px-10">
           <h2 className="font-display text-2xl font-bold text-fc-brand sm:text-3xl">
-            See where your labour profit is leaking
+            See where your labor profit is leaking
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-slate-700">
             Get a real example of how HVAC companies are losing margin and how FieldCrew finds it.

@@ -12,10 +12,12 @@ import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
   title: "Watch Demo — FieldCrew",
-  description: "Explore FieldCrew product highlights and see how owner views and labor profit reports work for HVAC teams.",
+  description:
+    "Explore FieldCrew product highlights and see how owner views and labor profit reports work for HVAC teams.",
 };
 
 export default function DemoPage() {
+  const vimeoId = process.env.NEXT_PUBLIC_DEMO_VIMEO_ID ?? "";
   return (
     <>
       <Nav />
@@ -25,6 +27,29 @@ export default function DemoPage() {
           title="Product demo highlights"
           description="A focused overview of owner workflows and where labor margin risk appears first."
         />
+        <PublicSection title="Watch the demo">
+          {vimeoId ? (
+            <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-fc-lg ring-1 ring-slate-900/[0.06]">
+              <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+                <iframe
+                  title="FieldCrew product demo"
+                  src={`https://player.vimeo.com/video/${encodeURIComponent(vimeoId)}?title=0&byline=0&portrait=0`}
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 h-full w-full"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="mx-auto max-w-3xl rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 px-6 py-10 text-center">
+              <p className="text-sm font-semibold text-slate-700">Demo video is being linked.</p>
+              <p className="mt-2 text-sm text-slate-600">
+                When ready, set <code className="font-mono">NEXT_PUBLIC_DEMO_VIMEO_ID</code> to show the Vimeo
+                embed here.
+              </p>
+            </div>
+          )}
+        </PublicSection>
         <PublicSection title="What you will see">
           <FeatureGrid
             items={[

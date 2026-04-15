@@ -22,13 +22,13 @@ export function OnboardingReadyStep({
       <div className="rounded-2xl border border-fc-border bg-fc-surface p-6 shadow-fc-md">
         <h1 className="font-display text-2xl font-bold text-fc-brand">You&apos;re ready to start tracking</h1>
         <p className="mt-2 text-fc-muted">
-          Your first labour snapshot is ready, and your workspace has been set up with the basics so
+          Your first labor snapshot is ready, and your workspace has been set up with the basics so
           your team can get moving.
         </p>
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           <Stat label="Workers added" value={String(workersAdded)} />
           <Stat label="Jobs added" value={String(jobsAdded)} />
-          <Stat label="Estimated labour snapshot" value="Ready" />
+          <Stat label="Estimated labor snapshot" value="Ready" />
         </div>
       </div>
 

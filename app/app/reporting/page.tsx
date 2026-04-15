@@ -81,7 +81,7 @@ export default function ReportingPage() {
     const headers = [
       "Job",
       "Revenue",
-      "Labour Cost",
+      "Labor Cost",
       "Gross Profit",
       "Margin %",
       "RPLH ($/hr)",
@@ -146,7 +146,7 @@ export default function ReportingPage() {
             Reporting
           </h1>
           <p className="mt-0.5 text-sm text-fc-muted">
-            Labour cost, overtime, and job profitability insights.
+            Labor cost, overtime, and job profitability insights.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -227,13 +227,13 @@ export default function ReportingPage() {
             </h2>
           <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
-              title="Labour Margin"
+              title="Labor Margin"
               primaryValue={
                 data.kpis.marginPct != null
                   ? `${data.kpis.marginPct.toFixed(1)}%`
                   : "—"
               }
-              secondaryValue={`Revenue $${data.kpis.revenue.toLocaleString()} • Labour $${data.kpis.labourCost.toLocaleString()}`}
+              secondaryValue={`Revenue $${data.kpis.revenue.toLocaleString()} • Labor $${data.kpis.labourCost.toLocaleString()}`}
               trend={
                 marginTrend != null
                   ? { value: marginTrend * 100, label: "previous period" }
@@ -241,7 +241,7 @@ export default function ReportingPage() {
               }
               icon={TrendingUp}
               warning={marginWarning ?? false}
-              tooltip="Margin = (Revenue - Labour Cost) / Revenue × 100"
+              tooltip="Margin = (Revenue - Labor Cost) / Revenue × 100"
             />
             <KpiCard
               title="Overtime Cost"
@@ -260,7 +260,7 @@ export default function ReportingPage() {
               tooltip="Jobs where actual hours exceed estimated"
             />
             <KpiCard
-              title="Revenue per Labour Hour"
+              title="Revenue per Labor Hour"
               primaryValue={
                 data.kpis.rplh != null
                   ? `$${data.kpis.rplh.toFixed(0)}/hr`
@@ -274,7 +274,7 @@ export default function ReportingPage() {
               }
               icon={DollarSign}
               warning={rplhWarning ?? false}
-              tooltip="RPLH = Total Revenue ÷ Total Labour Hours"
+              tooltip="RPLH = Total Revenue ÷ Total Labor Hours"
             />
           </div>
           </section>
@@ -284,7 +284,7 @@ export default function ReportingPage() {
               Performance trends
             </h2>
           <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <ChartCard title="Revenue vs Labour Cost (Over Time)">
+            <ChartCard title="Revenue vs Labor Cost (Over Time)">
               {data.series.revenueVsLabour.length === 0 ? (
                 <EmptyChart />
               ) : (
@@ -318,7 +318,7 @@ export default function ReportingPage() {
                       stroke={chartTheme.colors.secondary}
                       fill={chartTheme.colors.secondary}
                       fillOpacity={0.3}
-                      name="Labour Cost"
+                      name="Labor Cost"
                     />
                   </ComposedChart>
                 </ResponsiveContainer>
@@ -402,7 +402,7 @@ export default function ReportingPage() {
                           Revenue
                         </th>
                         <th className="py-2 text-right font-medium text-fc-brand">
-                          Labour
+                          Labor
                         </th>
                         <th className="py-2 text-right font-medium text-fc-brand">
                           Margin
@@ -507,7 +507,7 @@ export default function ReportingPage() {
                   columns={[
                     { key: "jobName", label: "Job", render: (r) => r.jobName },
                     { key: "revenue", label: "Revenue", render: (r) => `$${r.revenue.toLocaleString()}` },
-                    { key: "labourCost", label: "Labour cost", render: (r) => `$${Math.round(r.labourCost).toLocaleString()}` },
+                    { key: "labourCost", label: "Labor cost", render: (r) => `$${Math.round(r.labourCost).toLocaleString()}` },
                     { key: "grossProfit", label: "Gross profit", render: (r) => `$${r.grossProfit.toLocaleString()}` },
                     { key: "marginPct", label: "Margin %", render: (r) => r.marginPct != null ? `${r.marginPct.toFixed(1)}%` : "—" },
                     { key: "rplh", label: "RPLH ($/hr)", render: (r) => r.rplh != null ? `$${r.rplh.toFixed(0)}` : "—" },

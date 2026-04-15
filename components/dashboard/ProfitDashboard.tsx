@@ -175,7 +175,7 @@ export function ProfitDashboard({
       <div className="px-4 py-6 md:px-6">
         {showLiveDataTransitionNote && !liveNoteDismissed && (
           <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-950 sm:flex-row sm:items-center sm:justify-between">
-            <p className="font-medium">You&apos;re now seeing live labour data.</p>
+            <p className="font-medium">You&apos;re now seeing live labor data.</p>
             <button
               type="button"
               onClick={async () => {

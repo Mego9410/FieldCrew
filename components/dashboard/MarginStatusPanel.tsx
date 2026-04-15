@@ -66,13 +66,13 @@ export function MarginStatusPanel({
           </span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-fc-muted">Labour</span>
+          <span className="text-fc-muted">Labor</span>
           <span className="tabular-nums text-fc-brand">
             {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(labourCostThisWeek)}
           </span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-fc-muted">Rev / labour hr</span>
+          <span className="text-fc-muted">Rev / labor hr</span>
           <span className="tabular-nums text-fc-accent">
             ${revenuePerLabourHour.toFixed(0)}/hr
           </span>

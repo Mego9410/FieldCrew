@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 
 const LINES = [
-  "Calculating weekly labour hours",
+  "Calculating weekly labor hours",
   "Estimating overrun pressure",
   "Building first recovery opportunities",
 ];
@@ -12,10 +12,10 @@ export function InsightGeneratingLoader() {
   return (
     <div className="mx-auto max-w-lg rounded-2xl border border-fc-border bg-fc-surface px-6 py-12 shadow-fc-md">
       <h1 className="font-display text-2xl font-bold tracking-tight text-fc-brand sm:text-3xl">
-        Building your first labour snapshot
+        Building your first labor snapshot
       </h1>
       <p className="mt-2 text-fc-muted">
-        We&apos;re using your inputs to estimate where labour time is likely slipping.
+        We&apos;re using your inputs to estimate where labor time is likely slipping.
       </p>
       <ul className="mt-10 space-y-4">
         {LINES.map((line, i) => (

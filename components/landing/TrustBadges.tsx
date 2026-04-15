@@ -1,6 +1,6 @@
 const badges = [
   "Job-Based Time Tracking",
-  "Labour Cost Per Job",
+  "Labor Cost Per Job",
   "Payroll Export",
   "Leak Detection",
   "Magic Link Access",

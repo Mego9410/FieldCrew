@@ -18,7 +18,7 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
     switch (viewType) {
       case 0: // Job-Based Time Tracking
         return renderTimeTrackingView();
-      case 1: // Labour Cost Per Job
+      case 1: // Labor Cost Per Job
         return renderLabourCostView();
       case 2: // Payroll Export
         return renderPayrollExportView();
@@ -72,7 +72,7 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
       <>
         <div className="border-b border-fc-border bg-white px-6 py-4">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-display text-lg font-bold text-fc-brand">Labour cost per job</h3>
+            <h3 className="font-display text-lg font-bold text-fc-brand">Labor cost per job</h3>
             <span className="rounded-full bg-fc-accent/10 px-3 py-1 text-xs font-medium text-fc-accent">
               This week
             </span>
@@ -83,7 +83,7 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
               <p className="font-display text-2xl font-bold text-fc-brand">124</p>
             </div>
             <div className="rounded-lg border border-fc-border bg-white p-4">
-              <span className="font-body text-xs text-fc-muted">Labour $</span>
+              <span className="font-body text-xs text-fc-muted">Labor $</span>
               <p className="font-display text-2xl font-bold text-fc-brand">4,960</p>
             </div>
           </div>
@@ -93,7 +93,7 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
             <div className="flex items-center justify-between border-b border-fc-border bg-slate-50 px-4 py-3">
               <span className="font-body text-xs font-semibold text-fc-muted">Job</span>
               <span className="font-body text-xs font-semibold text-fc-muted">Hours</span>
-              <span className="font-body text-xs font-semibold text-fc-muted">Labour</span>
+              <span className="font-body text-xs font-semibold text-fc-muted">Labor</span>
             </div>
             <div className="flex items-center justify-between border-b border-fc-border/50 px-4 py-3 hover:bg-slate-50/50">
               <span className="font-body text-sm font-medium text-fc-brand">123 Main — Install</span>
@@ -127,7 +127,7 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
                 <FileSpreadsheet className="h-4 w-4 text-fc-accent" />
                 <span className="font-body text-sm font-semibold text-fc-brand">QuickBooks CSV</span>
               </div>
-              <p className="font-body text-xs text-fc-muted">Worker, hours, job, labour $</p>
+              <p className="font-body text-xs text-fc-muted">Worker, hours, job, labor $</p>
             </div>
             <div className="rounded-lg border border-fc-border bg-white p-4">
               <div className="mb-2 flex items-center gap-2">
@@ -233,7 +233,7 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
                 <span className="font-body text-sm font-semibold text-fc-brand">This Week</span>
                 <BarChart3 className="h-4 w-4 text-fc-accent" />
               </div>
-              <p className="font-body text-xs text-fc-muted">124 hours • $4,960 labour cost</p>
+              <p className="font-body text-xs text-fc-muted">124 hours • $4,960 labor cost</p>
               <p className="mt-2 font-body text-xs text-fc-muted">Sent Monday 8:00 AM</p>
             </div>
             <div className="rounded-lg border border-fc-border bg-white p-4">
@@ -241,7 +241,7 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
                 <span className="font-body text-sm font-semibold text-fc-muted">Last Week</span>
                 <BarChart3 className="h-4 w-4 text-fc-muted" />
               </div>
-              <p className="font-body text-xs text-fc-muted">118 hours • $4,720 labour cost</p>
+              <p className="font-body text-xs text-fc-muted">118 hours • $4,720 labor cost</p>
               <p className="mt-2 font-body text-xs text-fc-muted">Sent Monday 8:00 AM</p>
             </div>
           </div>

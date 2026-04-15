@@ -43,7 +43,7 @@ export function RevenuePerLabourHourCard({
       <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">
           <div className="mb-2 flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-fc-brand">Revenue per labour hour</h2>
+            <h2 className="text-sm font-semibold text-fc-brand">Revenue per labor hour</h2>
             {isBelowTarget && <Badge variant="warning">Below target</Badge>}
             <div className="relative">
               <button
@@ -62,7 +62,7 @@ export function RevenuePerLabourHourCard({
                 <div className="absolute left-0 top-6 z-10 w-48 rounded-fc border border-fc-border bg-fc-surface p-2 text-xs shadow-fc-md">
                   <p className="font-medium text-fc-brand">How this is calculated:</p>
                   <p className="mt-1 text-fc-muted">
-                    RPLH = Total Job Revenue ÷ Total Labour Hours
+                    RPLH = Total Job Revenue ÷ Total Labor Hours
                   </p>
                 </div>
               )}

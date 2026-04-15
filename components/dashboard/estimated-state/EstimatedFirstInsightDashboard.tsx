@@ -32,7 +32,7 @@ export function EstimatedFirstInsightDashboard({
         <div className="mb-8 rounded-2xl border border-fc-border bg-fc-surface p-6 shadow-fc-md md:flex md:items-start md:justify-between md:gap-8">
           <div className="min-w-0 flex-1">
             <h2 className="font-display text-lg font-semibold text-fc-brand">
-              Your first labour snapshot is ready
+              Your first labor snapshot is ready
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-fc-muted">
               This view is estimated from your onboarding answers. It gives you a starting point before live
@@ -65,7 +65,7 @@ export function EstimatedFirstInsightDashboard({
             sublabel="From your workload answers"
           />
           <MetricCard
-            label="Estimated labour hours"
+            label="Estimated labor hours"
             value={`${snap.estimatedTotalLabourHours}`}
             sublabel="Includes typical overrun stretch"
           />
@@ -75,7 +75,7 @@ export function EstimatedFirstInsightDashboard({
             sublabel="Combined pattern"
           />
           <MetricCard
-            label="Estimated labour leakage"
+            label="Estimated labor leakage"
             value={currency.format(snap.estimatedLeakageDollars)}
             sublabel="Loaded cost estimate"
             highlight
@@ -84,17 +84,17 @@ export function EstimatedFirstInsightDashboard({
 
         <p className="mt-6 max-w-3xl text-sm leading-relaxed text-fc-muted-strong">
           For a team of {techs} techs handling around {jobs} jobs a week, even small overruns can quietly
-          create extra labour cost and overtime pressure — a useful baseline until real tracking kicks in.
+            create extra labor cost and overtime pressure — a useful baseline until real tracking kicks in.
         </p>
 
         <section className="mt-10">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-fc-muted">
-            Where labour is likely slipping
+            Where labor is likely slipping
           </h2>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <FrictionCard title="Small overruns across many jobs" />
             <FrictionCard title="Overtime used to keep the schedule on track" />
-            <FrictionCard title="Labour hours not yet tied directly to job profitability" />
+            <FrictionCard title="Labor hours not yet tied directly to job profitability" />
           </div>
         </section>
 
@@ -145,7 +145,7 @@ export function EstimatedFirstInsightDashboard({
               step={3}
               title="Start replacing estimates with real tracked hours"
               href={routes.owner.timesheets}
-              body="As hours roll in, this view gives way to live labour visibility."
+              body="As hours roll in, this view gives way to live labor visibility."
             />
           </ol>
         </section>
@@ -155,7 +155,7 @@ export function EstimatedFirstInsightDashboard({
             <h2 className="font-display text-base font-semibold text-fc-brand">How this becomes exact</h2>
             <p className="mt-2 text-sm leading-relaxed text-fc-muted-strong">
               Once your team starts tracking real jobs, this dashboard switches from estimated patterns to
-              exact labour visibility based on your own hours, jobs, and payroll-linked activity.
+              exact labor visibility based on your own hours, jobs, and payroll-linked activity.
             </p>
           </div>
         </section>

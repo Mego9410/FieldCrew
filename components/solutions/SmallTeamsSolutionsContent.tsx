@@ -83,7 +83,7 @@ export function SmallTeamsSolutionsContent() {
             For small teams that know they are losing money - but do not have time to track it
           </h1>
           <p className="mt-4 max-w-3xl text-lg text-slate-700">
-            FieldCrew gives you a simple weekly view of where labour time is actually going without
+            FieldCrew gives you a simple weekly view of where labor time is actually going without
             spreadsheets, extra admin, or slowing your team down.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
@@ -236,7 +236,7 @@ export function SmallTeamsSolutionsContent() {
             Get clarity on your week - without adding more work
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-slate-700">
-            See exactly where your labour time is going and what it is costing you.
+            See exactly where your labor time is going and what it is costing you.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link

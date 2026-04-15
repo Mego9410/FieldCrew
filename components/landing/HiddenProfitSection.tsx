@@ -16,13 +16,13 @@ export function HiddenProfitSection() {
           id="hidden-profit-heading"
           className="mt-2 font-display text-3xl font-bold text-fc-brand sm:text-4xl lg:text-5xl"
         >
-          How much labour profit are you losing?
+          How much labor profit are you losing?
         </h2>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-fc-muted">
           Overtime premium, untracked time, and job overruns add up fast. Most shops never see the number — they just feel the squeeze on margin.
         </p>
         <p className="mx-auto mt-3 max-w-2xl text-lg font-medium text-fc-brand">
-          Get an estimate in under a minute. Then see a real sample report from a 10-tech HVAC company in Houston where we identified $6,420 in recoverable labour profit in a single month.
+          Get an estimate in under a minute. Then see a real sample report from a 10-tech HVAC company in Houston where we identified $6,420 in recoverable labor profit in a single month.
         </p>
         <ul className="mx-auto mt-8 max-w-xl list-inside list-disc space-y-2 text-left text-fc-muted sm:list-outside sm:text-center">
           <li>Overtime premium waste</li>

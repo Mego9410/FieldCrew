@@ -104,7 +104,7 @@ export function ContractorsSolutionsContent() {
               href={routes.public.sampleReport}
               className="inline-flex min-h-[44px] items-center justify-center rounded-md bg-fc-accent px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-fc-accent-dark"
             >
-              See a real labour report
+              See a real labor report
             </Link>
             <Link
               href="/#how-it-works"
@@ -252,7 +252,7 @@ export function ContractorsSolutionsContent() {
             Stop guessing where the time went
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-slate-700">
-            See exactly how labour hours turn into cost and what is causing it.
+            See exactly how labor hours turn into cost and what is causing it.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link

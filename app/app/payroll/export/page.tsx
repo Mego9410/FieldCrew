@@ -66,7 +66,7 @@ export default function PayrollExportPage() {
   );
 
   const buildCSV = useCallback((rows: PayrollRow[]) => {
-    const headers = ["Worker name", "Total hours", "Job name/ID", "Labour cost"];
+    const headers = ["Worker name", "Total hours", "Job name/ID", "Labor cost"];
     const escape = (s: string) => `"${String(s).replace(/"/g, '""')}"`;
     const csv =
       headers.join(",") +
@@ -105,7 +105,7 @@ export default function PayrollExportPage() {
 
       autoTable(doc, {
         startY: 34,
-        head: [["Worker name", "Total hours", "Job name/ID", "Labour cost"]],
+        head: [["Worker name", "Total hours", "Job name/ID", "Labor cost"]],
         body: tableData,
       });
 
