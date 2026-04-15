@@ -48,15 +48,19 @@ export function DemoVideoModal({
   const requestFullscreen = async () => {
     const el = containerRef.current;
     if (!el) return;
-    // @ts-expect-error - older Safari types
-    const fn: (() => Promise<void>) | undefined =
-      el.requestFullscreen ??
-      // @ts-expect-error - Safari
-      el.webkitRequestFullscreen ??
-      // @ts-expect-error - Firefox
-      el.mozRequestFullScreen ??
-      // @ts-expect-error - IE/Edge legacy
-      el.msRequestFullscreen;
+    const anyEl = el as HTMLElement & {
+      webkitRequestFullscreen?: () => Promise<void> | void;
+      mozRequestFullScreen?: () => Promise<void> | void;
+      msRequestFullscreen?: () => Promise<void> | void;
+    };
+
+    const fn:
+      | (() => Promise<void> | void)
+      | undefined =
+      anyEl.requestFullscreen ??
+      anyEl.webkitRequestFullscreen ??
+      anyEl.mozRequestFullScreen ??
+      anyEl.msRequestFullscreen;
     if (fn) {
       try {
         await fn.call(el);
