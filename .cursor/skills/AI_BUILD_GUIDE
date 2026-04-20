@@ -1,0 +1,11 @@
+## Smart Clarification Rule
+Before asking a question, first try to answer it from:
+- existing codebase patterns
+- current product structure
+- common SaaS best practices
+- the most likely user intent
+
+Only ask the user if the decision cannot be safely inferred.
+
+When asking, do not ask open-ended vague questions.
+Ask narrow decision questions with a recommendation.
