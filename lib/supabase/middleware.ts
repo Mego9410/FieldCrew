@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { ensureOwnerUserForAuthUser, getSubscriptionStatusForUser } from "@/lib/data";
 import { routes } from "@/lib/routes";
+import { isAllowlistedAdminEmail } from "@/lib/admin/allowlist";
 
 function getSupabaseAnonKey() {
   return (
@@ -126,6 +127,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   const isAppRoute = pathname.startsWith("/app");
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
   const isOnboardingRoute = pathname === "/onboarding" || pathname.startsWith("/onboarding/");
 
   // Allow unauthenticated access to /onboarding (preview / force onboarding from login page)
@@ -140,6 +142,19 @@ export async function updateSession(request: NextRequest) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  if (isAdminRoute) {
+    if (!user) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("next", request.nextUrl.pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    if (!isAllowlistedAdminEmail(user.email)) {
+      // Avoid leaking that /admin exists; send them to the owner app.
+      return NextResponse.redirect(new URL(routes.owner.home, request.url));
+    }
   }
 
   // Logged-in user on /app: ensure they have a company.
