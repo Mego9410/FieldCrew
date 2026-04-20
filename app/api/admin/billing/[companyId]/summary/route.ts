@@ -49,6 +49,16 @@ export async function GET(
     latest_invoice: unknown;
     default_payment_method: unknown;
   };
+  type StripeInvoiceLike = {
+    id: string;
+    status: string | null;
+    created: number;
+    amount_due: number | null;
+    amount_paid: number | null;
+    hosted_invoice_url: string | null;
+    attempt_count?: number;
+    next_payment_attempt?: number | null;
+  };
 
   const customer: StripeCustomerLike | null =
     stripeCustomerId ? ((await stripe.customers.retrieve(stripeCustomerId)) as unknown as StripeCustomerLike) : null;
@@ -59,6 +69,20 @@ export async function GET(
           expand: ["latest_invoice", "default_payment_method"],
         })) as unknown as StripeSubscriptionLike)
       : null;
+
+  let invoices: StripeInvoiceLike[] = [];
+  if (stripeCustomerId && stripeSubscriptionId) {
+    try {
+      const list = await stripe.invoices.list({
+        customer: stripeCustomerId,
+        subscription: stripeSubscriptionId,
+        limit: 10,
+      });
+      invoices = (list.data ?? []) as unknown as StripeInvoiceLike[];
+    } catch {
+      invoices = [];
+    }
+  }
 
   return NextResponse.json({
     company: {
@@ -100,6 +124,16 @@ export async function GET(
                   )?.card?.last4 ?? null,
           }
         : null,
+      invoices: invoices.map((i) => ({
+        id: i.id,
+        status: i.status ?? null,
+        created: i.created,
+        amountDue: i.amount_due ?? null,
+        amountPaid: i.amount_paid ?? null,
+        hostedInvoiceUrl: i.hosted_invoice_url ?? null,
+        attemptCount: i.attempt_count ?? null,
+        nextPaymentAttempt: i.next_payment_attempt ?? null,
+      })),
     },
   });
 }

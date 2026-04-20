@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Card } from "@/components/ui/Card";
 
 export function CompanyActionsCard({
   companyId,
@@ -63,9 +64,9 @@ export function CompanyActionsCard({
   };
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
-      <div className="text-sm font-medium text-slate-200">Safety controls</div>
-      <div className="mt-1 text-sm text-slate-300">
+    <Card className="rounded-xl">
+      <div className="text-sm font-semibold text-fc-brand">Safety controls</div>
+      <div className="mt-0.5 text-sm text-fc-muted">
         Suspend first. Deleting is a soft-delete marker (V1) and is always logged.
       </div>
 
@@ -74,7 +75,7 @@ export function CompanyActionsCard({
           type="button"
           onClick={onSuspendToggle}
           disabled={busy !== null}
-          className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-900 disabled:opacity-60"
+          className="rounded-lg border border-fc-border bg-white px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted disabled:opacity-60"
         >
           {busy === "suspend" || busy === "unsuspend"
             ? "Saving…"
@@ -84,10 +85,10 @@ export function CompanyActionsCard({
         </button>
       </div>
 
-      <div className="mt-5 rounded-lg border border-red-900/40 bg-red-950/30 p-4">
-        <div className="text-sm font-medium text-red-200">Soft delete</div>
-        <div className="mt-1 text-sm text-red-200/80">
-          Type <span className="font-semibold text-red-100">{companyName}</span>{" "}
+      <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4">
+        <div className="text-sm font-semibold text-red-900">Soft delete</div>
+        <div className="mt-1 text-sm text-red-800">
+          Type <span className="font-semibold text-red-900">{companyName}</span>{" "}
           to confirm.
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -95,21 +96,21 @@ export function CompanyActionsCard({
             value={confirmName}
             onChange={(e) => setConfirmName(e.target.value)}
             placeholder={companyName}
-            className="w-72 rounded-md border border-red-900/40 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600"
+            className="w-72 rounded-lg border border-red-200 bg-white px-3 py-2 text-sm text-fc-brand placeholder:text-fc-muted"
           />
           <button
             type="button"
             onClick={onDelete}
             disabled={busy !== null || !canDelete}
-            className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {busy === "delete" ? "Deleting…" : "Delete"}
           </button>
         </div>
       </div>
 
-      {error ? <div className="mt-3 text-sm text-red-300">{error}</div> : null}
-    </div>
+      {error ? <div className="mt-3 text-sm text-red-700">{error}</div> : null}
+    </Card>
   );
 }
 

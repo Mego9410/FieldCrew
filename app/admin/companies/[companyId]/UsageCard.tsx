@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Card } from "@/components/ui/Card";
 
 type UsageResponse = {
   windows: {
@@ -26,10 +27,10 @@ function Flag({ on, label }: { on: boolean; label: string }) {
   return (
     <span
       className={[
-        "rounded-md border px-2 py-1 text-xs",
+        "rounded-lg border px-2 py-1 text-xs",
         on
-          ? "border-amber-700/60 bg-amber-950/30 text-amber-200"
-          : "border-slate-700 bg-slate-950 text-slate-400",
+          ? "border-amber-200 bg-amber-50 text-amber-900"
+          : "border-fc-border bg-white text-fc-muted",
       ].join(" ")}
     >
       {label}
@@ -65,13 +66,13 @@ export function UsageCard({ companyId }: { companyId: string }) {
   }, [companyId]);
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
-      <div className="text-sm font-medium text-slate-200">Usage & churn risk</div>
-      <div className="mt-1 text-sm text-slate-300">
+    <Card className="mt-6 rounded-xl">
+      <div className="text-sm font-semibold text-fc-brand">Usage & churn risk</div>
+      <div className="mt-0.5 text-sm text-fc-muted">
         Early warning system. Helps you intervene before churn.
       </div>
 
-      {error ? <div className="mt-3 text-sm text-red-300">{error}</div> : null}
+      {error ? <div className="mt-3 text-sm text-red-700">{error}</div> : null}
 
       {data ? (
         <>
@@ -88,33 +89,33 @@ export function UsageCard({ companyId }: { companyId: string }) {
             ].map((card) => (
               <div
                 key={card.title}
-                className="rounded-lg border border-slate-800 bg-slate-950/40 p-4"
+                className="rounded-lg border border-fc-border bg-fc-surface-muted p-4"
               >
-                <div className="text-xs font-medium text-slate-400">
+                <div className="text-xs font-semibold text-fc-muted">
                   {card.title}
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <div className="text-xs text-slate-500">Jobs</div>
-                    <div className="mt-0.5 font-semibold text-slate-100">
+                    <div className="text-xs text-fc-muted">Jobs</div>
+                    <div className="mt-0.5 font-semibold text-fc-brand">
                       {card.w.jobsCreated}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-slate-500">Clock-ins</div>
-                    <div className="mt-0.5 font-semibold text-slate-100">
+                    <div className="text-xs text-fc-muted">Clock-ins</div>
+                    <div className="mt-0.5 font-semibold text-fc-brand">
                       {card.w.clockIns}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-slate-500">Active workers</div>
-                    <div className="mt-0.5 font-semibold text-slate-100">
+                    <div className="text-xs text-fc-muted">Active workers</div>
+                    <div className="mt-0.5 font-semibold text-fc-brand">
                       {card.w.activeWorkers}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-slate-500">Reports</div>
-                    <div className="mt-0.5 font-semibold text-slate-100">
+                    <div className="text-xs text-fc-muted">Reports</div>
+                    <div className="mt-0.5 font-semibold text-fc-brand">
                       {card.w.reportsViewed}
                     </div>
                   </div>
@@ -129,15 +130,15 @@ export function UsageCard({ companyId }: { companyId: string }) {
             <Flag on={data.flags.highEngagement} label="High engagement" />
           </div>
 
-          <div className="mt-3 text-xs text-slate-500">
+          <div className="mt-3 text-xs text-fc-muted">
             Note: “reports viewed” and “insights generated” are currently 0 until
             we instrument events (still useful for jobs + clock-ins).
           </div>
         </>
       ) : (
-        <div className="mt-3 text-sm text-slate-400">Loading…</div>
+        <div className="mt-3 text-sm text-fc-muted">Loading…</div>
       )}
-    </div>
+    </Card>
   );
 }
 

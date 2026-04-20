@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Card } from "@/components/ui/Card";
 
 export function ImpersonateCard({
   companyId,
@@ -35,11 +36,11 @@ export function ImpersonateCard({
   };
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+    <Card className="rounded-xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="text-sm font-medium text-slate-200">Impersonation</div>
-          <div className="mt-1 text-sm text-slate-300">
+          <div className="text-sm font-semibold text-fc-brand">Impersonation</div>
+          <div className="mt-0.5 text-sm text-fc-muted">
             Opens a new tab as the owner user (real session + RLS).
           </div>
         </div>
@@ -47,18 +48,18 @@ export function ImpersonateCard({
           type="button"
           onClick={onImpersonate}
           disabled={loading || !ownerUserId}
-          className="rounded-md bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-fc-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Generating…" : "Impersonate"}
         </button>
       </div>
       {!ownerUserId ? (
-        <div className="mt-3 text-sm text-amber-300">
+        <div className="mt-3 text-sm text-amber-800">
           This company has no owner user set.
         </div>
       ) : null}
-      {error ? <div className="mt-3 text-sm text-red-300">{error}</div> : null}
-    </div>
+      {error ? <div className="mt-3 text-sm text-red-700">{error}</div> : null}
+    </Card>
   );
 }
 
