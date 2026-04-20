@@ -183,7 +183,8 @@ export function OnboardingWizard({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setApiError((data as { error?: string }).error ?? "Could not save your answers");
+        const err = data as { error?: string; details?: string };
+        setApiError(err.details ? `${err.error ?? "Could not save your answers"}: ${err.details}` : (err.error ?? "Could not save your answers"));
         return;
       }
       const snap = (data as { estimatedSnapshot?: EstimatedSnapshot }).estimatedSnapshot;

@@ -45,30 +45,42 @@ async function handleUpsert(request: Request) {
   const estimatedSnapshot = generateEstimatedSnapshot(insightInputs);
   const existingProfile = await getOnboardingProfile(company.id, supabase);
 
-  const profile = await upsertOnboardingProfile(
-    company.id,
-    {
-      companyName: b.companyName,
-      insightInputs,
-      estimatedSnapshot,
-      onboardingStepCompleted: 4,
-      onboardingSeedWorkersCompleted: existingProfile?.onboardingSeedWorkersCompleted ?? false,
-      onboardingSeedJobsCompleted: existingProfile?.onboardingSeedJobsCompleted ?? false,
-    },
-    supabase
-  );
+  let profile: Awaited<ReturnType<typeof upsertOnboardingProfile>> = null;
+  try {
+    profile = await upsertOnboardingProfile(
+      company.id,
+      {
+        companyName: b.companyName,
+        insightInputs,
+        estimatedSnapshot,
+        onboardingStepCompleted: 4,
+        onboardingSeedWorkersCompleted: existingProfile?.onboardingSeedWorkersCompleted ?? false,
+        onboardingSeedJobsCompleted: existingProfile?.onboardingSeedJobsCompleted ?? false,
+      },
+      supabase
+    );
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Failed to save onboarding profile";
+    return NextResponse.json({ error: "Failed to save onboarding profile", details: message }, { status: 500 });
+  }
   if (!profile) {
     return NextResponse.json({ error: "Failed to save onboarding profile" }, { status: 500 });
   }
 
-  const updated = await updateCompany(
-    company.id,
-    {
-      name: b.companyName,
-      usingEstimatedInsight: true,
-    },
-    supabase
-  );
+  let updated: Awaited<ReturnType<typeof updateCompany>> = null;
+  try {
+    updated = await updateCompany(
+      company.id,
+      {
+        name: b.companyName,
+        usingEstimatedInsight: true,
+      },
+      supabase
+    );
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Failed to update company";
+    return NextResponse.json({ error: "Failed to update company", details: message }, { status: 500 });
+  }
   if (!updated) {
     return NextResponse.json({ error: "Failed to update company" }, { status: 500 });
   }

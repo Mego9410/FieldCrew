@@ -304,7 +304,7 @@ export async function upsertOnboardingProfile(
   const db = supabase ?? createClient();
   const now = new Date().toISOString();
   const ii = input.insightInputs;
-  const row = {
+  const row: Record<string, unknown> = {
     company_id: companyId,
     company_name: input.companyName,
     trade_type: ii.tradeType,
@@ -320,13 +320,42 @@ export async function upsertOnboardingProfile(
     onboarding_seed_jobs_completed: input.onboardingSeedJobsCompleted ?? false,
     updated_at: now,
   };
-  const { data, error } = await db
-    .from("company_onboarding_profile")
-    .upsert(row, { onConflict: "company_id" })
-    .select()
-    .single();
-  if (error || !data) return null;
-  return toOnboardingProfile(data as Record<string, unknown>);
+
+  const tryUpsert = async (r: Record<string, unknown>) => {
+    return await db
+      .from("company_onboarding_profile")
+      .upsert(r, { onConflict: "company_id" })
+      .select()
+      .single();
+  };
+
+  // Backwards-compat: older DBs may not have the progress columns yet (added later).
+  // If so, retry without those columns so onboarding can proceed.
+  const first = await tryUpsert(row);
+  if (first.error) {
+    const msg = String((first.error as { message?: string }).message ?? "");
+    const missingProgressCols =
+      msg.includes("onboarding_step_completed") ||
+      msg.includes("onboarding_seed_workers_completed") ||
+      msg.includes("onboarding_seed_jobs_completed") ||
+      msg.includes("column") && msg.includes("does not exist");
+
+    if (missingProgressCols) {
+      const { onboarding_step_completed, onboarding_seed_workers_completed, onboarding_seed_jobs_completed, ...rest } = row;
+      const retry = await tryUpsert(rest);
+      if (retry.error || !retry.data) {
+        console.error("[upsertOnboardingProfile] retry failed:", retry.error);
+        throw new Error((retry.error as { message?: string }).message ?? "Failed to save onboarding profile");
+      }
+      return toOnboardingProfile(retry.data as Record<string, unknown>);
+    }
+
+    console.error("[upsertOnboardingProfile] failed:", first.error);
+    throw new Error((first.error as { message?: string }).message ?? "Failed to save onboarding profile");
+  }
+
+  if (!first.data) return null;
+  return toOnboardingProfile(first.data as Record<string, unknown>);
 }
 
 export async function markOnboardingProfileDashboardEntered(
