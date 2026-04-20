@@ -165,6 +165,11 @@ export async function updateSession(request: NextRequest) {
       const subscribeUrl = new URL(routes.owner.subscribe, request.url);
       return NextResponse.redirect(subscribeUrl);
     }
+    if (sub.accountStatus === "deleted" || sub.accountStatus === "suspended") {
+      const loginUrl = new URL(routes.public.login, request.url);
+      loginUrl.searchParams.set("error", "account_disabled");
+      return NextResponse.redirect(loginUrl);
+    }
     // No redirects here; UI will show an onboarding prompt and block writes if needed.
   }
 

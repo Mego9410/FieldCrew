@@ -682,7 +682,12 @@ export async function getCompanyForCurrentUser(supabase?: SupabaseClient): Promi
 export async function getSubscriptionStatusForUser(
   userId: string,
   supabase: SupabaseClient
-): Promise<{ hasActiveSubscription: boolean; companyId: string | null; workerLimit: number }> {
+): Promise<{
+  hasActiveSubscription: boolean;
+  companyId: string | null;
+  workerLimit: number;
+  accountStatus: string | null;
+}> {
   const { data: ownerRow } = await supabase
     .from("owner_users")
     .select("company_id")
@@ -690,18 +695,27 @@ export async function getSubscriptionStatusForUser(
     .single();
   const companyId = ownerRow?.company_id ?? null;
   if (!companyId) {
-    return { hasActiveSubscription: false, companyId: null, workerLimit: 5 };
+    return {
+      hasActiveSubscription: false,
+      companyId: null,
+      workerLimit: 5,
+      accountStatus: null,
+    };
   }
   const { data: companyRow } = await supabase
     .from("companies")
-    .select("subscription_status, worker_limit")
+    .select("subscription_status, worker_limit, account_status")
     .eq("id", companyId)
     .single();
   const status = companyRow?.subscription_status ?? null;
   const workerLimit = companyRow?.worker_limit != null ? Number(companyRow.worker_limit) : 5;
+  const accountStatus = (companyRow as { account_status?: string | null } | null)?.account_status ?? null;
+  if (accountStatus === "deleted" || accountStatus === "suspended") {
+    return { hasActiveSubscription: false, companyId, workerLimit, accountStatus };
+  }
   const hasActiveSubscription =
     status === "active" || status === "trialing";
-  return { hasActiveSubscription, companyId, workerLimit };
+  return { hasActiveSubscription, companyId, workerLimit, accountStatus };
 }
 
 // ─── Projects ───────────────────────────────────────────────────────────────

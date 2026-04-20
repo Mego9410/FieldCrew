@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { routes } from "@/lib/routes";
+import { createClient } from "@/lib/supabase/client";
 
 const navigationItems = [
   {
@@ -64,6 +65,7 @@ export function AppHeader({
   readOnlyMode?: boolean;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [accountOpen, setAccountOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
@@ -81,6 +83,17 @@ export function AppHeader({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  async function handleSignOut() {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } finally {
+      setAccountOpen(false);
+      router.push(routes.public.login);
+      router.refresh();
+    }
+  }
 
   return (
     <header className="relative z-40 w-full shrink-0 border-b border-fc-border bg-fc-surface">
@@ -238,15 +251,15 @@ export function AppHeader({
                   Invite
                 </Link>
                 <div className="my-1 border-t border-fc-border" />
-                <Link
-                  href={routes.public.home}
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"
                   role="menuitem"
-                  onClick={() => setAccountOpen(false)}
+                  onClick={handleSignOut}
                 >
                   <LogOut className="h-4 w-4" />
-                  Back to site
-                </Link>
+                  Sign out
+                </button>
               </div>
             )}
           </div>

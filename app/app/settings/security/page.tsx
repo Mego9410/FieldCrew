@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { SettingsPageShell } from "@/components/settings/SettingsPageShell";
 import { SettingsSectionCard } from "@/components/settings/SettingsSectionCard";
 import { FormField, FormInput } from "@/components/forms/FormField";
 import { useToast } from "@/components/ui/Toast";
 import { Monitor } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { routes } from "@/lib/routes";
 
 function validatePassword(pwd: string): string | null {
   if (pwd.length < 8) return "At least 8 characters required";
@@ -16,6 +19,7 @@ function validatePassword(pwd: string): string | null {
 }
 
 export default function SecuritySettingsPage() {
+  const router = useRouter();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,6 +29,9 @@ export default function SecuritySettingsPage() {
   const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
   const toast = useToast();
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [deleteConfirmEmail, setDeleteConfirmEmail] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const isDirty =
     currentPassword !== "" || newPassword !== "" || confirmPassword !== "";
@@ -85,6 +92,44 @@ export default function SecuritySettingsPage() {
     "yzab-3456-cdef",
     "ghij-7890-klmn",
   ];
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth
+      .getUser()
+      .then(({ data }) => setUserEmail(data.user?.email ?? ""))
+      .catch(() => {});
+  }, []);
+
+  const handleDeleteAccount = async () => {
+    if (!userEmail || deleteConfirmEmail.trim().toLowerCase() !== userEmail.trim().toLowerCase()) {
+      toast.error("Type your email to confirm");
+      return;
+    }
+    setDeleteLoading(true);
+    try {
+      const res = await fetch("/api/settings/delete-account", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ confirmEmail: deleteConfirmEmail.trim() }),
+      });
+      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !json.ok) {
+        toast.error(json.error ?? "Failed to delete account");
+        return;
+      }
+
+      // Sign out locally and redirect to login.
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push(routes.public.login);
+      router.refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete account");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   return (
     <SettingsPageShell
@@ -238,6 +283,48 @@ export default function SecuritySettingsPage() {
               className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50"
             >
               Sign out other sessions
+            </button>
+          </div>
+        </SettingsSectionCard>
+
+        <SettingsSectionCard
+          title="Delete account"
+          description="Permanently disable your account and stop access to your workspace."
+        >
+          <div className="space-y-4">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-900">
+                This will delete your FieldCrew account access.
+              </p>
+              <p className="mt-1 text-xs text-red-800">
+                For safety, this is a soft-delete (account is disabled) and can be restored by support if needed.
+              </p>
+            </div>
+
+            <FormField
+              label="Type your email to confirm"
+              id="delete-confirm-email"
+            >
+              <FormInput
+                id="delete-confirm-email"
+                value={deleteConfirmEmail}
+                onChange={(e) => setDeleteConfirmEmail(e.target.value)}
+                placeholder={userEmail || "you@company.com"}
+                autoComplete="email"
+              />
+            </FormField>
+
+            <button
+              type="button"
+              onClick={handleDeleteAccount}
+              disabled={
+                deleteLoading ||
+                !userEmail ||
+                deleteConfirmEmail.trim().toLowerCase() !== userEmail.trim().toLowerCase()
+              }
+              className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {deleteLoading ? "Deleting…" : "Delete account"}
             </button>
           </div>
         </SettingsSectionCard>
