@@ -1,17 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
-import { getCompanyForCurrentUser, getOnboardingProfile, getWorkers } from "@/lib/data";
+import { createServiceRoleClient } from "@/lib/supabase/server";
+import {
+  ensureOwnerUserForAuthUser,
+  getCompanyForCurrentUser,
+  getOnboardingProfile,
+  getWorkers,
+} from "@/lib/data";
 import { OnboardingWizard } from "./OnboardingWizard";
-import type { Company } from "@/lib/entities";
 import { routes } from "@/lib/routes";
 import { redirect } from "next/navigation";
 import { OnboardingAuthGate } from "@/components/onboarding/OnboardingAuthGate";
-
-const DEMO_COMPANY: Company = {
-  id: "demo",
-  name: "",
-  onboardingStatus: undefined,
-  settings: {},
-};
 
 type SearchParams = { payment?: string; edit?: string };
 
@@ -28,23 +26,35 @@ export default async function OnboardingPage(props: PageProps) {
   if (!user) {
     return <OnboardingAuthGate />;
   }
-  const company = await getCompanyForCurrentUser(supabase);
-  const isPreview = !company;
-  const initialCompany = company ?? DEMO_COMPANY;
+  let company = await getCompanyForCurrentUser(supabase);
+  // Ensure authenticated users always have a real company during onboarding so answers persist.
+  if (!company) {
+    try {
+      const insertClient = createServiceRoleClient() ?? supabase;
+      await ensureOwnerUserForAuthUser(insertClient, user);
+      company = await getCompanyForCurrentUser(supabase);
+    } catch (err) {
+      console.error("[onboarding/page] ensureOwnerUserForAuthUser failed:", err);
+    }
+  }
+  if (!company) {
+    // If we still can't create a company, force a refresh rather than falling back to preview mode.
+    redirect(routes.owner.onboarding);
+  }
 
   if (company?.onboardingStatus === "complete" && !wantsEdit) {
     redirect(routes.owner.home);
   }
 
-  const initialProfile = company ? await getOnboardingProfile(company.id, supabase) : null;
-  const initialWorkers = company ? await getWorkers(company.id, supabase) : [];
+  const initialProfile = await getOnboardingProfile(company.id, supabase);
+  const initialWorkers = await getWorkers(company.id, supabase);
 
   return (
     <OnboardingWizard
-      initialCompany={initialCompany}
+      initialCompany={company}
       initialProfile={initialProfile}
       initialWorkers={initialWorkers}
-      isPreview={isPreview}
+      isPreview={false}
       showPaymentSuccess={showPaymentSuccess}
     />
   );

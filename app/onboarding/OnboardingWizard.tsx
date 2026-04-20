@@ -1,7 +1,7 @@
  "use client";
 
-import { useCallback, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { StepLayout } from "@/components/onboarding/StepLayout";
 import { TeamBasicsStep } from "@/components/onboarding/TeamBasicsStep";
@@ -24,7 +24,7 @@ import { SuggestedPlanStep } from "@/components/onboarding/SuggestedPlanStep";
 import { Button } from "@/components/ui/Button";
 import { generateEstimatedSnapshot } from "@/lib/insights/generateEstimatedSnapshot";
 import { routes } from "@/lib/routes";
-import { suggestPlanIdForWorkers } from "@/lib/pricing-plans";
+import { isPlanId, suggestPlanIdForWorkers, type PlanId } from "@/lib/pricing-plans";
 import type { Company, Worker } from "@/lib/entities";
 import type { CompanyOnboardingProfile, EstimatedSnapshot, OnboardingInsightInputs } from "@/types/onboarding";
 
@@ -91,6 +91,7 @@ export function OnboardingWizard({
   showPaymentSuccess = false,
 }: OnboardingWizardProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState(1);
   const [team, setTeam] = useState<TeamForm>(() => initialTeam(initialCompany, initialProfile));
   const [workload, setWorkload] = useState<WorkloadForm>(() => initialWorkload(initialProfile));
@@ -104,7 +105,7 @@ export function OnboardingWizard({
     createEmptyWorkerRow(),
   ]);
   const [jobRows, setJobRows] = useState<JobSeedRow[]>([createEmptyJobRow(), createEmptyJobRow()]);
-  const [workersAddedCount, setWorkersAddedCount] = useState(0);
+  const [onboardingAddedWorkerIds, setOnboardingAddedWorkerIds] = useState<string[]>([]);
   const [jobsAddedCount, setJobsAddedCount] = useState(0);
   const [assignableWorkers, setAssignableWorkers] = useState<AssignableWorker[]>(
     () => initialWorkers.map((w) => ({ id: w.id, name: w.name }))
@@ -225,18 +226,35 @@ export function OnboardingWizard({
   };
 
   const workerCountForPlan = useMemo(() => {
-    // Prefer the real number of workers the user has added during onboarding.
+    // Prefer the number of workers the user has added during this onboarding session.
     // If they skipped adding workers, fall back to the team size estimate from step 1.
-    const fromSeeded = assignableWorkers.length;
-    if (fromSeeded > 0) return fromSeeded;
+    if (onboardingAddedWorkerIds.length > 0) return onboardingAddedWorkerIds.length;
     const fallback = (team.fieldTechCount ?? 0) + (team.officeStaffCount ?? 0);
     return Math.max(0, fallback);
-  }, [assignableWorkers.length, team.fieldTechCount, team.officeStaffCount]);
+  }, [onboardingAddedWorkerIds.length, team.fieldTechCount, team.officeStaffCount]);
 
   const suggestedPlanId = useMemo(
     () => suggestPlanIdForWorkers(workerCountForPlan),
     [workerCountForPlan]
   );
+  const [selectedPlanId, setSelectedPlanId] = useState<PlanId>(suggestedPlanId);
+
+  useEffect(() => {
+    setSelectedPlanId(suggestedPlanId);
+  }, [suggestedPlanId]);
+
+  useEffect(() => {
+    const stepParam = searchParams.get("step");
+    const parsed = stepParam ? Number(stepParam) : NaN;
+    if (Number.isFinite(parsed) && parsed >= 1 && parsed <= 8) {
+      setStep(parsed);
+    }
+    const planParam = searchParams.get("plan")?.toLowerCase();
+    if (planParam && isPlanId(planParam)) {
+      setSelectedPlanId(planParam);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const filledWorkerRows = useMemo(
     () =>
@@ -263,7 +281,11 @@ export function OnboardingWizard({
   const saveWorkers = async (rows: WorkerSeedRow[]) => {
     if (isPreview) {
       const pseudo = rows.map((r, i) => ({ id: `preview-${Date.now()}-${i}`, name: `${r.firstName} ${r.lastName}`.trim() }));
-      setWorkersAddedCount((c) => c + pseudo.length);
+      setOnboardingAddedWorkerIds((prev) => {
+        const next = new Set(prev);
+        pseudo.forEach((w) => next.add(w.id));
+        return Array.from(next);
+      });
       setAssignableWorkers((prev) => [...prev, ...pseudo]);
       return;
     }
@@ -286,8 +308,16 @@ export function OnboardingWizard({
       id: w.id,
       name: w.name,
     }));
-    setWorkersAddedCount((c) => c + created.length);
-    setAssignableWorkers((prev) => [...prev, ...created]);
+    setOnboardingAddedWorkerIds((prev) => {
+      const next = new Set(prev);
+      created.forEach((w) => next.add(w.id));
+      return Array.from(next);
+    });
+    setAssignableWorkers((prev) => {
+      const next = new Map(prev.map((w) => [w.id, w] as const));
+      created.forEach((w) => next.set(w.id, w));
+      return Array.from(next.values());
+    });
   };
 
   const saveJobs = async (rows: JobSeedRow[]) => {
@@ -464,13 +494,38 @@ export function OnboardingWizard({
           )}
           <SuggestedPlanStep
             workerCount={workerCountForPlan}
+            selectedPlanId={selectedPlanId}
             suggestedPlanId={suggestedPlanId}
-            onBack={() => setStep(5)}
             isLoading={busy}
-            onSelectPlan={(planId) => {
+            onChangeSelectedPlan={setSelectedPlanId}
+            onContinue={async (planId) => {
+              if (isPreview) {
+                router.push(routes.public.signup + "?plan=" + encodeURIComponent(planId) + "&next=" + encodeURIComponent(routes.owner.onboarding));
+                return;
+              }
               setBusy(true);
-              // Hand off to the existing subscribe flow, which will start Stripe Checkout.
-              window.location.href = `${routes.owner.subscribe}?plan=${planId}&checkout=1`;
+              setApiError(null);
+              try {
+                const res = await fetch("/api/stripe/create-checkout", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    planId,
+                    cancelPath: `${routes.owner.onboarding}?step=6&plan=${encodeURIComponent(planId)}`,
+                  }),
+                  credentials: "include",
+                });
+                const data = await res.json().catch(() => ({} as Record<string, unknown>));
+                if (!res.ok) {
+                  throw new Error((data as { error?: string }).error ?? "Could not start checkout");
+                }
+                const url = (data as { url?: string }).url;
+                if (!url) throw new Error("No checkout URL returned");
+                window.location.href = url;
+              } catch (e) {
+                setApiError(e instanceof Error ? e.message : "Could not start checkout");
+                setBusy(false);
+              }
             }}
           />
         </StepLayout>
@@ -558,7 +613,7 @@ export function OnboardingWizard({
           description="Your first labor snapshot is ready and your workspace is set up for week one."
         >
           <OnboardingReadyStep
-            workersAdded={workersAddedCount}
+            workersAdded={onboardingAddedWorkerIds.length}
             jobsAdded={jobsAddedCount}
             onGoToDashboard={() => void handleGoToDashboard()}
             onInviteWorkersNow={() => void handleInviteWorkersNow()}

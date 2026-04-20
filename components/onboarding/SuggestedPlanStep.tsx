@@ -9,18 +9,20 @@ import {
 
 export function SuggestedPlanStep({
   workerCount,
+  selectedPlanId,
   suggestedPlanId,
-  onSelectPlan,
-  onBack,
+  onChangeSelectedPlan,
+  onContinue,
   isLoading = false,
 }: {
   workerCount: number;
+  selectedPlanId: PlanId;
   suggestedPlanId: PlanId;
-  onSelectPlan: (planId: PlanId) => void;
-  onBack: () => void;
+  onChangeSelectedPlan: (planId: PlanId) => void;
+  onContinue: (planId: PlanId) => void;
   isLoading?: boolean;
 }) {
-  const suggested = SUBSCRIPTION_PLANS.find((p) => p.id === suggestedPlanId) ?? SUBSCRIPTION_PLANS[0];
+  const selected = SUBSCRIPTION_PLANS.find((p) => p.id === selectedPlanId) ?? SUBSCRIPTION_PLANS[0];
 
   return (
     <div className="space-y-8">
@@ -36,13 +38,15 @@ export function SuggestedPlanStep({
       <div className="rounded-2xl border border-fc-border bg-fc-surface p-6 shadow-fc-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-fc-muted">Recommended</p>
-            <p className="mt-1 font-display text-2xl font-bold text-fc-brand">{suggested.name}</p>
-            <p className="mt-1 text-sm text-fc-muted">{suggested.workers}</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-fc-muted">
+              {selectedPlanId === suggestedPlanId ? "Recommended" : "Selected"}
+            </p>
+            <p className="mt-1 font-display text-2xl font-bold text-fc-brand">{selected.name}</p>
+            <p className="mt-1 text-sm text-fc-muted">{selected.workers}</p>
           </div>
           <div className="text-right">
             <p className="font-display text-3xl font-extrabold tracking-tight text-fc-brand">
-              ${suggested.price}
+              ${selected.price}
               <span className="ml-1 text-sm font-medium text-fc-muted">/mo</span>
             </p>
             <p className="mt-1 text-xs text-fc-muted">First month promo available at checkout</p>
@@ -52,11 +56,11 @@ export function SuggestedPlanStep({
         <div className="mt-6">
           <Button
             type="button"
-            onClick={() => onSelectPlan(suggestedPlanId)}
+            onClick={() => onContinue(selectedPlanId)}
             disabled={isLoading}
             className="w-full bg-fc-accent text-white hover:bg-fc-accent-dark"
           >
-            {isLoading ? "Redirecting…" : `Continue with ${suggested.name}`}
+            {isLoading ? "Redirecting…" : `Continue with ${selected.name}`}
           </Button>
         </div>
       </div>
@@ -70,14 +74,15 @@ export function SuggestedPlanStep({
             <button
               key={plan.id}
               type="button"
-              onClick={() => onSelectPlan(plan.id)}
+              onClick={() => onChangeSelectedPlan(plan.id)}
               disabled={isLoading}
               className={cn(
                 "rounded-2xl border px-4 py-4 text-left shadow-fc-sm transition",
-                plan.id === suggestedPlanId
-                  ? "border-fc-accent/50 bg-fc-surface ring-2 ring-fc-accent/20"
+                plan.id === selectedPlanId
+                  ? "border-fc-accent/60 bg-fc-surface ring-2 ring-fc-accent/25"
                   : "border-fc-border bg-fc-surface hover:border-fc-accent/30"
               )}
+              aria-pressed={plan.id === selectedPlanId}
             >
               <p className="font-display text-lg font-bold text-fc-brand">{plan.name}</p>
               <p className="mt-1 text-sm text-fc-muted">{plan.workers}</p>
@@ -88,12 +93,6 @@ export function SuggestedPlanStep({
             </button>
           ))}
         </div>
-      </div>
-
-      <div className="flex items-center gap-3 border-t border-fc-border pt-8">
-        <Button type="button" onClick={onBack} variant="outline" disabled={isLoading}>
-          Back
-        </Button>
       </div>
     </div>
   );

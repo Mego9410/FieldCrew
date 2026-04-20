@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Stripe is not configured" }, { status: 503 });
     }
 
-    let body: { planId?: string; plan?: string; promoCode?: string | null };
+    let body: { planId?: string; plan?: string; promoCode?: string | null; cancelPath?: string };
     try {
       body = await request.json();
     } catch {
@@ -86,6 +86,10 @@ export async function POST(request: Request) {
     // Don't hardcode apiVersion; use account default to avoid runtime mismatch.
     const stripe = new Stripe(secret);
     const baseUrl = getBaseUrl(request);
+    const cancelPath =
+      typeof body.cancelPath === "string" && body.cancelPath.startsWith("/") && !body.cancelPath.startsWith("//")
+        ? body.cancelPath
+        : routes.owner.subscribe;
 
     const promoCode = typeof body.promoCode === "string" ? body.promoCode.trim() : "";
     let appliedPromotionCodeId: string | null = null;
@@ -125,7 +129,7 @@ export async function POST(request: Request) {
       customer: customerId,
       line_items: [{ price: plan.stripePriceId, quantity: 1 }],
       success_url: `${baseUrl}${routes.owner.onboarding}?payment=success`,
-      cancel_url: `${baseUrl}${routes.owner.subscribe}`,
+      cancel_url: `${baseUrl}${cancelPath}`,
       client_reference_id: company.id,
       ...(appliedPromotionCodeId
         ? { discounts: [{ promotion_code: appliedPromotionCodeId }] }
