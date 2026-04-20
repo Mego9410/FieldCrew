@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Users, ClipboardList, Clock, ChevronRight } from "lucide-react";
 import { routes } from "@/lib/routes";
+import { useReadOnlyMode } from "@/lib/hooks/useReadOnlyMode";
 import {
   WorkerForm,
   JobForm,
@@ -38,6 +39,7 @@ export default function DataPage() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState<TabId>(isValidTabId(tabParam) ? tabParam : "project");
+  const readOnlyMode = useReadOnlyMode();
 
   useEffect(() => {
     if (isValidTabId(tabParam)) setActiveTab(tabParam);
@@ -103,12 +105,19 @@ export default function DataPage() {
             <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-fc-muted">
               Create {tabs.find((t) => t.id === activeTab)?.label}
             </h2>
-          <Card variant="default" className="p-5">
-            {activeTab === "project" && <ProjectForm onSuccess={handleSuccess} />}
-            {activeTab === "worker" && <WorkerForm onSuccess={handleSuccess} />}
-            {activeTab === "job" && <JobForm onSuccess={handleSuccess} />}
-            {activeTab === "timeentry" && <TimeEntryForm onSuccess={handleSuccess} />}
-          </Card>
+            {readOnlyMode && (
+              <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                Finish onboarding to create or edit data. You can browse the app in the meantime.
+              </div>
+            )}
+            <Card variant="default" className="p-5">
+              <fieldset disabled={readOnlyMode} className={readOnlyMode ? "opacity-60" : ""}>
+                {activeTab === "project" && <ProjectForm onSuccess={handleSuccess} />}
+                {activeTab === "worker" && <WorkerForm onSuccess={handleSuccess} />}
+                {activeTab === "job" && <JobForm onSuccess={handleSuccess} />}
+                {activeTab === "timeentry" && <TimeEntryForm onSuccess={handleSuccess} />}
+              </fieldset>
+            </Card>
           </section>
 
           <section>

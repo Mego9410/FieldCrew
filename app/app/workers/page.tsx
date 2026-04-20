@@ -14,6 +14,7 @@ import {
   Send,
 } from "lucide-react";
 import { useWorkers } from "@/lib/hooks/useData";
+import { useReadOnlyMode } from "@/lib/hooks/useReadOnlyMode";
 import { WorkerForm } from "@/components/forms";
 import { routes } from "@/lib/routes";
 import { Button } from "@/components/ui/Button";
@@ -30,6 +31,7 @@ export default function WorkersPage() {
   const [sendingWorkerId, setSendingWorkerId] = useState<string | null>(null);
   const { items: workers, loading, refetch } = useWorkers();
   const toast = useToast();
+  const readOnlyMode = useReadOnlyMode();
 
   useEffect(() => {
     fetch("/api/subscription")
@@ -40,6 +42,10 @@ export default function WorkersPage() {
 
   const handleSendProfileLink = useCallback(
     async (workerId: string) => {
+      if (readOnlyMode) {
+        toast.error("Finish onboarding to send invites.");
+        return;
+      }
       setSendingWorkerId(workerId);
       try {
         const res = await fetch("/api/invite/send", {
@@ -60,7 +66,7 @@ export default function WorkersPage() {
         setSendingWorkerId(null);
       }
     },
-    [toast, refetch]
+    [readOnlyMode, toast, refetch]
   );
 
   const filtered = workers.filter(
@@ -104,6 +110,10 @@ export default function WorkersPage() {
         <Button
           type="button"
           onClick={() => {
+            if (readOnlyMode) {
+              toast.error("Finish onboarding to add workers.");
+              return;
+            }
             const atLimit = subscription && subscription.workersUsed >= subscription.workerLimit;
             if (atLimit) {
               setShowUpgradePrompt(true);

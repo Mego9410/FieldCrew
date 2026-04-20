@@ -11,6 +11,7 @@ import {
   User,
 } from "lucide-react";
 import { useJobs, useWorkers, useTimeEntries } from "@/lib/hooks/useData";
+import { useReadOnlyMode } from "@/lib/hooks/useReadOnlyMode";
 import { routes } from "@/lib/routes";
 import { JobForm } from "@/components/forms";
 import { Button } from "@/components/ui/Button";
@@ -105,6 +106,7 @@ export default function JobsPage() {
   const [search, setSearch] = useState("");
   const { display: jobsDisplay, refetch } = useJobsDisplay();
   const toast = useToast();
+  const readOnlyMode = useReadOnlyMode();
 
   const handleCloseJobModal = () => {
     if (formHasChanges && !window.confirm("You have unsaved changes. Are you sure you want to close?")) return;
@@ -131,7 +133,16 @@ export default function JobsPage() {
             Manage jobs and see labor cost per job.
           </p>
         </div>
-        <Button type="button" onClick={() => setShowAddModal(true)}>
+        <Button
+          type="button"
+          onClick={() => {
+            if (readOnlyMode) {
+              toast.error("Finish onboarding to create jobs.");
+              return;
+            }
+            setShowAddModal(true);
+          }}
+        >
           <Plus className="h-4 w-4" />
           New job
         </Button>
