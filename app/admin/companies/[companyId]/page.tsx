@@ -29,6 +29,11 @@ export default async function AdminCompanyPage({
 
   const res = await fetch(`${origin}/api/admin/companies/${encodeURIComponent(companyId)}`, {
     cache: "no-store",
+    headers: {
+      cookie: h.get("cookie") ?? "",
+      "x-forwarded-proto": proto,
+      "x-forwarded-host": host,
+    },
   });
 
   if (!res.ok) {

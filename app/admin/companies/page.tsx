@@ -43,7 +43,14 @@ export default async function AdminCompaniesPage({
 
   const res = await fetch(
     `${origin}/api/admin/companies?q=${encodeURIComponent(q)}`,
-    { cache: "no-store" }
+    {
+      cache: "no-store",
+      headers: {
+        cookie: h.get("cookie") ?? "",
+        "x-forwarded-proto": proto,
+        "x-forwarded-host": host,
+      },
+    }
   );
 
   if (!res.ok) {
