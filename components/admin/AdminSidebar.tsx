@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Building2, ShieldAlert } from "lucide-react";
+import { LayoutDashboard, Building2, ShieldAlert, DollarSign } from "lucide-react";
 
 const nav = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/companies", label: "Companies", icon: Building2 },
+  { href: "/admin/finances", label: "Finances", icon: DollarSign },
 ] as const;
 
 export function AdminSidebar() {
