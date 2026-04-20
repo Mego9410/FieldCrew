@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { CreateCompanyDialog } from "./CreateCompanyDialog";
+import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
@@ -35,8 +36,13 @@ export default async function AdminCompaniesPage({
   const sp = (await searchParams) ?? {};
   const q = typeof sp.q === "string" ? sp.q : "";
 
+  const h = await headers();
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
+  const origin = `${proto}://${host}`;
+
   const res = await fetch(
-    `/api/admin/companies?q=${encodeURIComponent(q)}`,
+    `${origin}/api/admin/companies?q=${encodeURIComponent(q)}`,
     { cache: "no-store" }
   );
 

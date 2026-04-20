@@ -6,6 +6,7 @@ import { UsageCard } from "./UsageCard";
 import { UsersCard } from "./UsersCard";
 import { SupportToolsCard } from "./SupportToolsCard";
 import { Card } from "@/components/ui/Card";
+import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,12 @@ export default async function AdminCompanyPage({
   params: Promise<{ companyId: string }>;
 }) {
   const { companyId } = await params;
-  const res = await fetch(`/api/admin/companies/${encodeURIComponent(companyId)}`, {
+  const h = await headers();
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
+  const origin = `${proto}://${host}`;
+
+  const res = await fetch(`${origin}/api/admin/companies/${encodeURIComponent(companyId)}`, {
     cache: "no-store",
   });
 
