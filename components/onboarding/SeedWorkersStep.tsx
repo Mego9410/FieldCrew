@@ -33,7 +33,23 @@ export function SeedWorkersStep({ rows, onChange, onAdd }: SeedWorkersStepProps)
       <div className="space-y-3">
         {rows.map((row, idx) => (
           <div key={idx} className="rounded-2xl border border-fc-border bg-fc-surface p-4 shadow-fc-sm">
-            <div className="grid gap-3 md:grid-cols-5">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-fc-muted">
+                Worker {idx + 1}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="xs"
+                onClick={() => {
+                  const next = rows.filter((_, i) => i !== idx);
+                  onChange(next.length > 0 ? next : [createEmptyWorkerRow()]);
+                }}
+              >
+                Remove
+              </Button>
+            </div>
+            <div className="mt-3 grid gap-3 md:grid-cols-5">
               <Input
                 label="First name *"
                 value={row.firstName}
@@ -59,7 +75,7 @@ export function SeedWorkersStep({ rows, onChange, onAdd }: SeedWorkersStepProps)
                 placeholder="Tech"
               />
               <Input
-                label="Hourly rate"
+                label="Hourly rate *"
                 value={row.hourlyRate}
                 onChange={(v) => updateRow(rows, idx, { hourlyRate: v }, onChange)}
                 placeholder="45"

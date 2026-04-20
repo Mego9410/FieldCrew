@@ -3,6 +3,7 @@ import {
   addWorker,
   getCompanyForCurrentUser,
   getOnboardingProfile,
+  WorkerLimitError,
   updateOnboardingProfileProgress,
 } from "@/lib/data";
 import { onboardingSeedWorkersSchema } from "@/lib/onboardingSeedSchemas";
@@ -28,20 +29,31 @@ export async function POST(request: Request) {
   }
 
   const created = [];
-  for (const w of parsed.data.workers) {
-    const name = `${w.firstName}${w.lastName ? ` ${w.lastName}` : ""}`.trim();
-    const worker = await addWorker(
-      {
-        name,
-        phone: w.mobileNumber,
-        hourlyRate: w.hourlyRate ?? 0,
-        companyId: company.id,
-        role: (w.role?.toLowerCase() as "lead" | "tech" | "apprentice" | undefined) ?? "tech",
-        createdViaOnboarding: true,
-      },
-      supabase
-    );
-    created.push(worker);
+  try {
+    for (const w of parsed.data.workers) {
+      const name = `${w.firstName}${w.lastName ? ` ${w.lastName}` : ""}`.trim();
+      const worker = await addWorker(
+        {
+          name,
+          phone: w.mobileNumber,
+          hourlyRate: w.hourlyRate,
+          companyId: company.id,
+          role: (w.role?.toLowerCase() as "lead" | "tech" | "apprentice" | undefined) ?? "tech",
+          createdViaOnboarding: true,
+        },
+        supabase
+      );
+      created.push(worker);
+    }
+  } catch (e) {
+    if (e instanceof WorkerLimitError) {
+      return NextResponse.json(
+        { error: e.message, code: e.code, limit: e.limit },
+        { status: 402 }
+      );
+    }
+    const message = e instanceof Error ? e.message : "Could not save workers";
+    return NextResponse.json({ error: "Could not save workers", details: message }, { status: 500 });
   }
 
   const profile = await getOnboardingProfile(company.id, supabase);

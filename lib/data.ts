@@ -558,9 +558,17 @@ export async function addWorker(input: WorkerInput, supabase?: SupabaseClient): 
   const db = supabase ?? createClient();
   const company = await getCompany(input.companyId, db);
   const limit = company?.workerLimit ?? 5;
-  const existing = await getWorkers(input.companyId, db);
-  if (existing.length >= limit) {
-    throw new WorkerLimitError(limit);
+  const subStatus = company?.subscriptionStatus ?? null;
+  const hasActiveSub = subStatus === "active" || subStatus === "trialing";
+  const isOnboardingCreate = Boolean((input as { createdViaOnboarding?: boolean }).createdViaOnboarding);
+
+  // During onboarding (before plan selection), let owners add workers without hitting the
+  // subscription worker limit. Limits apply once a subscription is active/trialing.
+  if (!isOnboardingCreate || hasActiveSub) {
+    const existing = await getWorkers(input.companyId, db);
+    if (existing.length >= limit) {
+      throw new WorkerLimitError(limit);
+    }
   }
   const worker: Worker = { ...input, id: uid() };
   const { error } = await db.from("workers").insert({

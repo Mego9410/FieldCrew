@@ -7,7 +7,7 @@ export const onboardingSeedWorkersSchema = z.object({
       lastName: z.string().trim().optional().nullable(),
       mobileNumber: z.string().trim().min(1),
       role: z.string().trim().optional().nullable(),
-      hourlyRate: z.coerce.number().min(0).optional().nullable(),
+      hourlyRate: z.coerce.number().min(1),
     })
   ),
 });

@@ -224,15 +224,18 @@ export function OnboardingWizard({
     setApiError(null);
   };
 
-  const inferredWorkerCount = useMemo(() => {
-    const fallback = (team.fieldTechCount ?? 0) + (team.officeStaffCount ?? 0);
+  const workerCountForPlan = useMemo(() => {
+    // Prefer the real number of workers the user has added during onboarding.
+    // If they skipped adding workers, fall back to the team size estimate from step 1.
     const fromSeeded = assignableWorkers.length;
-    return Math.max(0, Math.max(fromSeeded, fallback));
+    if (fromSeeded > 0) return fromSeeded;
+    const fallback = (team.fieldTechCount ?? 0) + (team.officeStaffCount ?? 0);
+    return Math.max(0, fallback);
   }, [assignableWorkers.length, team.fieldTechCount, team.officeStaffCount]);
 
   const suggestedPlanId = useMemo(
-    () => suggestPlanIdForWorkers(inferredWorkerCount),
-    [inferredWorkerCount]
+    () => suggestPlanIdForWorkers(workerCountForPlan),
+    [workerCountForPlan]
   );
 
   const filledWorkerRows = useMemo(
@@ -359,9 +362,11 @@ export function OnboardingWizard({
             try {
               setBusy(true);
               setApiError(null);
-              const invalid = filledWorkerRows.find((r) => !r.firstName.trim() || !r.mobileNumber.trim());
+              const invalid = filledWorkerRows.find(
+                (r) => !r.firstName.trim() || !r.mobileNumber.trim() || !r.hourlyRate.trim()
+              );
               if (invalid) {
-                setApiError("Each worker needs first name and mobile number.");
+                setApiError("Each worker needs first name, mobile number, and hourly rate.");
                 return;
               }
               await saveWorkers(filledWorkerRows);
@@ -458,7 +463,7 @@ export function OnboardingWizard({
             </p>
           )}
           <SuggestedPlanStep
-            workerCount={inferredWorkerCount}
+            workerCount={workerCountForPlan}
             suggestedPlanId={suggestedPlanId}
             onBack={() => setStep(5)}
             isLoading={busy}
