@@ -6,6 +6,44 @@ import { updateCompany } from "@/lib/data";
 const secret = process.env.STRIPE_WEBHOOK_SECRET;
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 
+type UntypedFrom = {
+  from: (table: string) => {
+    upsert: (values: unknown, opts?: unknown) => Promise<{ error: { message: string } | null }>;
+    insert: (values: unknown) => Promise<{ error: { message: string } | null }>;
+    update: (values: unknown) => { eq: (col: string, v: unknown) => Promise<{ error: { message: string } | null }> };
+    select: (cols?: string, opts?: unknown) => unknown;
+  };
+};
+
+async function resolveCompanyIdByStripe(
+  supabase: NonNullable<ReturnType<typeof createServiceRoleClient>>,
+  input: { stripeCustomerId?: string | null; stripeSubscriptionId?: string | null }
+): Promise<string | null> {
+  const stripeSubscriptionId = input.stripeSubscriptionId ?? null;
+  const stripeCustomerId = input.stripeCustomerId ?? null;
+
+  if (stripeSubscriptionId) {
+    const { data } = await supabase
+      .from("companies")
+      .select("id")
+      .eq("stripe_subscription_id", stripeSubscriptionId)
+      .maybeSingle();
+    const id = (data as { id?: string } | null)?.id ?? null;
+    if (id) return id;
+  }
+
+  if (stripeCustomerId) {
+    const { data } = await supabase
+      .from("companies")
+      .select("id")
+      .eq("stripe_customer_id", stripeCustomerId)
+      .maybeSingle();
+    return (data as { id?: string } | null)?.id ?? null;
+  }
+
+  return null;
+}
+
 export async function POST(request: Request) {
   if (!secret || !stripeKey) {
     return NextResponse.json({ error: "Webhook not configured" }, { status: 503 });
@@ -30,6 +68,8 @@ export async function POST(request: Request) {
     console.error("[stripe/webhook] No service role client");
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
+
+  const untyped = supabase as unknown as UntypedFrom;
 
   try {
     switch (event.type) {
@@ -78,6 +118,55 @@ export async function POST(request: Request) {
             supabase
           );
         }
+
+        // Snapshot subscription state for finance dashboard
+        await untyped.from("stripe_subscription_snapshots").insert({
+          stripe_subscription_id: sub.id,
+          company_id: companyIdUpdated ?? companyId ?? null,
+          stripe_customer_id: typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? null,
+          effective_at: new Date(event.created * 1000).toISOString(),
+          status: sub.status,
+          worker_limit: workerLimit ?? null,
+          cancel_at_period_end: Boolean(sub.cancel_at_period_end),
+          paused: sub.pause_collection != null,
+        });
+        break;
+      }
+      case "customer.subscription.created": {
+        const sub = event.data.object as Stripe.Subscription;
+        const workerLimit =
+          sub.metadata?.worker_limit != null ? parseInt(String(sub.metadata.worker_limit), 10) : undefined;
+
+        const { data: row } = await supabase
+          .from("companies")
+          .select("id")
+          .eq("stripe_subscription_id", sub.id)
+          .maybeSingle();
+        const companyIdCreated = (row as { id?: string } | null)?.id ?? null;
+
+        if (companyIdCreated) {
+          await updateCompany(
+            companyIdCreated,
+            {
+              subscriptionStatus: sub.status,
+              ...(workerLimit != null && { workerLimit }),
+              stripeCustomerId:
+                typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? undefined,
+            },
+            supabase
+          );
+        }
+
+        await untyped.from("stripe_subscription_snapshots").insert({
+          stripe_subscription_id: sub.id,
+          company_id: companyIdCreated,
+          stripe_customer_id: typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? null,
+          effective_at: new Date(event.created * 1000).toISOString(),
+          status: sub.status,
+          worker_limit: workerLimit ?? null,
+          cancel_at_period_end: Boolean(sub.cancel_at_period_end),
+          paused: sub.pause_collection != null,
+        });
         break;
       }
       case "customer.subscription.deleted": {
@@ -87,6 +176,91 @@ export async function POST(request: Request) {
         if (companyIdDeleted) {
           await updateCompany(companyIdDeleted, { subscriptionStatus: "canceled", stripeSubscriptionId: null }, supabase);
         }
+
+        await untyped.from("stripe_subscription_snapshots").insert({
+          stripe_subscription_id: sub.id,
+          company_id: companyIdDeleted ?? null,
+          stripe_customer_id: typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? null,
+          effective_at: new Date(event.created * 1000).toISOString(),
+          status: sub.status,
+          worker_limit:
+            sub.metadata?.worker_limit != null ? parseInt(String(sub.metadata.worker_limit), 10) : null,
+          cancel_at_period_end: Boolean(sub.cancel_at_period_end),
+          paused: sub.pause_collection != null,
+        });
+        break;
+      }
+      case "invoice.paid":
+      case "invoice.payment_failed":
+      case "invoice.finalized":
+      case "invoice.updated": {
+        // Stripe's TS types vary by SDK version/account defaults; keep this tolerant.
+        type StripeInvoiceLike = Stripe.Invoice & {
+          subscription?: string | { id?: string } | null;
+          status_transitions?: { paid_at?: number | null } | null;
+        };
+        const inv = event.data.object as unknown as StripeInvoiceLike;
+        const stripeCustomerId = typeof inv.customer === "string" ? inv.customer : inv.customer?.id ?? null;
+        const stripeSubscriptionId =
+          typeof inv.subscription === "string" ? inv.subscription : inv.subscription?.id ?? null;
+        const companyId = await resolveCompanyIdByStripe(supabase, {
+          stripeCustomerId,
+          stripeSubscriptionId,
+        });
+
+        await untyped.from("stripe_invoice_facts").upsert(
+          {
+            stripe_invoice_id: inv.id,
+            company_id: companyId,
+            stripe_customer_id: stripeCustomerId,
+            stripe_subscription_id: stripeSubscriptionId,
+            status: inv.status ?? null,
+            created_at: new Date(inv.created * 1000).toISOString(),
+            due_at: inv.due_date ? new Date(inv.due_date * 1000).toISOString() : null,
+            paid_at: inv.status_transitions?.paid_at
+              ? new Date(inv.status_transitions.paid_at * 1000).toISOString()
+              : null,
+            amount_due: inv.amount_due ?? null,
+            amount_paid: inv.amount_paid ?? null,
+            currency: inv.currency ?? null,
+            attempt_count: inv.attempt_count ?? null,
+            next_payment_attempt: inv.next_payment_attempt
+              ? new Date(inv.next_payment_attempt * 1000).toISOString()
+              : null,
+            hosted_invoice_url: inv.hosted_invoice_url ?? null,
+            updated_at: new Date(event.created * 1000).toISOString(),
+          },
+          { onConflict: "stripe_invoice_id" }
+        );
+        break;
+      }
+      case "charge.refunded":
+      case "charge.updated": {
+        type StripeChargeLike = Stripe.Charge & {
+          invoice?: string | { id?: string } | null;
+        };
+        const ch = event.data.object as unknown as StripeChargeLike;
+        const stripeCustomerId = typeof ch.customer === "string" ? ch.customer : ch.customer?.id ?? null;
+        const stripeInvoiceId = typeof ch.invoice === "string" ? ch.invoice : ch.invoice?.id ?? null;
+        const companyId = await resolveCompanyIdByStripe(supabase, { stripeCustomerId });
+
+        await untyped.from("stripe_charge_facts").upsert(
+          {
+            stripe_charge_id: ch.id,
+            company_id: companyId,
+            stripe_customer_id: stripeCustomerId,
+            stripe_invoice_id: stripeInvoiceId,
+            created_at: new Date(ch.created * 1000).toISOString(),
+            amount: ch.amount,
+            amount_refunded: ch.amount_refunded ?? 0,
+            refunded_at:
+              (ch.amount_refunded ?? 0) > 0 ? new Date(event.created * 1000).toISOString() : null,
+            currency: ch.currency ?? null,
+            receipt_url: ch.receipt_url ?? null,
+            updated_at: new Date(event.created * 1000).toISOString(),
+          },
+          { onConflict: "stripe_charge_id" }
+        );
         break;
       }
       default:
