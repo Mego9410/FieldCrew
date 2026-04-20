@@ -57,9 +57,11 @@ const navigationItems = [
 export function AppHeader({
   onMenuClick,
   showMenuButton = false,
+  readOnlyMode = false,
 }: {
   onMenuClick?: () => void;
   showMenuButton?: boolean;
+  readOnlyMode?: boolean;
 }) {
   const pathname = usePathname();
   const [accountOpen, setAccountOpen] = useState(false);
@@ -167,15 +169,21 @@ export function AppHeader({
         </div>
 
         <div className="ml-auto flex shrink-0 items-center justify-end gap-2 sm:gap-4">
-          <Link
-            href={routes.owner.data}
-            className={cn(
-              buttonVariants({ variant: "ghost" }),
-              "hidden text-fc-brand md:inline-flex",
-            )}
-          >
-            Create
-          </Link>
+          {!readOnlyMode ? (
+            <Link
+              href={routes.owner.data}
+              className={cn(
+                buttonVariants({ variant: "ghost" }),
+                "hidden text-fc-brand md:inline-flex",
+              )}
+            >
+              Create
+            </Link>
+          ) : (
+            <span className="hidden select-none rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900 md:inline-flex">
+              Read-only
+            </span>
+          )}
           <div className="hidden h-6 w-px bg-fc-border md:block" aria-hidden />
 
           <div className="relative flex items-center gap-2" ref={accountRef}>

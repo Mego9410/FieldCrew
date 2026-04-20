@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { Menu, MoveRight, X } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
 import { Logo } from "@/components/brand/Logo";
+import { createClient } from "@/lib/supabase/client";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -57,11 +58,23 @@ export function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [heroVisible, setHeroVisible] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const pathname = usePathname();
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setUserEmail(data.user?.email ?? null);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserEmail(session?.user?.email ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -268,20 +281,43 @@ export function Nav() {
               aria-hidden
             />
 
-            <Link
-              href="/login"
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "hidden h-9 items-center justify-center px-4 text-sm font-medium lg:inline-flex",
-                darkNav &&
-                  "border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white",
-              )}
-            >
-              Log in
-            </Link>
+            {userEmail ? (
+              <Link
+                href={routes.owner.home}
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "hidden h-9 items-center justify-center gap-2 px-4 text-sm font-medium lg:inline-flex",
+                  darkNav &&
+                    "border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white",
+                )}
+              >
+                <span
+                  className={cn(
+                    "inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold",
+                    darkNav ? "bg-white/15 text-white" : "bg-fc-accent/15 text-fc-accent",
+                  )}
+                  aria-hidden
+                >
+                  {userEmail.slice(0, 1).toUpperCase()}
+                </span>
+                <span className="max-w-[160px] truncate">Signed in</span>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "hidden h-9 items-center justify-center px-4 text-sm font-medium lg:inline-flex",
+                  darkNav &&
+                    "border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white",
+                )}
+              >
+                Log in
+              </Link>
+            )}
 
             <Link
-              href={routes.owner.subscribe}
+              href={userEmail ? routes.owner.home : routes.owner.subscribe}
               className={cn(
                 buttonVariants(),
                 "hidden h-9 px-5 text-sm font-semibold shadow-fc-sm lg:inline-flex",
@@ -290,7 +326,7 @@ export function Nav() {
                   : "bg-fc-brand text-white hover:bg-fc-brand/90",
               )}
             >
-              Start for $9
+              {userEmail ? "Go to dashboard" : "Start for $9"}
             </Link>
 
             <button

@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppHeader } from "@/components/app/AppHeader";
+import Link from "next/link";
+import { routes } from "@/lib/routes";
 
 function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(false);
@@ -19,7 +21,13 @@ function useMediaQuery(query: string): boolean {
 /** Delay before backdrop can close the drawer (avoids same-tap closing on touch) */
 const BACKDROP_READY_MS = 350;
 
-export function AppLayoutClient({ children }: { children: React.ReactNode }) {
+export function AppLayoutClient({
+  children,
+  readOnlyMode = false,
+}: {
+  children: React.ReactNode;
+  readOnlyMode?: boolean;
+}) {
   const isLg = useMediaQuery("(min-width: 1024px)");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [backdropReady, setBackdropReady] = useState(false);
@@ -82,6 +90,7 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
         <AppSidebar
           onNavigate={handleCloseSidebar}
           showCloseButton={!isLg}
+          readOnlyMode={readOnlyMode}
         />
       </aside>
 
@@ -89,8 +98,27 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
         <AppHeader
           onMenuClick={handleOpenMenu}
           showMenuButton={!isLg}
+          readOnlyMode={readOnlyMode}
         />
-        <main className="min-h-0 flex-1 overflow-auto bg-fc-page">
+        {readOnlyMode && (
+          <div className="border-b border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3">
+              <p className="font-medium">
+                You’re signed in, but setup isn’t finished yet. You can look around, but edits are disabled.
+              </p>
+              <Link
+                href={routes.owner.onboarding}
+                className="inline-flex items-center rounded-lg bg-amber-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-950"
+              >
+                Finish onboarding
+              </Link>
+            </div>
+          </div>
+        )}
+        <main
+          className="min-h-0 flex-1 overflow-auto bg-fc-page"
+          data-readonly={readOnlyMode ? "true" : "false"}
+        >
           {children}
         </main>
       </div>

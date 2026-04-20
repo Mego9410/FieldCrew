@@ -32,9 +32,11 @@ const secondaryNav = [
 export function AppSidebar({
   onNavigate,
   showCloseButton = false,
+  readOnlyMode = false,
 }: {
   onNavigate?: () => void;
   showCloseButton?: boolean;
+  readOnlyMode?: boolean;
 }) {
   const pathname = usePathname();
   const { items: projects } = useProjects();
@@ -117,6 +119,7 @@ export function AppSidebar({
           <button
             type="button"
             onClick={() => setCreateOpen((o) => !o)}
+            disabled={readOnlyMode}
             className="flex w-full items-center justify-center gap-1 rounded-lg bg-[#1e3a5f] px-3 py-2.5 text-sm font-medium text-white hover:bg-[#152d47] focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-surface"
             aria-expanded={createOpen}
             aria-haspopup="true"
