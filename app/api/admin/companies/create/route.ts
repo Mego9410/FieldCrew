@@ -116,7 +116,7 @@ export async function POST(request: Request) {
 
   // 3) Provide a magic link for immediate access (admin can copy/open).
   const origin = getAppOrigin();
-  const redirectTo = `${origin}/auth/finish?next=${encodeURIComponent("/app")}`;
+  const redirectTo = `${origin}/auth/finish?next=/app`;
   const { data: link } = await supabase.auth.admin.generateLink({
     type: "magiclink",
     email: ownerEmail,

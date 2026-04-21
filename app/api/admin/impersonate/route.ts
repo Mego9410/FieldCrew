@@ -92,7 +92,7 @@ export async function POST(request: Request) {
 
   const isolatedOrigin = getImpersonationOrigin();
   const origin = isolatedOrigin || getAppOrigin();
-  const redirectTo = `${origin}/auth/finish?next=${encodeURIComponent("/app")}`;
+  const redirectTo = `${origin}/auth/finish?next=/app`;
 
   const { data, error } = await supabase.auth.admin.generateLink({
     type: "magiclink",
