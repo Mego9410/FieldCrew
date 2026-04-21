@@ -46,6 +46,7 @@ export function AdminUserActionsCard({
   const [impersonationDebug, setImpersonationDebug] = useState<{
     isolated: boolean;
     redirectTo: string | null;
+    linkRedirectTo: string | null;
     actionLinkHost: string | null;
   } | null>(null);
 
@@ -91,6 +92,7 @@ export function AdminUserActionsCard({
                 setImpersonationDebug({
                   isolated: Boolean(r.isolated),
                   redirectTo: r.redirectTo ?? null,
+                  linkRedirectTo: (r as unknown as { linkRedirectTo?: string | null }).linkRedirectTo ?? null,
                   actionLinkHost: host,
                 });
                 // Make debugging unmissable even if UI is stale/cached.
@@ -98,6 +100,7 @@ export function AdminUserActionsCard({
                 const msg = [
                   `isolated=${String(Boolean(r.isolated))}`,
                   `redirectTo=${r.redirectTo ?? "—"}`,
+                  `linkRedirectTo=${(r as unknown as { linkRedirectTo?: string | null }).linkRedirectTo ?? "—"}`,
                   `actionLinkHost=${host ?? "—"}`,
                   "",
                   "If redirectTo is NOT https://imp.getfieldcrew.com/auth/finish?... then Vercel env vars are not applied to this deployment.",

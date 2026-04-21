@@ -107,6 +107,15 @@ export async function POST(request: Request) {
     );
   }
 
+  let linkRedirectTo: string | null = null;
+  try {
+    const u = new URL(data.properties.action_link);
+    const rt = u.searchParams.get("redirect_to");
+    linkRedirectTo = rt ? decodeURIComponent(rt) : null;
+  } catch {
+    linkRedirectTo = null;
+  }
+
   await writeAdminAuditLog({
     actorUserId: adminGate.admin.userId,
     actorEmail: adminGate.admin.email,
@@ -120,6 +129,7 @@ export async function POST(request: Request) {
     url: data.properties.action_link,
     isolated: Boolean(isolatedOrigin),
     redirectTo,
+    linkRedirectTo,
     target: { ownerUserId: ownerId, companyId: targetCompanyId, email },
   });
 }
