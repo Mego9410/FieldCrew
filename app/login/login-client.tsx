@@ -77,7 +77,9 @@ export function LoginClient() {
       return;
     }
     const next = searchParams.get("next");
-    router.push(next?.startsWith("/") && !next.startsWith("//") ? next : routes.owner.home);
+    const nextPath =
+      next?.startsWith("/") && !next.startsWith("//") ? next : routes.auth.postLogin;
+    router.push(nextPath);
     router.refresh();
   };
 
@@ -104,7 +106,8 @@ export function LoginClient() {
     const supabase = createClient();
     const origin = getSiteOrigin();
     const next = searchParams.get("next");
-    const nextPath = next?.startsWith("/") && !next.startsWith("//") ? next : routes.owner.home;
+    const nextPath =
+      next?.startsWith("/") && !next.startsWith("//") ? next : routes.auth.postLogin;
     const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
 
     const { error: signInError } = await supabase.auth.signInWithOAuth({

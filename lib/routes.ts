@@ -26,6 +26,14 @@ export const routes = {
     login: "/login",
     signup: "/signup",
   },
+  /** Auth helper routes (server redirects, callbacks) */
+  auth: {
+    postLogin: "/auth/post-login",
+  },
+  /** Admin: internal tools and finance dashboards */
+  admin: {
+    home: "/admin",
+  },
   /** Owner: business owner app (dashboard, jobs, workers, timesheets, payroll, settings) */
   owner: {
     home: "/app",

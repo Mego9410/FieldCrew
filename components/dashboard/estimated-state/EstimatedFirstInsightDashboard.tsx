@@ -40,6 +40,12 @@ export function EstimatedFirstInsightDashboard({
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link
+                href={routes.owner.workers}
+                className="inline-flex items-center justify-center rounded-xl border border-fc-border bg-fc-surface px-4 py-2.5 text-sm font-medium text-fc-brand shadow-fc-sm transition-colors hover:bg-fc-surface-muted"
+              >
+                Add workers
+              </Link>
+              <Link
                 href={routes.owner.jobs}
                 className="inline-flex items-center justify-center rounded-xl bg-fc-accent px-4 py-2.5 text-sm font-medium text-white shadow-fc-sm transition-colors hover:bg-fc-accent-dark"
               >

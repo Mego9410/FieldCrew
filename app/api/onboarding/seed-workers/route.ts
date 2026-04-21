@@ -32,14 +32,17 @@ export async function POST(request: Request) {
   try {
     for (const w of parsed.data.workers) {
       const name = `${w.firstName}${w.lastName ? ` ${w.lastName}` : ""}`.trim();
+      const phone = (w.mobileNumber ?? "").trim();
       // Idempotency: if a worker with this phone already exists for the company,
       // update their details instead of inserting a duplicate (common when users go back and re-submit).
-      const { data: existing } = await supabase
-        .from("workers")
-        .select("id")
-        .eq("company_id", company.id)
-        .eq("phone", w.mobileNumber)
-        .maybeSingle();
+      const { data: existing } = phone
+        ? await supabase
+            .from("workers")
+            .select("id")
+            .eq("company_id", company.id)
+            .eq("phone", phone)
+            .maybeSingle()
+        : { data: null };
 
       const role = (w.role?.toLowerCase() as "lead" | "tech" | "apprentice" | undefined) ?? "tech";
       const worker = existing?.id
@@ -61,8 +64,8 @@ export async function POST(request: Request) {
         : await addWorker(
             {
               name,
-              phone: w.mobileNumber,
-              hourlyRate: w.hourlyRate,
+              phone,
+              hourlyRate: w.hourlyRate ?? 0,
               companyId: company.id,
               role,
               createdViaOnboarding: true,

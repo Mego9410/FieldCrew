@@ -296,7 +296,7 @@ export function OnboardingWizard({
         workers: rows.map((r) => ({
           firstName: r.firstName.trim(),
           lastName: r.lastName.trim() || null,
-          mobileNumber: r.mobileNumber.trim(),
+          mobileNumber: r.mobileNumber.trim() || null,
           role: r.role.trim() || null,
           hourlyRate: r.hourlyRate.trim() ? Number(r.hourlyRate) : null,
         })),
@@ -481,7 +481,7 @@ export function OnboardingWizard({
         {paymentSuccessBanner}
         {previewBanner}
         <StepLayout
-          step={5}
+          step={6}
           totalSteps={TOTAL_STEPS}
           title="Choose a plan"
           description="We’ll suggest the right plan for your team size."
@@ -609,8 +609,8 @@ export function OnboardingWizard({
         <StepLayout
           step={7}
           totalSteps={TOTAL_STEPS}
-          title="Setup complete"
-          description="Your first labor snapshot is ready and your workspace is set up for week one."
+          title="You&apos;re ready to start tracking"
+          description="Your first labour snapshot is ready, and your workspace has been set up with the basics so your team can get moving."
         >
           <OnboardingReadyStep
             workersAdded={onboardingAddedWorkerIds.length}

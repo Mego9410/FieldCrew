@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const nextPath =
     nextParam?.startsWith("/") && !nextParam.startsWith("//")
       ? nextParam
-      : routes.owner.home;
+      : routes.auth.postLogin;
 
   if (!code) {
     return NextResponse.redirect(`${origin}${routes.public.login}?error=no_code`);

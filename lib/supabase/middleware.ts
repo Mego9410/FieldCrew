@@ -83,7 +83,7 @@ export async function updateSession(request: NextRequest) {
     const nextPath =
       nextParam?.startsWith("/") && !nextParam.startsWith("//")
         ? nextParam
-        : routes.owner.home;
+        : routes.auth.postLogin;
     const redirectRes = NextResponse.redirect(new URL(nextPath, request.url));
     // Preserve full cookie options (httpOnly, secure, sameSite, maxAge) so the session persists.
     if (sessionCookies.length > 0) {

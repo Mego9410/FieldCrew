@@ -63,7 +63,7 @@ export function SeedWorkersStep({ rows, onChange, onAdd }: SeedWorkersStepProps)
                 placeholder="Smith"
               />
               <Input
-                label="Mobile number *"
+                label="Mobile number"
                 value={row.mobileNumber}
                 onChange={(v) => updateRow(rows, idx, { mobileNumber: v }, onChange)}
                 placeholder="0400 000 000"
