@@ -22,9 +22,9 @@ export async function GET(request: Request) {
   }
 
   const isAdmin = isAllowlistedAdminEmail(user.email);
-  const defaultTarget = isAdmin ? routes.admin.home : routes.owner.home;
+  const defaultTarget: string = isAdmin ? routes.admin.home : routes.owner.home;
 
-  let target = defaultTarget;
+  let target: string = defaultTarget;
   if (isSafeInternalPath(nextParam)) {
     // If a non-admin tries to hit /admin, fall back silently.
     if (
