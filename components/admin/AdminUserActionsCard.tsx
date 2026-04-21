@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 
-type PostResult = { url?: string };
+type PostResult = { url?: string; isolated?: boolean; redirectTo?: string };
 
 async function post(path: string, body?: unknown): Promise<PostResult> {
   const res = await fetch(path, {
@@ -13,7 +13,12 @@ async function post(path: string, body?: unknown): Promise<PostResult> {
     headers: { "content-type": "application/json" },
     body: body ? JSON.stringify(body) : "{}",
   });
-  const json = (await res.json().catch(() => ({}))) as { error?: string; url?: string };
+  const json = (await res.json().catch(() => ({}))) as {
+    error?: string;
+    url?: string;
+    isolated?: boolean;
+    redirectTo?: string;
+  };
   if (!res.ok) throw new Error(json.error ?? res.statusText);
   return json;
 }
@@ -38,6 +43,11 @@ export function AdminUserActionsCard({
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [roleInput, setRoleInput] = useState<string>(currentRole ?? "");
+  const [impersonationDebug, setImpersonationDebug] = useState<{
+    isolated: boolean;
+    redirectTo: string | null;
+    actionLinkHost: string | null;
+  } | null>(null);
 
   const title = compact ? "Actions" : "User actions";
   const help = compact
@@ -67,9 +77,22 @@ export function AdminUserActionsCard({
             disabled={busy !== null}
             onClick={async () => {
               setError(null);
+              setImpersonationDebug(null);
               setBusy("impersonate");
               try {
                 const r = await post("/api/admin/impersonate", { ownerUserId: userId });
+                const host = (() => {
+                  try {
+                    return r.url ? new URL(r.url).host : null;
+                  } catch {
+                    return null;
+                  }
+                })();
+                setImpersonationDebug({
+                  isolated: Boolean(r.isolated),
+                  redirectTo: r.redirectTo ?? null,
+                  actionLinkHost: host,
+                });
                 openLink(r.url);
               } catch (e) {
                 setError(e instanceof Error ? e.message : "Failed");
@@ -93,6 +116,28 @@ export function AdminUserActionsCard({
       {error ? (
         <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
           {error}
+        </div>
+      ) : null}
+      {impersonationDebug ? (
+        <div className="mt-3 rounded-lg border border-fc-border bg-fc-surface-muted px-3 py-2 text-xs text-fc-muted">
+          <div>
+            Impersonation isolated:{" "}
+            <span className="font-mono text-fc-brand">
+              {String(impersonationDebug.isolated)}
+            </span>
+          </div>
+          <div className="mt-1">
+            redirectTo:{" "}
+            <span className="font-mono text-fc-brand break-all">
+              {impersonationDebug.redirectTo ?? "—"}
+            </span>
+          </div>
+          <div className="mt-1">
+            action link host:{" "}
+            <span className="font-mono text-fc-brand">
+              {impersonationDebug.actionLinkHost ?? "—"}
+            </span>
+          </div>
         </div>
       ) : null}
 
