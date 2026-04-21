@@ -9,6 +9,20 @@ function isSafeInternalPath(path: string | null): path is string {
   return Boolean(path && path.startsWith("/") && !path.startsWith("//"));
 }
 
+async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  let t: ReturnType<typeof setTimeout> | null = null;
+  try {
+    return await Promise.race([
+      p,
+      new Promise<T>((_, reject) => {
+        t = setTimeout(() => reject(new Error("Timed out finishing sign-in")), ms);
+      }),
+    ]);
+  } finally {
+    if (t) clearTimeout(t);
+  }
+}
+
 export default function AuthFinishPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -21,12 +35,19 @@ export default function AuthFinishPage() {
       try {
         const supabase = createClient();
         // Handles magiclink/invite/recovery flows that return tokens in the URL hash.
-        // If this URL is hit without auth params, this is a no-op.
+        // Some environments can hang on the exchange; never block redirect forever.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const anyAuth = (supabase.auth as any) ?? null;
         if (anyAuth?.getSessionFromUrl) {
-          await anyAuth.getSessionFromUrl({ storeSession: true });
+          try {
+            await withTimeout(anyAuth.getSessionFromUrl({ storeSession: true }), 7000);
+          } catch {
+            // Continue below; we'll check whether we have a session.
+          }
         }
+
+        const { data } = await supabase.auth.getSession();
+        const hasSession = Boolean(data?.session);
 
         // Clean up hash so refresh doesn't re-run the flow.
         if (typeof window !== "undefined" && window.location.hash) {
@@ -40,6 +61,12 @@ export default function AuthFinishPage() {
         const nextParam = searchParams.get("next");
         const nextPath = isSafeInternalPath(nextParam) ? nextParam : routes.auth.postLogin;
         if (!cancelled) {
+          if (!hasSession) {
+            const msg = encodeURIComponent("Sign-in link expired or invalid. Please request a new link.");
+            router.replace(`${routes.public.login}?error=${msg}`);
+            router.refresh();
+            return;
+          }
           router.replace(nextPath);
           router.refresh();
         }
