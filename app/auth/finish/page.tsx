@@ -9,6 +9,14 @@ function isSafeInternalPath(path: string | null): path is string {
   return Boolean(path && path.startsWith("/") && !path.startsWith("//"));
 }
 
+function parseHashTokens(hash: string): { access_token?: string; refresh_token?: string } {
+  const raw = hash.startsWith("#") ? hash.slice(1) : hash;
+  const params = new URLSearchParams(raw);
+  const access_token = params.get("access_token") ?? undefined;
+  const refresh_token = params.get("refresh_token") ?? undefined;
+  return { access_token, refresh_token };
+}
+
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   let t: ReturnType<typeof setTimeout> | null = null;
   try {
@@ -34,8 +42,19 @@ export default function AuthFinishPage() {
     async function run() {
       try {
         const supabase = createClient();
-        // Handles magiclink/invite/recovery flows that return tokens in the URL hash.
-        // Some environments can hang on the exchange; never block redirect forever.
+        // Prefer explicit hash-token handling for magic links.
+        // This avoids relying on getSessionFromUrl() which may hang depending on client/runtime.
+        if (typeof window !== "undefined" && window.location.hash) {
+          const { access_token, refresh_token } = parseHashTokens(window.location.hash);
+          if (access_token && refresh_token) {
+            await withTimeout(
+              supabase.auth.setSession({ access_token, refresh_token }),
+              7000
+            );
+          }
+        }
+
+        // Fallback: some flows might use query params/code exchange.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const anyAuth = (supabase.auth as any) ?? null;
         if (anyAuth?.getSessionFromUrl) {
