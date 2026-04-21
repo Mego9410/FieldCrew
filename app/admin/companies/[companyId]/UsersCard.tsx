@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/Card";
+import Link from "next/link";
+import { AdminUserActionsCard } from "@/components/admin/AdminUserActionsCard";
 
 type OwnerUser = {
   id: string;
@@ -24,7 +26,6 @@ type UsersResponse = { users: OwnerUser[]; workers: Worker[] };
 export function UsersCard({ companyId }: { companyId: string }) {
   const [data, setData] = useState<UsersResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState<string | null>(null);
 
   const load = async () => {
     setError(null);
@@ -47,28 +48,11 @@ export function UsersCard({ companyId }: { companyId: string }) {
   }, [companyId]);
 
   const owner = data?.users?.[0] ?? null;
-  const [roleInput, setRoleInput] = useState<string>("");
 
   const fmt = useMemo(
     () => (iso: string | null) => (iso ? new Date(iso).toLocaleString() : "—"),
     []
   );
-
-  const post = async (path: string, body?: unknown) => {
-    const res = await fetch(path, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: body ? JSON.stringify(body) : "{}",
-    });
-    const json = (await res.json().catch(() => ({}))) as { error?: string; url?: string };
-    if (!res.ok) throw new Error(json.error ?? res.statusText);
-    return json;
-  };
-
-  const openLink = (url?: string) => {
-    if (!url) return;
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
 
   return (
     <Card className="mt-6 rounded-xl">
@@ -109,117 +93,22 @@ export function UsersCard({ companyId }: { companyId: string }) {
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  disabled={busy !== null}
-                  onClick={async () => {
-                    setBusy("magic");
-                    try {
-                      const r = await post(`/api/admin/users/${owner.id}/magic-link`);
-                      openLink(r.url);
-                    } catch (e) {
-                      setError(e instanceof Error ? e.message : "Failed");
-                    } finally {
-                      setBusy(null);
-                    }
-                  }}
-                  className="rounded-lg border border-fc-border px-3 py-2 text-sm font-medium text-fc-brand hover:bg-white disabled:opacity-50"
-                >
-                  Send magic link
-                </button>
-                <button
-                  type="button"
-                  disabled={busy !== null}
-                  onClick={async () => {
-                    setBusy("reset");
-                    try {
-                      const r = await post(`/api/admin/users/${owner.id}/reset-password`);
-                      openLink(r.url);
-                    } catch (e) {
-                      setError(e instanceof Error ? e.message : "Failed");
-                    } finally {
-                      setBusy(null);
-                    }
-                  }}
-                  className="rounded-lg border border-fc-border px-3 py-2 text-sm font-medium text-fc-brand hover:bg-white disabled:opacity-50"
-                >
-                  Reset password
-                </button>
-                <button
-                  type="button"
-                  disabled={busy !== null}
-                  onClick={async () => {
-                    setBusy("logout");
-                    try {
-                      await post(`/api/admin/users/${owner.id}/force-logout`);
-                    } catch (e) {
-                      setError(e instanceof Error ? e.message : "Failed");
-                    } finally {
-                      setBusy(null);
-                    }
-                  }}
-                  className="rounded-lg border border-fc-border px-3 py-2 text-sm font-medium text-fc-brand hover:bg-white disabled:opacity-50"
-                >
-                  Force logout
-                </button>
-              </div>
+              <div className="mt-4 space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/admin/users/${encodeURIComponent(owner.id)}`}
+                    className="rounded-lg border border-fc-border bg-white px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted"
+                  >
+                    Open user detail
+                  </Link>
+                </div>
 
-              <div className="mt-4 rounded-lg border border-fc-border bg-white p-3">
-                <div className="text-xs font-semibold text-fc-muted">
-                  Admin actions
-                </div>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <input
-                    value={roleInput}
-                    onChange={(e) => setRoleInput(e.target.value)}
-                    placeholder="Role (e.g. owner, support_admin)"
-                    className="w-64 rounded-lg border border-fc-border bg-white px-3 py-2 text-sm text-fc-brand placeholder:text-fc-muted"
-                  />
-                  <button
-                    type="button"
-                    disabled={busy !== null || !roleInput.trim()}
-                    onClick={async () => {
-                      setBusy("role");
-                      try {
-                        await post(`/api/admin/users/${owner.id}/role`, {
-                          role: roleInput.trim(),
-                        });
-                        setRoleInput("");
-                        await load();
-                      } catch (e) {
-                        setError(e instanceof Error ? e.message : "Failed");
-                      } finally {
-                        setBusy(null);
-                      }
-                    }}
-                    className="rounded-lg border border-fc-border px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted disabled:opacity-50"
-                  >
-                    {busy === "role" ? "Saving…" : "Change role"}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={busy !== null}
-                    onClick={async () => {
-                      const ok = window.confirm(
-                        "Delete this auth user? This will remove their ability to sign in."
-                      );
-                      if (!ok) return;
-                      setBusy("delete");
-                      try {
-                        await post(`/api/admin/users/${owner.id}/delete`);
-                        await load();
-                      } catch (e) {
-                        setError(e instanceof Error ? e.message : "Failed");
-                      } finally {
-                        setBusy(null);
-                      }
-                    }}
-                    className="rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50"
-                  >
-                    {busy === "delete" ? "Deleting…" : "Delete user"}
-                  </button>
-                </div>
+                <AdminUserActionsCard
+                  userId={owner.id}
+                  email={owner.email}
+                  currentRole={owner.role}
+                  compact
+                />
               </div>
             </>
           ) : (

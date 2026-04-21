@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { headers } from "next/headers";
+import { AdminUserActionsCard } from "@/components/admin/AdminUserActionsCard";
 
 export const dynamic = "force-dynamic";
 
@@ -161,55 +162,11 @@ export default async function AdminUserDetailPage({
         </Card>
       </div>
 
-      <Card className="rounded-xl">
-        <div className="text-sm font-semibold text-fc-brand">Admin actions</div>
-        <div className="mt-2 text-sm text-fc-muted">
-          Use the existing per-user endpoints:
-          <span className="text-fc-brand">
-            {" "}
-            reset password, magic link, force logout, delete, and role changes.
-          </span>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {[
-            { href: `/admin/companies`, label: "Go to companies" },
-            { href: `/admin/users`, label: "Back to users" },
-          ].map((a) => (
-            <Link
-              key={a.href}
-              href={a.href}
-              className="rounded-lg border border-fc-border bg-white px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted"
-            >
-              {a.label}
-            </Link>
-          ))}
-        </div>
-        <div className="mt-4 rounded-lg border border-fc-border bg-fc-surface-muted p-3">
-          <div className="text-xs font-semibold text-fc-muted">API endpoints</div>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-fc-brand">
-            <li>
-              <span className="font-mono">POST</span>{" "}
-              <span className="font-mono">/api/admin/users/{u.id}/magic-link</span>
-            </li>
-            <li>
-              <span className="font-mono">POST</span>{" "}
-              <span className="font-mono">/api/admin/users/{u.id}/reset-password</span>
-            </li>
-            <li>
-              <span className="font-mono">POST</span>{" "}
-              <span className="font-mono">/api/admin/users/{u.id}/force-logout</span>
-            </li>
-            <li>
-              <span className="font-mono">POST</span>{" "}
-              <span className="font-mono">/api/admin/users/{u.id}/delete</span>
-            </li>
-            <li>
-              <span className="font-mono">POST</span>{" "}
-              <span className="font-mono">/api/admin/users/{u.id}/role</span>
-            </li>
-          </ul>
-        </div>
-      </Card>
+      <AdminUserActionsCard
+        userId={u.id}
+        email={u.email}
+        currentRole={u.role}
+      />
     </div>
   );
 }
