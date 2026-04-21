@@ -61,12 +61,33 @@ export function AdminUserActionsCard({
             </div>
           ) : null}
         </div>
-        <Link
-          href={`/admin/users/${encodeURIComponent(userId)}`}
-          className="rounded-lg border border-fc-border bg-white px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted"
-        >
-          View user
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={async () => {
+              setError(null);
+              setBusy("impersonate");
+              try {
+                const r = await post("/api/admin/impersonate", { ownerUserId: userId });
+                openLink(r.url);
+              } catch (e) {
+                setError(e instanceof Error ? e.message : "Failed");
+              } finally {
+                setBusy(null);
+              }
+            }}
+            className="rounded-lg bg-fc-brand px-3 py-2 text-sm font-medium text-white hover:bg-fc-brand/90 disabled:opacity-50"
+          >
+            {busy === "impersonate" ? "Opening…" : "Open in app"}
+          </button>
+          <Link
+            href={`/admin/users/${encodeURIComponent(userId)}`}
+            className="rounded-lg border border-fc-border bg-white px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted"
+          >
+            Admin view
+          </Link>
+        </div>
       </div>
 
       {error ? (
