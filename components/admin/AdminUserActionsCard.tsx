@@ -43,12 +43,6 @@ export function AdminUserActionsCard({
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [roleInput, setRoleInput] = useState<string>(currentRole ?? "");
-  const [impersonationDebug, setImpersonationDebug] = useState<{
-    isolated: boolean;
-    redirectTo: string | null;
-    linkRedirectTo: string | null;
-    actionLinkHost: string | null;
-  } | null>(null);
 
   const title = compact ? "Actions" : "User actions";
   const help = compact
@@ -78,36 +72,9 @@ export function AdminUserActionsCard({
             disabled={busy !== null}
             onClick={async () => {
               setError(null);
-              setImpersonationDebug(null);
               setBusy("impersonate");
               try {
                 const r = await post("/api/admin/impersonate", { ownerUserId: userId });
-                const host = (() => {
-                  try {
-                    return r.url ? new URL(r.url).host : null;
-                  } catch {
-                    return null;
-                  }
-                })();
-                setImpersonationDebug({
-                  isolated: Boolean(r.isolated),
-                  redirectTo: r.redirectTo ?? null,
-                  linkRedirectTo: (r as unknown as { linkRedirectTo?: string | null }).linkRedirectTo ?? null,
-                  actionLinkHost: host,
-                });
-                // Make debugging unmissable even if UI is stale/cached.
-                // Do NOT include the action link URL (contains credentials).
-                const msg = [
-                  `isolated=${String(Boolean(r.isolated))}`,
-                  `redirectTo=${r.redirectTo ?? "—"}`,
-                  `linkRedirectTo=${(r as unknown as { linkRedirectTo?: string | null }).linkRedirectTo ?? "—"}`,
-                  `actionLinkHost=${host ?? "—"}`,
-                  "",
-                  "If redirectTo is NOT https://imp.getfieldcrew.com/auth/finish?... then Vercel env vars are not applied to this deployment.",
-                  "If redirectTo IS correct but you still land on getfieldcrew.com/#access_token..., Supabase is rejecting redirectTo (Redirect URLs allowlist).",
-                ].join("\n");
-                // eslint-disable-next-line no-alert
-                window.alert(msg);
                 openLink(r.url);
               } catch (e) {
                 setError(e instanceof Error ? e.message : "Failed");
@@ -131,28 +98,6 @@ export function AdminUserActionsCard({
       {error ? (
         <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
           {error}
-        </div>
-      ) : null}
-      {impersonationDebug ? (
-        <div className="mt-3 rounded-lg border border-fc-border bg-fc-surface-muted px-3 py-2 text-xs text-fc-muted">
-          <div>
-            Impersonation isolated:{" "}
-            <span className="font-mono text-fc-brand">
-              {String(impersonationDebug.isolated)}
-            </span>
-          </div>
-          <div className="mt-1">
-            redirectTo:{" "}
-            <span className="font-mono text-fc-brand break-all">
-              {impersonationDebug.redirectTo ?? "—"}
-            </span>
-          </div>
-          <div className="mt-1">
-            action link host:{" "}
-            <span className="font-mono text-fc-brand">
-              {impersonationDebug.actionLinkHost ?? "—"}
-            </span>
-          </div>
         </div>
       ) : null}
 

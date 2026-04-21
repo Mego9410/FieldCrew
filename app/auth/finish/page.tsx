@@ -34,15 +34,6 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 export default function AuthFinishPage() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
-  const [stage, setStage] = useState<
-    "starting" | "setSession" | "fallback" | "checkSession" | "redirecting"
-  >("starting");
-  const [debug, setDebug] = useState<{
-    host?: string;
-    hasHash?: boolean;
-    hasAccessToken?: boolean;
-    hasRefreshToken?: boolean;
-  } | null>(null);
 
   const nextPath = useMemo(() => {
     const nextParam = searchParams.get("next");
@@ -55,17 +46,10 @@ export default function AuthFinishPage() {
     async function run() {
       try {
         const supabase = createClient();
-        setStage("setSession");
         // Prefer explicit hash-token handling for magic links.
         // This avoids relying on getSessionFromUrl() which may hang depending on client/runtime.
         if (typeof window !== "undefined") {
           const { access_token, refresh_token } = parseHashTokens(window.location.hash);
-          setDebug({
-            host: window.location.host,
-            hasHash: Boolean(window.location.hash),
-            hasAccessToken: Boolean(access_token),
-            hasRefreshToken: Boolean(refresh_token),
-          });
           if (access_token && refresh_token) {
             await withTimeout(
               supabase.auth.setSession({ access_token, refresh_token }),
@@ -78,7 +62,6 @@ export default function AuthFinishPage() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const anyAuth = (supabase.auth as any) ?? null;
         if (anyAuth?.getSessionFromUrl) {
-          setStage("fallback");
           try {
             await withTimeout(anyAuth.getSessionFromUrl({ storeSession: true }), 7000);
           } catch {
@@ -86,7 +69,6 @@ export default function AuthFinishPage() {
           }
         }
 
-        setStage("checkSession");
         const { data } = await supabase.auth.getSession();
         const hasSession = Boolean(data?.session);
 
@@ -100,7 +82,6 @@ export default function AuthFinishPage() {
         }
 
         if (!cancelled) {
-          setStage("redirecting");
           if (!hasSession) {
             const msg = encodeURIComponent("Sign-in link expired or invalid. Please request a new link.");
             // Use a hard redirect; router navigation can be flaky in some deployments.
@@ -132,22 +113,6 @@ export default function AuthFinishPage() {
         <div className="mt-2 text-sm text-fc-muted">
           Finishing secure sign-in and redirecting to your dashboard.
         </div>
-        <div className="mt-3 text-xs text-fc-muted">
-          Step: <span className="font-mono text-fc-brand">{stage}</span>
-        </div>
-        {debug ? (
-          <div className="mt-2 rounded-lg border border-fc-border bg-fc-surface-muted px-3 py-2 text-xs text-fc-muted">
-            <div>
-              Host: <span className="font-mono text-fc-brand">{debug.host ?? "—"}</span>
-            </div>
-            <div className="mt-1">
-              Hash tokens:{" "}
-              <span className="font-mono text-fc-brand">
-                hash={String(debug.hasHash)} access={String(debug.hasAccessToken)} refresh={String(debug.hasRefreshToken)}
-              </span>
-            </div>
-          </div>
-        ) : null}
         {error ? (
           <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
             {error}
