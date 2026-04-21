@@ -7,7 +7,7 @@ function getAppOrigin() {
   const raw =
     process.env.NEXT_PUBLIC_APP_URL ??
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
-  return raw.replace(/\/$/, "");
+  return normalizeOrigin(raw);
 }
 
 function getImpersonationOrigin() {
@@ -15,7 +15,17 @@ function getImpersonationOrigin() {
     process.env.IMPERSONATION_APP_URL ??
     process.env.NEXT_PUBLIC_IMPERSONATION_APP_URL ??
     "";
-  return raw.replace(/\/$/, "");
+  return normalizeOrigin(raw);
+}
+
+function normalizeOrigin(raw: string) {
+  const trimmed = (raw ?? "").trim();
+  if (!trimmed) return "";
+  const withScheme =
+    trimmed.startsWith("http://") || trimmed.startsWith("https://")
+      ? trimmed
+      : `https://${trimmed}`;
+  return withScheme.replace(/\/$/, "");
 }
 
 export async function POST(request: Request) {
@@ -109,6 +119,7 @@ export async function POST(request: Request) {
   return NextResponse.json({
     url: data.properties.action_link,
     isolated: Boolean(isolatedOrigin),
+    redirectTo,
     target: { ownerUserId: ownerId, companyId: targetCompanyId, email },
   });
 }
