@@ -37,6 +37,12 @@ export default function AuthFinishPage() {
   const [stage, setStage] = useState<
     "starting" | "setSession" | "fallback" | "checkSession" | "redirecting"
   >("starting");
+  const [debug, setDebug] = useState<{
+    host?: string;
+    hasHash?: boolean;
+    hasAccessToken?: boolean;
+    hasRefreshToken?: boolean;
+  } | null>(null);
 
   const nextPath = useMemo(() => {
     const nextParam = searchParams.get("next");
@@ -52,8 +58,14 @@ export default function AuthFinishPage() {
         setStage("setSession");
         // Prefer explicit hash-token handling for magic links.
         // This avoids relying on getSessionFromUrl() which may hang depending on client/runtime.
-        if (typeof window !== "undefined" && window.location.hash) {
+        if (typeof window !== "undefined") {
           const { access_token, refresh_token } = parseHashTokens(window.location.hash);
+          setDebug({
+            host: window.location.host,
+            hasHash: Boolean(window.location.hash),
+            hasAccessToken: Boolean(access_token),
+            hasRefreshToken: Boolean(refresh_token),
+          });
           if (access_token && refresh_token) {
             await withTimeout(
               supabase.auth.setSession({ access_token, refresh_token }),
@@ -123,6 +135,19 @@ export default function AuthFinishPage() {
         <div className="mt-3 text-xs text-fc-muted">
           Step: <span className="font-mono text-fc-brand">{stage}</span>
         </div>
+        {debug ? (
+          <div className="mt-2 rounded-lg border border-fc-border bg-fc-surface-muted px-3 py-2 text-xs text-fc-muted">
+            <div>
+              Host: <span className="font-mono text-fc-brand">{debug.host ?? "—"}</span>
+            </div>
+            <div className="mt-1">
+              Hash tokens:{" "}
+              <span className="font-mono text-fc-brand">
+                hash={String(debug.hasHash)} access={String(debug.hasAccessToken)} refresh={String(debug.hasRefreshToken)}
+              </span>
+            </div>
+          </div>
+        ) : null}
         {error ? (
           <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
             {error}
