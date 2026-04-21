@@ -93,6 +93,18 @@ export function AdminUserActionsCard({
                   redirectTo: r.redirectTo ?? null,
                   actionLinkHost: host,
                 });
+                // Make debugging unmissable even if UI is stale/cached.
+                // Do NOT include the action link URL (contains credentials).
+                const msg = [
+                  `isolated=${String(Boolean(r.isolated))}`,
+                  `redirectTo=${r.redirectTo ?? "—"}`,
+                  `actionLinkHost=${host ?? "—"}`,
+                  "",
+                  "If redirectTo is NOT https://imp.getfieldcrew.com/auth/finish?... then Vercel env vars are not applied to this deployment.",
+                  "If redirectTo IS correct but you still land on getfieldcrew.com/#access_token..., Supabase is rejecting redirectTo (Redirect URLs allowlist).",
+                ].join("\n");
+                // eslint-disable-next-line no-alert
+                window.alert(msg);
                 openLink(r.url);
               } catch (e) {
                 setError(e instanceof Error ? e.message : "Failed");
