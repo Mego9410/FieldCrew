@@ -10,6 +10,14 @@ function getAppOrigin() {
   return raw.replace(/\/$/, "");
 }
 
+function getImpersonationOrigin() {
+  const raw =
+    process.env.IMPERSONATION_APP_URL ??
+    process.env.NEXT_PUBLIC_IMPERSONATION_APP_URL ??
+    "";
+  return raw.replace(/\/$/, "");
+}
+
 export async function POST(request: Request) {
   const adminGate = await requireAdminOrResponse();
   if (!adminGate.ok) return adminGate.response;
@@ -72,7 +80,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const origin = getAppOrigin();
+  const isolatedOrigin = getImpersonationOrigin();
+  const origin = isolatedOrigin || getAppOrigin();
   const redirectTo = `${origin}/auth/finish?next=${encodeURIComponent("/app")}`;
 
   const { data, error } = await supabase.auth.admin.generateLink({
@@ -99,6 +108,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     url: data.properties.action_link,
+    isolated: Boolean(isolatedOrigin),
     target: { ownerUserId: ownerId, companyId: targetCompanyId, email },
   });
 }
