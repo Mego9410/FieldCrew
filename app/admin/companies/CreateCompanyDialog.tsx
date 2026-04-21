@@ -15,6 +15,7 @@ export function CreateCompanyDialog({
   const [ownerName, setOwnerName] = useState("");
   const [ownerEmail, setOwnerEmail] = useState("");
   const [planId, setPlanId] = useState<"starter" | "growth" | "pro">("starter");
+  const [waiveFees, setWaiveFees] = useState(true);
   const [magicLink, setMagicLink] = useState<string | null>(null);
 
   const create = async () => {
@@ -30,6 +31,7 @@ export function CreateCompanyDialog({
           ownerName,
           ownerEmail,
           planId,
+          waiveFees,
         }),
       });
       const json = (await res.json().catch(() => ({}))) as {
@@ -126,6 +128,25 @@ export function CreateCompanyDialog({
                   <option value="growth">Growth</option>
                   <option value="pro">Pro</option>
                 </select>
+              </div>
+              <div className="md:col-span-2 flex items-center justify-between gap-3 rounded-lg border border-fc-border bg-fc-surface-muted px-3 py-2">
+                <div>
+                  <div className="text-sm font-semibold text-fc-brand">
+                    Waive fees (comp)
+                  </div>
+                  <div className="text-xs text-fc-muted">
+                    If enabled, the account is marked active without requiring Stripe checkout.
+                  </div>
+                </div>
+                <label className="inline-flex items-center gap-2 text-sm font-medium text-fc-brand">
+                  <input
+                    type="checkbox"
+                    checked={waiveFees}
+                    onChange={(e) => setWaiveFees(e.target.checked)}
+                    className="h-4 w-4 accent-fc-accent"
+                  />
+                  Comped
+                </label>
               </div>
             </div>
 

@@ -33,6 +33,7 @@ export async function POST(request: Request) {
     ownerName?: string;
     ownerEmail?: string;
     planId?: "starter" | "growth" | "pro";
+    waiveFees?: boolean;
   } = {};
   try {
     body = await request.json();
@@ -44,6 +45,7 @@ export async function POST(request: Request) {
   const ownerName = (body.ownerName ?? "").trim();
   const ownerEmail = (body.ownerEmail ?? "").trim().toLowerCase();
   const planId = body.planId ?? "starter";
+  const waiveFees = body.waiveFees !== false;
 
   if (!companyName || !ownerName || !ownerEmail) {
     return NextResponse.json(
@@ -88,10 +90,10 @@ export async function POST(request: Request) {
     owner_user_id: ownerUserId,
     onboarding_status: "incomplete",
     worker_limit: workerLimit,
-    subscription_status: "active",
+    subscription_status: waiveFees ? "active" : "inactive",
     account_status: "active",
     signup_at: new Date().toISOString(),
-    settings: {},
+    settings: { billing: { comped: waiveFees } },
   });
 
   if (companyErr) {
@@ -127,7 +129,7 @@ export async function POST(request: Request) {
     action: "company.create",
     targetCompanyId: companyId,
     targetUserId: ownerUserId,
-    metadata: { planId, workerLimit },
+    metadata: { planId, workerLimit, waiveFees },
   });
 
   return NextResponse.json({
@@ -135,6 +137,7 @@ export async function POST(request: Request) {
     company: { id: companyId, name: companyName },
     owner: { id: ownerUserId, email: ownerEmail, name: ownerName },
     magicLink: link?.properties?.action_link ?? null,
+    waiveFees,
   });
 }
 
