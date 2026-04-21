@@ -73,7 +73,7 @@ export async function POST(request: Request) {
   }
 
   const origin = getAppOrigin();
-  const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent("/app")}`;
+  const redirectTo = `${origin}/auth/finish?next=${encodeURIComponent("/app")}`;
 
   const { data, error } = await supabase.auth.admin.generateLink({
     type: "magiclink",

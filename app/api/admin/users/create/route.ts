@@ -117,7 +117,7 @@ export async function POST(request: Request) {
 
   // 3) Provide a magic link + a password setup link.
   const origin = getAppOrigin();
-  const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent("/auth/post-login")}`;
+  const redirectTo = `${origin}/auth/finish?next=${encodeURIComponent("/auth/post-login")}`;
 
   const { data: magic } = await supabase.auth.admin.generateLink({
     type: "magiclink",
