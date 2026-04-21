@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { headers } from "next/headers";
 import { AdminUserActionsCard } from "@/components/admin/AdminUserActionsCard";
+import { AdminUserBillingCard } from "@/components/admin/AdminUserBillingCard";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ type UserDetailResponse = {
         workerLimit: number | null;
         stripeCustomerId: string | null;
         stripeSubscriptionId: string | null;
+        comped: boolean;
       }
     | null;
 };
@@ -167,6 +169,16 @@ export default async function AdminUserDetailPage({
         email={u.email}
         currentRole={u.role}
       />
+
+      {c ? (
+        <AdminUserBillingCard
+          companyId={c.id}
+          stripeSubscriptionId={c.stripeSubscriptionId}
+          workerLimit={c.workerLimit}
+          subscriptionStatus={c.subscriptionStatus}
+          comped={c.comped}
+        />
+      ) : null}
     </div>
   );
 }

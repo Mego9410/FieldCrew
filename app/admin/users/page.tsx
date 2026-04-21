@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { headers } from "next/headers";
+import { CreateUserDialog } from "./CreateUserDialog";
 
 export const dynamic = "force-dynamic";
 
@@ -79,20 +80,23 @@ export default async function AdminUsersPage({
             All auth users (owners + admins). Includes active and inactive accounts.
           </p>
         </div>
-        <form className="flex items-center gap-2">
-          <input
-            name="q"
-            defaultValue={q}
-            placeholder="Search email, name, id…"
-            className="w-72 rounded-lg border border-fc-border bg-white px-3 py-2 text-sm text-fc-brand placeholder:text-fc-muted"
-          />
-          <button
-            type="submit"
-            className="rounded-lg border border-fc-border px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted"
-          >
-            Search
-          </button>
-        </form>
+        <div className="flex flex-wrap items-center gap-2">
+          <form className="flex items-center gap-2">
+            <input
+              name="q"
+              defaultValue={q}
+              placeholder="Search email, name, id…"
+              className="w-72 rounded-lg border border-fc-border bg-white px-3 py-2 text-sm text-fc-brand placeholder:text-fc-muted"
+            />
+            <button
+              type="submit"
+              className="rounded-lg border border-fc-border px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted"
+            >
+              Search
+            </button>
+          </form>
+          <CreateUserDialog />
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-fc-border bg-fc-surface shadow-fc-sm">

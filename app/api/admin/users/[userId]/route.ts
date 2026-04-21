@@ -49,7 +49,7 @@ export async function GET(
     ? await supabase
         .from("companies")
         .select(
-          "id,name,account_status,onboarding_status,subscription_status,worker_limit,stripe_customer_id,stripe_subscription_id"
+          "id,name,account_status,onboarding_status,subscription_status,worker_limit,stripe_customer_id,stripe_subscription_id,settings"
         )
         .eq("id", companyId)
         .maybeSingle()
@@ -94,6 +94,9 @@ export async function GET(
             (company as { stripe_customer_id?: string | null }).stripe_customer_id ?? null,
           stripeSubscriptionId:
             (company as { stripe_subscription_id?: string | null }).stripe_subscription_id ?? null,
+          comped:
+            ((company as { settings?: unknown }).settings as { billing?: { comped?: boolean } } | null | undefined)
+              ?.billing?.comped ?? false,
         }
       : null,
   });
