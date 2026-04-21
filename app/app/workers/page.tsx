@@ -337,7 +337,7 @@ export default function WorkersPage() {
           aria-modal="true"
           aria-labelledby="add-worker-title"
         >
-          <div className="max-h-[90vh] w-full max-w-md overflow-auto border border-fc-border bg-fc-surface p-6">
+          <div className="max-h-[90dvh] w-full max-w-md overflow-auto border border-fc-border bg-fc-surface p-6">
             <h2 id="add-worker-title" className="mb-4 text-xs font-bold uppercase tracking-widest text-fc-muted">
               Add worker
             </h2>
@@ -353,7 +353,7 @@ export default function WorkersPage() {
           aria-modal="true"
           aria-labelledby="upgrade-prompt-title"
         >
-          <div className="w-full max-w-md border border-fc-border bg-fc-surface p-6">
+          <div className="w-full max-h-[90dvh] max-w-md overflow-auto border border-fc-border bg-fc-surface p-6">
             <h2 id="upgrade-prompt-title" className="mb-2 font-display text-lg font-bold text-fc-brand">
               Worker limit reached
             </h2>

@@ -239,7 +239,7 @@ export default function JobsPage() {
           onClick={(e) => e.target === e.currentTarget && handleCloseJobModal()}
         >
           <div
-            className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden border border-fc-border bg-fc-surface p-6"
+            className="flex max-h-[90dvh] w-full max-w-md flex-col overflow-auto border border-fc-border bg-fc-surface p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 id="add-job-title" className="shrink-0 text-xs font-bold uppercase tracking-widest text-fc-muted mb-4">

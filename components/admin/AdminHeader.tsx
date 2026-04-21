@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, LogOut, ArrowLeft } from "lucide-react";
+import { ChevronDown, LogOut, ArrowLeft, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
@@ -30,7 +30,13 @@ function getInitials(input: { name?: string | null; email?: string | null }): st
   return (local.slice(0, 2) || "FC").toUpperCase();
 }
 
-export function AdminHeader() {
+export function AdminHeader({
+  onMenuClick,
+  showMenuButton = false,
+}: {
+  onMenuClick?: () => void;
+  showMenuButton?: boolean;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -91,6 +97,16 @@ export function AdminHeader() {
     <header className="relative z-40 w-full shrink-0 border-b border-fc-border bg-fc-surface">
       <div className="relative mx-auto flex min-h-20 w-full max-w-[1400px] items-center justify-between gap-3 px-3 sm:px-4">
         <div className="flex items-center gap-2">
+          {showMenuButton && (
+            <button
+              type="button"
+              onClick={onMenuClick}
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-fc-brand hover:bg-fc-surface-muted focus:outline-none focus:ring-2 focus:ring-fc-accent lg:hidden"
+              aria-label="Open admin menu"
+            >
+              <PanelLeft className="h-5 w-5" />
+            </button>
+          )}
           <Link
             href={routes.owner.home}
             className="inline-flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"

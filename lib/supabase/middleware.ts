@@ -129,6 +129,7 @@ export async function updateSession(request: NextRequest) {
   const isAppRoute = pathname.startsWith("/app");
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
   const isOnboardingRoute = pathname === "/onboarding" || pathname.startsWith("/onboarding/");
+  const isTwoFactorRoute = pathname === routes.auth.twoFactor || pathname.startsWith(`${routes.auth.twoFactor}/`);
 
   // Allow unauthenticated access to /onboarding (preview / force onboarding from login page)
   if (isOnboardingRoute && !user) {
@@ -154,6 +155,24 @@ export async function updateSession(request: NextRequest) {
     if (!isAllowlistedAdminEmail(user.email)) {
       // Avoid leaking that /admin exists; send them to the owner app.
       return NextResponse.redirect(new URL(routes.owner.home, request.url));
+    }
+  }
+
+  // 2FA gating (device-level cookie). If enabled for the owner, require /auth/2fa before /app or /admin.
+  if ((isAppRoute || isAdminRoute) && user && !isTwoFactorRoute) {
+    const has2faCookie = request.cookies.get("fc_2fa")?.value === "1";
+    if (!has2faCookie) {
+      const { data: twofa } = await supabase
+        .from("owner_two_factor")
+        .select("enabled")
+        .eq("owner_user_id", user.id)
+        .maybeSingle();
+      const enabled = Boolean((twofa as { enabled?: boolean } | null)?.enabled);
+      if (enabled) {
+        const twofaUrl = new URL(routes.auth.twoFactor, request.url);
+        twofaUrl.searchParams.set("next", request.nextUrl.pathname);
+        return NextResponse.redirect(twofaUrl);
+      }
     }
   }
 

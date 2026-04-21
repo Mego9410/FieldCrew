@@ -22,6 +22,7 @@ import type {
   TimeEntryInput,
   JobTypeInput,
 } from "./entities";
+import type { CompanyTourV1 } from "./entities";
 import type {
   CompanyOnboardingProfile,
   EstimatedSnapshot,
@@ -38,6 +39,17 @@ function uid(): string {
 
 function toCompany(r: Record<string, unknown>): Company {
   const settings = r.settings as Record<string, unknown> | null | undefined;
+  const tourRaw = (settings?.tour_v1 ?? settings?.tourV1) as Record<string, unknown> | null | undefined;
+  const tourV1: CompanyTourV1 | undefined = tourRaw
+    ? {
+        status: (tourRaw.status as CompanyTourV1["status"]) ?? "active",
+        step: tourRaw.step != null ? Number(tourRaw.step) : 0,
+        dismissedAt: (tourRaw.dismissed_at ?? tourRaw.dismissedAt) as string | undefined,
+        completedAt: (tourRaw.completed_at ?? tourRaw.completedAt) as string | undefined,
+        reportExportedAt: (tourRaw.report_exported_at ?? tourRaw.reportExportedAt) as string | undefined,
+        payrollExportedAt: (tourRaw.payroll_exported_at ?? tourRaw.payrollExportedAt) as string | undefined,
+      }
+    : undefined;
   return {
     id: r.id as string,
     name: r.name as string,
@@ -70,6 +82,34 @@ function toCompany(r: Record<string, unknown>): Company {
       requireNotesOnClockOut: settings.require_notes_on_clock_out as boolean | undefined,
       requirePhotoOnClockOut: settings.require_photo_on_clock_out as boolean | undefined,
       jobReminderHours: settings.job_reminder_hours != null ? Number(settings.job_reminder_hours) : undefined,
+
+      companyEmail: (settings.company_email ?? settings.companyEmail) as string | undefined,
+      companyPhone: (settings.company_phone ?? settings.companyPhone) as string | undefined,
+      companyTaxId: (settings.company_tax_id ?? settings.companyTaxId) as string | undefined,
+      companyCurrency: (settings.company_currency ?? settings.companyCurrency) as string | undefined,
+      companyStreet: (settings.company_street ?? settings.companyStreet) as string | undefined,
+      companyCity: (settings.company_city ?? settings.companyCity) as string | undefined,
+      companyState: (settings.company_state ?? settings.companyState) as string | undefined,
+      companyZip: (settings.company_zip ?? settings.companyZip) as string | undefined,
+      companyCountry: (settings.company_country ?? settings.companyCountry) as string | undefined,
+      otDailyThreshold: settings.ot_daily_threshold != null ? Number(settings.ot_daily_threshold) : settings.otDailyThreshold != null ? Number(settings.otDailyThreshold) : undefined,
+      otWeeklyThreshold: settings.ot_weekly_threshold != null ? Number(settings.ot_weekly_threshold) : settings.otWeeklyThreshold != null ? Number(settings.otWeeklyThreshold) : undefined,
+      otMultiplier: settings.ot_multiplier != null ? Number(settings.ot_multiplier) : settings.otMultiplier != null ? Number(settings.otMultiplier) : undefined,
+
+      ownerPhone: (settings.owner_phone ?? settings.ownerPhone) as string | undefined,
+      ownerTimezone: (settings.owner_timezone ?? settings.ownerTimezone) as string | undefined,
+      ownerAvatarUrl: (settings.owner_avatar_url ?? settings.ownerAvatarUrl) as string | null | undefined,
+
+      weeklyLabourSummaryEmail: (settings.weekly_labour_summary_email ?? settings.weeklyLabourSummaryEmail) as boolean | undefined,
+      overtimeThresholdEmail: (settings.overtime_threshold_email ?? settings.overtimeThresholdEmail) as boolean | undefined,
+      overtimeThresholdInApp: (settings.overtime_threshold_in_app ?? settings.overtimeThresholdInApp) as boolean | undefined,
+      jobOverBudgetInApp: (settings.job_over_budget_in_app ?? settings.jobOverBudgetInApp) as boolean | undefined,
+      unapprovedTimesheetsEmail: (settings.unapproved_timesheets_email ?? settings.unapprovedTimesheetsEmail) as boolean | undefined,
+      clockInReminderInApp: (settings.clock_in_reminder_in_app ?? settings.clockInReminderInApp) as boolean | undefined,
+      breakReminderInApp: (settings.break_reminder_in_app ?? settings.breakReminderInApp) as boolean | undefined,
+      shiftEditedEmail: (settings.shift_edited_email ?? settings.shiftEditedEmail) as boolean | undefined,
+
+      tourV1,
     } : undefined,
   };
 }
@@ -89,6 +129,46 @@ function companySettingsToDb(s: Partial<Company["settings"]> | undefined): Recor
   if (s.jobReminderHours != null) out.job_reminder_hours = s.jobReminderHours;
   if (s.onboardingStep != null) out.onboarding_step = s.onboardingStep;
   if (s.estimatedInsightDismissed != null) out.estimated_insight_dismissed = s.estimatedInsightDismissed;
+
+  if (s.companyEmail !== undefined) out.company_email = s.companyEmail;
+  if (s.companyPhone !== undefined) out.company_phone = s.companyPhone;
+  if (s.companyTaxId !== undefined) out.company_tax_id = s.companyTaxId;
+  if (s.companyCurrency !== undefined) out.company_currency = s.companyCurrency;
+  if (s.companyStreet !== undefined) out.company_street = s.companyStreet;
+  if (s.companyCity !== undefined) out.company_city = s.companyCity;
+  if (s.companyState !== undefined) out.company_state = s.companyState;
+  if (s.companyZip !== undefined) out.company_zip = s.companyZip;
+  if (s.companyCountry !== undefined) out.company_country = s.companyCountry;
+  if (s.otDailyThreshold !== undefined) out.ot_daily_threshold = s.otDailyThreshold;
+  if (s.otWeeklyThreshold !== undefined) out.ot_weekly_threshold = s.otWeeklyThreshold;
+  if (s.otMultiplier !== undefined) out.ot_multiplier = s.otMultiplier;
+
+  if (s.ownerPhone !== undefined) out.owner_phone = s.ownerPhone;
+  if (s.ownerTimezone !== undefined) out.owner_timezone = s.ownerTimezone;
+  if (s.ownerAvatarUrl !== undefined) out.owner_avatar_url = s.ownerAvatarUrl;
+
+  if (s.weeklyLabourSummaryEmail !== undefined) out.weekly_labour_summary_email = s.weeklyLabourSummaryEmail;
+  if (s.overtimeThresholdEmail !== undefined) out.overtime_threshold_email = s.overtimeThresholdEmail;
+  if (s.overtimeThresholdInApp !== undefined) out.overtime_threshold_in_app = s.overtimeThresholdInApp;
+  if (s.jobOverBudgetInApp !== undefined) out.job_over_budget_in_app = s.jobOverBudgetInApp;
+  if (s.unapprovedTimesheetsEmail !== undefined) out.unapproved_timesheets_email = s.unapprovedTimesheetsEmail;
+  if (s.clockInReminderInApp !== undefined) out.clock_in_reminder_in_app = s.clockInReminderInApp;
+  if (s.breakReminderInApp !== undefined) out.break_reminder_in_app = s.breakReminderInApp;
+  if (s.shiftEditedEmail !== undefined) out.shift_edited_email = s.shiftEditedEmail;
+
+  if (s.tourV1 !== undefined) {
+    const t = s.tourV1;
+    out.tour_v1 = t
+      ? {
+          status: t.status,
+          step: t.step,
+          dismissed_at: t.dismissedAt,
+          completed_at: t.completedAt,
+          report_exported_at: t.reportExportedAt,
+          payroll_exported_at: t.payrollExportedAt,
+        }
+      : null;
+  }
   return out;
 }
 
@@ -341,7 +421,10 @@ export async function upsertOnboardingProfile(
       msg.includes("column") && msg.includes("does not exist");
 
     if (missingProgressCols) {
-      const { onboarding_step_completed, onboarding_seed_workers_completed, onboarding_seed_jobs_completed, ...rest } = row;
+      const rest = { ...row };
+      delete (rest as Record<string, unknown>).onboarding_step_completed;
+      delete (rest as Record<string, unknown>).onboarding_seed_workers_completed;
+      delete (rest as Record<string, unknown>).onboarding_seed_jobs_completed;
       const retry = await tryUpsert(rest);
       if (retry.error || !retry.data) {
         console.error("[upsertOnboardingProfile] retry failed:", retry.error);
@@ -962,6 +1045,26 @@ export async function addTimeEntryForWorkerByToken(
     p_notes: input.notes ?? null,
     p_is_overtime: input.isOvertime ?? false,
     p_category: input.category ?? "billable",
+  });
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) throw new Error("No time entry returned");
+  return toTimeEntry(row as Record<string, unknown>);
+}
+
+/** Update a time entry (breaks/notes) as a worker using invite token (uses RPC; bypasses RLS). */
+export async function updateTimeEntryForWorkerByToken(
+  token: string,
+  timeEntryId: string,
+  input: { breaks?: number; notes?: string | null },
+  supabase?: SupabaseClient
+): Promise<TimeEntry> {
+  const db = supabase ?? createClient();
+  const { data, error } = await db.rpc("update_time_entry_for_worker_by_token", {
+    p_token: token,
+    p_time_entry_id: timeEntryId,
+    p_breaks: input.breaks ?? null,
+    p_notes: input.notes ?? null,
   });
   if (error) throw error;
   const row = Array.isArray(data) ? data[0] : data;

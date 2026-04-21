@@ -12,7 +12,7 @@ import {
   Users,
   Edit3,
 } from "lucide-react";
-import { addTimeEntryForWorkerByToken } from "@/lib/data";
+import { addTimeEntryForWorkerByToken, updateTimeEntryForWorkerByToken } from "@/lib/data";
 import {
   useWorkerByToken,
   useJobsForWorkerByToken,
@@ -85,6 +85,11 @@ export default function WorkerClockPage({
   const [notes, setNotes] = useState("");
   const [clockOutSubmitting, setClockOutSubmitting] = useState(false);
   const [clockOutError, setClockOutError] = useState<string | null>(null);
+  const [editEntryId, setEditEntryId] = useState<string | null>(null);
+  const [editBreaks, setEditBreaks] = useState("0");
+  const [editNotes, setEditNotes] = useState("");
+  const [editSubmitting, setEditSubmitting] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
   const { item: worker } = useWorkerByToken(token);
   const workerId = worker?.id ?? "";
   const { items: jobsForWorker } = useJobsForWorkerByToken(token);
@@ -237,6 +242,41 @@ export default function WorkerClockPage({
       setClockOutError(err instanceof Error ? err.message : "Failed to clock out. Please try again.");
     } finally {
       setClockOutSubmitting(false);
+    }
+  };
+
+  const openEdit = (entryId: string) => {
+    const entry = entries.find((x) => x.id === entryId);
+    if (!entry) return;
+    setEditEntryId(entryId);
+    setEditBreaks(String(entry.breaks ?? 0));
+    setEditNotes(entry.notes ?? "");
+    setEditError(null);
+  };
+
+  const closeEdit = () => {
+    setEditEntryId(null);
+    setEditError(null);
+    setEditSubmitting(false);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editEntryId) return;
+    setEditSubmitting(true);
+    setEditError(null);
+    try {
+      const breaksNum = Math.max(0, parseInt(editBreaks, 10) || 0);
+      await updateTimeEntryForWorkerByToken(token, editEntryId, {
+        breaks: breaksNum,
+        notes: editNotes.trim() ? editNotes.trim() : null,
+      });
+      closeEdit();
+      refreshEntries();
+    } catch (err) {
+      setEditError(err instanceof Error ? err.message : "Failed to update session");
+    } finally {
+      setEditSubmitting(false);
     }
   };
 
@@ -584,10 +624,10 @@ export default function WorkerClockPage({
                     </div>
                     <button
                       type="button"
-                      onClick={() => {}}
+                      onClick={() => openEdit(e.id)}
                       className="p-1.5 text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"
                       aria-label="Edit session"
-                      title="Edit (coming soon)"
+                      title="Edit session"
                     >
                       <Edit3 className="h-4 w-4" />
                     </button>
@@ -604,6 +644,68 @@ export default function WorkerClockPage({
         )}
       </div>
       </section>
+
+      {editEntryId && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-session-title"
+        >
+          <div className="w-full max-h-[90dvh] max-w-md overflow-auto rounded-lg border border-fc-border bg-white p-6 shadow-lg">
+            <h2 id="edit-session-title" className="font-display text-lg font-bold text-fc-brand">
+              Edit session
+            </h2>
+            <p className="mt-1 text-sm text-fc-muted">
+              Update break minutes and notes for this session.
+            </p>
+
+            {editError && (
+              <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+                {editError}
+              </div>
+            )}
+
+            <form onSubmit={handleEditSubmit} className="mt-4 space-y-4">
+              <FormField label="Break minutes" id="edit-breaks">
+                <FormInput
+                  id="edit-breaks"
+                  type="number"
+                  min="0"
+                  value={editBreaks}
+                  onChange={(e) => setEditBreaks(e.target.value)}
+                />
+              </FormField>
+              <FormField label="Notes" id="edit-notes">
+                <FormTextarea
+                  id="edit-notes"
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  placeholder="Optional notes about the job…"
+                  rows={3}
+                />
+              </FormField>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={editSubmitting}
+                  className="flex-1 rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-semibold text-white hover:bg-fc-brand/90 disabled:opacity-50"
+                >
+                  {editSubmitting ? "Saving…" : "Save"}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeEdit}
+                  disabled={editSubmitting}
+                  className="flex-1 rounded-lg border border-fc-border px-4 py-2.5 text-sm font-semibold text-fc-brand hover:bg-slate-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

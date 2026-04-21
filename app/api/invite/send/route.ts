@@ -66,14 +66,18 @@ export async function POST(request: Request) {
     );
   }
 
-  const sent = await sendSms(worker.phone, message);
-  if (!sent) {
-    return NextResponse.json({ error: "Failed to send SMS" }, { status: 502 });
+  const result = await sendSms(worker.phone, message);
+  if (!result.ok) {
+    // Soft fallback: keep invite created, but do not mark as sent.
+    return NextResponse.json(
+      { ok: true, delivered: false, mode: result.mode, error: result.error },
+      { status: 200 }
+    );
   }
 
   const now = new Date().toISOString();
   await updateWorkerInvite(invite.id, { sentAt: now }, supabase);
   await updateWorker(body.workerId, { inviteStatus: "sent" } as Parameters<typeof updateWorker>[1], supabase);
 
-  return NextResponse.json({ ok: true, sentAt: now });
+  return NextResponse.json({ ok: true, delivered: true, mode: result.mode, sentAt: now });
 }

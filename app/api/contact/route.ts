@@ -72,7 +72,7 @@ export async function POST(request: Request) {
         console.error("[contact] Supabase insert error:", error);
         return NextResponse.json({ error: "Failed to submit contact form." }, { status: 500 });
       }
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true, persisted: true });
     } catch (err) {
       console.error("[contact] Error:", err);
       return NextResponse.json({ error: "Failed to submit contact form." }, { status: 500 });
@@ -80,5 +80,5 @@ export async function POST(request: Request) {
   }
 
   console.log("[contact] No Supabase config; logging payload:", payload);
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, persisted: false });
 }

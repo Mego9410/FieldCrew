@@ -5,12 +5,30 @@ import { SettingsPageShell } from "@/components/settings/SettingsPageShell";
 import { SettingsSectionCard } from "@/components/settings/SettingsSectionCard";
 import { FormField, FormSelect } from "@/components/forms/FormField";
 import { useToast } from "@/components/ui/Toast";
-import {
-  getSettings,
-  saveSettings,
-  getDefaultNotifications,
-  type NotificationPrefs,
-} from "@/lib/settings.mock";
+
+type NotificationPrefs = {
+  weeklyLabourSummaryEmail: boolean;
+  overtimeThresholdEmail: boolean;
+  overtimeThresholdInApp: boolean;
+  jobOverBudgetInApp: boolean;
+  unapprovedTimesheetsEmail: boolean;
+  clockInReminderInApp: boolean;
+  breakReminderInApp: boolean;
+  shiftEditedEmail: boolean;
+};
+
+function getDefaultNotifications(): NotificationPrefs {
+  return {
+    weeklyLabourSummaryEmail: true,
+    overtimeThresholdEmail: true,
+    overtimeThresholdInApp: true,
+    jobOverBudgetInApp: true,
+    unapprovedTimesheetsEmail: true,
+    clockInReminderInApp: true,
+    breakReminderInApp: true,
+    shiftEditedEmail: true,
+  };
+}
 
 function ToggleRow({
   label,
@@ -64,10 +82,14 @@ export default function NotificationsSettingsPage() {
   const toast = useToast();
 
   useEffect(() => {
-    getSettings().then((s) => {
-      setPrefs(s.notifications);
-      setSaved(s.notifications);
-    });
+    fetch("/api/settings/notifications")
+      .then((r) => r.json())
+      .then((d: { notifications?: NotificationPrefs }) => {
+        if (!d?.notifications) return;
+        setPrefs(d.notifications);
+        setSaved(d.notifications);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -92,8 +114,16 @@ export default function NotificationsSettingsPage() {
     if (!isDirty || loading) return;
     setLoading(true);
     try {
-      await saveSettings({ notifications: prefs });
-      setSaved(prefs);
+      const res = await fetch("/api/settings/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notifications: prefs }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = (await res.json()) as { notifications?: NotificationPrefs };
+      const next = data.notifications ?? prefs;
+      setPrefs(next);
+      setSaved(next);
       toast.success("Notification preferences saved");
     } catch {
       toast.error("Failed to save notification preferences");

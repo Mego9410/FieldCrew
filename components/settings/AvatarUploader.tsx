@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { User } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 
 interface AvatarUploaderProps {
   avatarUrl: string | null;
@@ -15,11 +16,11 @@ export function AvatarUploader({
   disabled = false,
 }: AvatarUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const toast = useToast();
+  const [uploading, setUploading] = useState(false);
 
   const handleUpload = () => {
     if (disabled) return;
-    // Mock upload: simulate file pick and set a placeholder data URL
-    // TODO: Replace with real file upload when API is ready
     const input = inputRef.current;
     if (input) {
       input.click();
@@ -27,12 +28,42 @@ export function AvatarUploader({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0] ?? null;
     if (!file) return;
-    // Mock: create object URL for preview
-    const url = URL.createObjectURL(file);
-    onUpload(url);
+    if (disabled || uploading) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    onUpload(previewUrl);
     e.target.value = "";
+
+    setUploading(true);
+    fetch("/api/storage/avatar-upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contentType: file.type || "image/png" }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error(await r.text());
+        return (await r.json()) as { signedUrl: string; publicUrl: string };
+      })
+      .then(async ({ signedUrl, publicUrl }) => {
+        const put = await fetch(signedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "image/png" },
+          body: file,
+        });
+        if (!put.ok) throw new Error("Upload failed");
+        URL.revokeObjectURL(previewUrl);
+        onUpload(publicUrl);
+        toast.success("Photo uploaded (save to apply)");
+      })
+      .catch(() => {
+        toast.error("Failed to upload photo");
+        // Keep preview so user sees what they selected.
+      })
+      .finally(() => {
+        setUploading(false);
+      });
   };
 
   const handleRemove = () => {
@@ -68,10 +99,10 @@ export function AvatarUploader({
         <button
           type="button"
           onClick={handleUpload}
-          disabled={disabled}
+          disabled={disabled || uploading}
           className="rounded-lg border border-fc-border px-3 py-1.5 text-sm font-medium text-fc-brand hover:bg-slate-50 disabled:opacity-50"
         >
-          Upload
+          {uploading ? "Uploading…" : "Upload"}
         </button>
         <button
           type="button"

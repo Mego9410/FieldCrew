@@ -23,6 +23,55 @@ export interface CompanySettings {
   requirePhotoOnClockOut?: boolean;
   /** Hours before job start to send reminder SMS (0 = disabled). */
   jobReminderHours?: number;
+
+  /**
+   * Launch v1: store basic settings in companies.settings (JSONB).
+   * These were previously mocked in the UI via localStorage.
+   */
+  companyEmail?: string;
+  companyPhone?: string;
+  companyTaxId?: string;
+  companyCurrency?: string;
+  companyStreet?: string;
+  companyCity?: string;
+  companyState?: string;
+  companyZip?: string;
+  companyCountry?: string;
+  otDailyThreshold?: number;
+  otWeeklyThreshold?: number;
+  otMultiplier?: number;
+
+  /** Owner profile settings (until per-user settings are introduced). */
+  ownerPhone?: string;
+  ownerTimezone?: string;
+  ownerAvatarUrl?: string | null;
+
+  /** Notification preferences (company-wide for launch). */
+  weeklyLabourSummaryEmail?: boolean;
+  overtimeThresholdEmail?: boolean;
+  overtimeThresholdInApp?: boolean;
+  jobOverBudgetInApp?: boolean;
+  unapprovedTimesheetsEmail?: boolean;
+  clockInReminderInApp?: boolean;
+  breakReminderInApp?: boolean;
+  shiftEditedEmail?: boolean;
+
+  /** Per-company guided tutorial state (versioned). */
+  tourV1?: CompanyTourV1;
+}
+
+export type CompanyTourV1Status = "active" | "dismissed" | "completed";
+
+export interface CompanyTourV1 {
+  status: CompanyTourV1Status;
+  /** 0-based index into the tutorial step registry. */
+  step: number;
+  dismissedAt?: string;
+  completedAt?: string;
+
+  /** Audit / completion signals for “export report” steps. */
+  reportExportedAt?: string;
+  payrollExportedAt?: string;
 }
 
 export interface Company {

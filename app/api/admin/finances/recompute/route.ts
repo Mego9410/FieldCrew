@@ -8,11 +8,15 @@ const PLAN_BY_LIMIT: Record<number, { name: string; mrrUsd: number }> = {
   30: { name: "Pro", mrrUsd: 149 },
 };
 
+const INTRO_OFFER_FIRST_MONTH_MRR_USD = 9;
+const INTRO_OFFER_DAYS = 30;
+
 type SubSnap = {
   stripe_subscription_id: string;
   effective_at: string;
   status: string;
   worker_limit: number | null;
+  company_id?: string | null;
 };
 
 type Invoice = {
@@ -83,7 +87,7 @@ export async function POST(request: Request) {
     await Promise.all([
       supabase
         .from("stripe_subscription_snapshots")
-        .select("stripe_subscription_id,effective_at,status,worker_limit")
+        .select("stripe_subscription_id,company_id,effective_at,status,worker_limit")
         .gte("effective_at", seedStart.toISOString())
         .lte("effective_at", dayEndUtc(endIso).toISOString())
         .order("effective_at", { ascending: true }),
@@ -109,6 +113,34 @@ export async function POST(request: Request) {
   const invoices = (invRaw ?? []) as unknown as Invoice[];
   const charges = (chRaw ?? []) as unknown as Charge[];
 
+  function isCompanyComped(settings: Record<string, unknown> | null | undefined): boolean {
+    if (!settings || typeof settings !== "object") return false;
+    const billing = (settings as { billing?: unknown }).billing;
+    if (!billing || typeof billing !== "object") return false;
+    return Boolean((billing as { comped?: unknown }).comped);
+  }
+
+  // Build a comped lookup by company id (for subscriptions that should contribute $0 MRR).
+  const companyIds = Array.from(
+    new Set(
+      snaps
+        .map((s) => (s as unknown as { company_id?: string | null }).company_id ?? null)
+        .filter((id): id is string => Boolean(id))
+    )
+  );
+  const compedByCompanyId = new Map<string, boolean>();
+  if (companyIds.length > 0) {
+    const { data: companiesRaw } = await supabase
+      .from("companies")
+      .select("id,settings")
+      .in("id", companyIds);
+    const companies =
+      (companiesRaw ?? []) as unknown as { id: string; settings: Record<string, unknown> | null }[];
+    for (const c of companies) {
+      compedByCompanyId.set(c.id, isCompanyComped(c.settings));
+    }
+  }
+
   // Build subscription timelines
   const snapBySub = new Map<string, SubSnap[]>();
   for (const s of snaps) {
@@ -123,6 +155,7 @@ export async function POST(request: Request) {
     let total = 0;
     for (const [, timeline] of snapBySub) {
       // timeline is sorted asc by effective_at
+      const startTs = new Date(timeline[0]!.effective_at).getTime();
       let last: SubSnap | null = null;
       for (let i = 0; i < timeline.length; i++) {
         const t = new Date(timeline[i]!.effective_at).getTime();
@@ -131,8 +164,15 @@ export async function POST(request: Request) {
       }
       if (!last) continue;
       if ((last.status ?? "").toLowerCase() !== "active") continue;
-      const wl = last.worker_limit ?? 5;
-      total += PLAN_BY_LIMIT[wl]?.mrrUsd ?? PLAN_BY_LIMIT[5].mrrUsd;
+      const companyId = (last as unknown as { company_id?: string | null }).company_id ?? null;
+      if (companyId && compedByCompanyId.get(companyId) === true) continue;
+      const isInIntroOffer = endTs - startTs < INTRO_OFFER_DAYS * 24 * 60 * 60 * 1000;
+      if (isInIntroOffer) {
+        total += INTRO_OFFER_FIRST_MONTH_MRR_USD;
+      } else {
+        const wl = last.worker_limit ?? 5;
+        total += PLAN_BY_LIMIT[wl]?.mrrUsd ?? PLAN_BY_LIMIT[5].mrrUsd;
+      }
     }
     return total;
   }

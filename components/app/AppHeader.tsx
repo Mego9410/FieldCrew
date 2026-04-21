@@ -27,6 +27,7 @@ import {
 import { cn } from "@/lib/utils";
 import { routes } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/brand/Logo";
 
 const navigationItems = [
   {
@@ -173,12 +174,9 @@ export function AppHeader({
         </div>
 
         <div className="flex flex-1 justify-center lg:flex-none">
-          <Link
-            href={routes.owner.home}
-            className="font-display text-base font-semibold text-fc-brand hover:text-fc-accent"
-          >
-            FieldCrew
-          </Link>
+          <div data-tour="app-home" className="inline-flex">
+            <Logo href={routes.owner.home} size="sm" className="hover:opacity-90 transition-opacity" priority />
+          </div>
         </div>
 
         <div className="ml-auto flex shrink-0 items-center justify-end gap-2 sm:gap-4">

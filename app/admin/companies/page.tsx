@@ -82,16 +82,16 @@ export default async function AdminCompaniesPage({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <form className="flex items-center gap-2">
+          <form className="flex w-full max-w-md items-center gap-2">
             <input
               name="q"
               defaultValue={q}
               placeholder="Search company…"
-              className="w-64 rounded-lg border border-fc-border bg-white px-3 py-2 text-sm text-fc-brand placeholder:text-fc-muted"
+              className="w-full rounded-lg border border-fc-border bg-white px-3 py-2 text-sm text-fc-brand placeholder:text-fc-muted sm:w-72"
             />
             <button
               type="submit"
-              className="rounded-lg border border-fc-border px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted"
+              className="shrink-0 rounded-lg border border-fc-border px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted"
             >
               Search
             </button>

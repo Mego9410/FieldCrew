@@ -11,6 +11,7 @@ type AdminCompanyRow = {
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   last_active_at: string | null;
+  settings: Record<string, unknown> | null;
 };
 
 const PLAN_BY_LIMIT: Record<number, { name: string; mrrUsd: number }> = {
@@ -18,6 +19,16 @@ const PLAN_BY_LIMIT: Record<number, { name: string; mrrUsd: number }> = {
   15: { name: "Growth", mrrUsd: 89 },
   30: { name: "Pro", mrrUsd: 149 },
 };
+
+const INTRO_OFFER_FIRST_MONTH_MRR_USD = 9;
+const INTRO_OFFER_DAYS = 30;
+
+function isCompanyComped(settings: Record<string, unknown> | null | undefined): boolean {
+  if (!settings || typeof settings !== "object") return false;
+  const billing = (settings as { billing?: unknown }).billing;
+  if (!billing || typeof billing !== "object") return false;
+  return Boolean((billing as { comped?: unknown }).comped);
+}
 
 function isoDate(d: Date) {
   const yyyy = d.getUTCFullYear();
@@ -47,7 +58,7 @@ export async function GET(request: Request) {
   const { data: companiesRaw, error } = await supabase
     .from("companies")
     .select(
-      "id,name,subscription_status,worker_limit,stripe_customer_id,stripe_subscription_id,last_active_at"
+      "id,name,subscription_status,worker_limit,stripe_customer_id,stripe_subscription_id,last_active_at,settings"
     )
     .order("name", { ascending: true })
     .limit(limit);
@@ -57,6 +68,27 @@ export async function GET(request: Request) {
   }
 
   const companies = (companiesRaw ?? []) as unknown as AdminCompanyRow[];
+
+  // Intro offer ($9 first month): we infer "month 1" by the earliest subscription snapshot.
+  const stripeSubIds = Array.from(
+    new Set(companies.map((c) => c.stripe_subscription_id).filter((v): v is string => Boolean(v)))
+  );
+  const subscriptionStartById = new Map<string, Date>();
+  if (stripeSubIds.length > 0) {
+    const { data: snapsRaw } = await supabase
+      .from("stripe_subscription_snapshots")
+      .select("stripe_subscription_id,effective_at")
+      .in("stripe_subscription_id", stripeSubIds)
+      .order("effective_at", { ascending: true });
+    const snaps =
+      (snapsRaw ?? []) as unknown as { stripe_subscription_id: string; effective_at: string }[];
+    for (const s of snaps) {
+      if (!subscriptionStartById.has(s.stripe_subscription_id)) {
+        subscriptionStartById.set(s.stripe_subscription_id, new Date(s.effective_at));
+      }
+    }
+  }
+  const nowTs = Date.now();
 
   const usageStart = new Date();
   usageStart.setUTCDate(usageStart.getUTCDate() - 13); // last 14 days inclusive-ish
@@ -118,14 +150,22 @@ export async function GET(request: Request) {
 
   const items: Item[] = companies.map((c) => {
     const plan = PLAN_BY_LIMIT[c.worker_limit ?? 5] ?? PLAN_BY_LIMIT[5];
-    const mrrUsd = (c.subscription_status ?? "") === "active" ? plan.mrrUsd : 0;
+    const status = (c.subscription_status ?? "").toLowerCase();
+    const comped = isCompanyComped(c.settings);
+    const isBillableStatus = status === "active" || status === "past_due" || status === "unpaid";
+    let mrrUsd = !comped && isBillableStatus ? plan.mrrUsd : 0;
+
+    const subId = c.stripe_subscription_id ?? null;
+    const startedAt = subId ? subscriptionStartById.get(subId) ?? null : null;
+    const isInIntroOffer =
+      startedAt != null && nowTs - startedAt.getTime() < INTRO_OFFER_DAYS * 24 * 60 * 60 * 1000;
+    if (mrrUsd > 0 && isInIntroOffer) mrrUsd = INTRO_OFFER_FIRST_MONTH_MRR_USD;
 
     const usage = usageByCompany.get(c.id) ?? { sum7: 0, prev7: 0, sum14: 0 };
     const usageDropPct =
       usage.prev7 > 0 ? Math.max(0, Math.min(1, 1 - usage.sum7 / usage.prev7)) : null;
 
     const riskReasons: string[] = [];
-    const status = (c.subscription_status ?? "").toLowerCase();
     if (status === "past_due" || status === "unpaid") riskReasons.push("payment_issue");
     if (usage.prev7 >= 5 && usageDropPct != null && usageDropPct >= 0.5) riskReasons.push("usage_down");
     if (usage.sum14 === 0 && status === "active") riskReasons.push("no_usage_14d");
@@ -144,7 +184,7 @@ export async function GET(request: Request) {
     };
   });
 
-  const activeItems = items.filter((i) => (i.subscriptionStatus ?? "") === "active");
+  const activeItems = items.filter((i) => (i.subscriptionStatus ?? "") === "active" && i.mrrUsd > 0);
   const pastDueItems = items.filter((i) => {
     const s = (i.subscriptionStatus ?? "").toLowerCase();
     return s === "past_due" || s === "unpaid";

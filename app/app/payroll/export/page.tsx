@@ -134,6 +134,13 @@ export default function PayrollExportPage() {
         const blob = await buildPDF(payrollRows);
         triggerDownload(blob, `${filename}.pdf`);
       }
+      void fetch("/api/tutorial/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ step: 5, event: "payroll_exported" }),
+      }).finally(() => {
+        window.dispatchEvent(new Event("fc:tutorial:refresh"));
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Export failed.");
     } finally {

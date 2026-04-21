@@ -7,7 +7,15 @@ import { AvatarUploader } from "@/components/settings/AvatarUploader";
 import { FormField, FormInput, FormSelect } from "@/components/forms/FormField";
 import { PhoneInput } from "@/components/forms/PhoneInput";
 import { useToast } from "@/components/ui/Toast";
-import { getSettings, saveSettings, type ProfileSettings } from "@/lib/settings.mock";
+
+type ProfileSettings = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  timezone: string;
+  avatarUrl: string | null;
+};
 
 const TIMEZONES = [
   "America/New_York",
@@ -33,10 +41,14 @@ export default function ProfileSettingsPage() {
   const toast = useToast();
 
   useEffect(() => {
-    getSettings().then((s) => {
-      setProfile(s.profile);
-      setSaved(s.profile);
-    });
+    fetch("/api/settings/profile")
+      .then((r) => r.json())
+      .then((d: { profile?: ProfileSettings }) => {
+        if (!d?.profile) return;
+        setProfile(d.profile);
+        setSaved(d.profile);
+      })
+      .catch(() => {});
   }, []);
 
   const isDirty =
@@ -58,9 +70,24 @@ export default function ProfileSettingsPage() {
     if (!validate() || !isDirty || loading) return;
     setLoading(true);
     try {
-      await saveSettings({ profile });
-      setSaved(profile);
+      const res = await fetch("/api/settings/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = (await res.json()) as { profile?: ProfileSettings };
+      const next = data.profile ?? profile;
+      setProfile(next);
+      setSaved(next);
       toast.success("Profile updated");
+      void fetch("/api/tutorial/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ step: 1 }),
+      }).finally(() => {
+        window.dispatchEvent(new Event("fc:tutorial:refresh"));
+      });
     } catch {
       toast.error("Failed to save profile");
     } finally {

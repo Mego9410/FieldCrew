@@ -6,11 +6,22 @@ import { SettingsSectionCard } from "@/components/settings/SettingsSectionCard";
 import { FormField, FormInput, FormSelect } from "@/components/forms/FormField";
 import { PhoneInput } from "@/components/forms/PhoneInput";
 import { useToast } from "@/components/ui/Toast";
-import {
-  getSettings,
-  saveSettings,
-  type CompanySettings,
-} from "@/lib/settings.mock";
+
+type CompanySettings = {
+  name: string;
+  email: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+  taxId: string;
+  currency: string;
+  otDailyThreshold: number;
+  otWeeklyThreshold: number;
+  otMultiplier: number;
+};
 
 const COUNTRIES = ["US", "CA", "MX"];
 const CURRENCIES = ["USD", "CAD"];
@@ -37,10 +48,14 @@ export default function CompanySettingsPage() {
   const toast = useToast();
 
   useEffect(() => {
-    getSettings().then((s) => {
-      setCompany(s.company);
-      setSaved(s.company);
-    });
+    fetch("/api/settings/company")
+      .then((r) => r.json())
+      .then((d: { company?: CompanySettings }) => {
+        if (!d?.company) return;
+        setCompany(d.company);
+        setSaved(d.company);
+      })
+      .catch(() => {});
   }, []);
 
   const isDirty = JSON.stringify(company) !== JSON.stringify(saved);
@@ -62,9 +77,24 @@ export default function CompanySettingsPage() {
     if (!validate() || !isDirty || loading) return;
     setLoading(true);
     try {
-      await saveSettings({ company });
-      setSaved(company);
+      const res = await fetch("/api/settings/company", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = (await res.json()) as { company?: CompanySettings };
+      const next = data.company ?? company;
+      setCompany(next);
+      setSaved(next);
       toast.success("Company settings saved");
+      void fetch("/api/tutorial/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ step: 0 }),
+      }).finally(() => {
+        window.dispatchEvent(new Event("fc:tutorial:refresh"));
+      });
     } catch {
       toast.error("Failed to save company settings");
     } finally {

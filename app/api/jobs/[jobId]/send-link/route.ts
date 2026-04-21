@@ -42,6 +42,7 @@ export async function POST(
   const now = new Date();
   let sent = 0;
   let skipped = 0;
+  let mode: "twilio" | "stub" = "twilio";
 
   for (const workerId of workerIds) {
     const invite = invites.find(
@@ -63,10 +64,11 @@ export async function POST(
     const link = `${APP_ORIGIN}/s/${shortCode}`;
     const message = `FieldCrew: Job "${job.name}" at ${job.address}. Open job: ${link}`;
 
-    const ok = await sendSms(worker.phone, message);
-    if (ok) sent++;
+    const res = await sendSms(worker.phone, message);
+    mode = res.mode;
+    if (res.ok) sent++;
     else skipped++;
   }
 
-  return NextResponse.json({ ok: true, sent, skipped });
+  return NextResponse.json({ ok: true, sent, skipped, mode });
 }

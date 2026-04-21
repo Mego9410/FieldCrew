@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   LineChart,
@@ -13,6 +13,18 @@ import {
 } from "recharts";
 import { Card } from "@/components/ui/Card";
 import { chartTheme } from "@/components/charts";
+
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia(query);
+    setMatches(m.matches);
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    m.addEventListener("change", handler);
+    return () => m.removeEventListener("change", handler);
+  }, [query]);
+  return matches;
+}
 
 type FinanceItem = {
   id: string;
@@ -109,6 +121,7 @@ export function FinancesDashboardClient({
   refunds: RefundsResponse | null;
   origin: string;
 }) {
+  const isNarrow = useMediaQuery("(max-width: 480px)");
   const [range, setRange] = useState<"7d" | "30d" | "90d" | "365d">("30d");
   const [busy, setBusy] = useState(false);
 
@@ -227,12 +240,16 @@ export function FinancesDashboardClient({
                 <XAxis
                   dataKey="date"
                   tick={chartTheme.axis.tick}
-                  tickCount={6}
+                  tickCount={isNarrow ? 4 : 6}
                   tickFormatter={(v) =>
                     new Date(v).toLocaleDateString("en-US", { month: "short", day: "numeric" })
                   }
                 />
-                <YAxis tick={chartTheme.axis.tick} width={40} tickFormatter={(v) => `$${v}`} />
+                <YAxis
+                  tick={chartTheme.axis.tick}
+                  width={isNarrow ? 32 : 40}
+                  tickFormatter={(v) => (v >= 1000 ? `$${Math.round(v / 1000)}k` : `$${v}`)}
+                />
                 <Tooltip
                   contentStyle={chartTheme.tooltip.contentStyle}
                   labelFormatter={(v) => new Date(String(v)).toLocaleDateString()}
@@ -276,12 +293,16 @@ export function FinancesDashboardClient({
                 <XAxis
                   dataKey="date"
                   tick={chartTheme.axis.tick}
-                  tickCount={6}
+                  tickCount={isNarrow ? 4 : 6}
                   tickFormatter={(v) =>
                     new Date(v).toLocaleDateString("en-US", { month: "short", day: "numeric" })
                   }
                 />
-                <YAxis tick={chartTheme.axis.tick} width={40} tickFormatter={(v) => `$${v}`} />
+                <YAxis
+                  tick={chartTheme.axis.tick}
+                  width={isNarrow ? 32 : 40}
+                  tickFormatter={(v) => (v >= 1000 ? `$${Math.round(v / 1000)}k` : `$${v}`)}
+                />
                 <Tooltip
                   contentStyle={chartTheme.tooltip.contentStyle}
                   labelFormatter={(v) => new Date(String(v)).toLocaleDateString()}

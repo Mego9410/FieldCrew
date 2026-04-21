@@ -62,7 +62,7 @@ export async function POST(request: Request) {
           { status: 500 }
         );
       }
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true, persisted: true });
     } catch (err) {
       console.error("[leads] Error:", err);
       return NextResponse.json(
@@ -73,5 +73,5 @@ export async function POST(request: Request) {
   }
 
   console.log("[leads] No Supabase config; logging lead:", payload);
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, persisted: false });
 }

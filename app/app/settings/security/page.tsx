@@ -7,8 +7,8 @@ import { SettingsSectionCard } from "@/components/settings/SettingsSectionCard";
 import { FormField, FormInput } from "@/components/forms/FormField";
 import { useToast } from "@/components/ui/Toast";
 import { Monitor } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
+import QRCode from "qrcode";
 
 function validatePassword(pwd: string): string | null {
   if (pwd.length < 8) return "At least 8 characters required";
@@ -32,6 +32,11 @@ export default function SecuritySettingsPage() {
   const [userEmail, setUserEmail] = useState<string>("");
   const [deleteConfirmEmail, setDeleteConfirmEmail] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [twoFactorLoading, setTwoFactorLoading] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string>("");
+  const [setupSecret, setSetupSecret] = useState<string>("");
+  const [setupCode, setSetupCode] = useState<string>("");
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
 
   const isDirty =
     currentPassword !== "" || newPassword !== "" || confirmPassword !== "";
@@ -57,8 +62,12 @@ export default function SecuritySettingsPage() {
     if (!currentPassword || !newPassword || !confirmPassword) return;
     setLoading(true);
     try {
-      // TODO: Call API to change password
-      await new Promise((r) => setTimeout(r, 500));
+      const res = await fetch("/api/security/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      if (!res.ok) throw new Error(await res.text());
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -78,28 +87,111 @@ export default function SecuritySettingsPage() {
   };
 
   const handleToggle2FA = () => {
-    if (!twoFactorEnabled) {
-      // TODO: Show 2FA setup modal (QR step) - stub for now
-      toast.success("2FA setup would open here (stub)");
+    if (twoFactorEnabled) {
+      setTwoFactorEnabled(false);
+      return;
     }
-    setTwoFactorEnabled(!twoFactorEnabled);
+    setTwoFactorEnabled(true);
   };
 
-  const recoveryCodes = [
-    "abcd-1234-efgh",
-    "5678-ijkl-mnop",
-    "qrst-9012-uvwx",
-    "yzab-3456-cdef",
-    "ghij-7890-klmn",
-  ];
-
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth
-      .getUser()
-      .then(({ data }) => setUserEmail(data.user?.email ?? ""))
+    fetch("/api/security/2fa/status")
+      .then((r) => r.json())
+      .then((d: { enabled?: boolean; email?: string }) => {
+        setTwoFactorEnabled(Boolean(d.enabled));
+        setUserEmail(d.email ?? "");
+      })
       .catch(() => {});
   }, []);
+
+  const handleStart2FA = async () => {
+    if (twoFactorLoading) return;
+    setTwoFactorLoading(true);
+    try {
+      const res = await fetch("/api/security/2fa/start", { method: "POST" });
+      if (!res.ok) throw new Error(await res.text());
+      const d = (await res.json()) as { otpauthUrl: string; secret: string };
+      setSetupSecret(d.secret);
+      const url = await QRCode.toDataURL(d.otpauthUrl);
+      setQrDataUrl(url);
+      toast.success("Scan the QR code, then enter a code to verify.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to start 2FA");
+    } finally {
+      setTwoFactorLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async () => {
+    const code = setupCode.trim();
+    if (!code || twoFactorLoading) return;
+    setTwoFactorLoading(true);
+    try {
+      const res = await fetch("/api/security/2fa/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((d as { error?: string }).error ?? "Failed to verify 2FA");
+      setRecoveryCodes(Array.isArray((d as { recoveryCodes?: unknown }).recoveryCodes) ? (d as { recoveryCodes: string[] }).recoveryCodes : []);
+      setShowRecoveryCodes(true);
+      setQrDataUrl("");
+      setSetupSecret("");
+      setSetupCode("");
+      toast.success("2FA enabled");
+      router.refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Invalid code");
+    } finally {
+      setTwoFactorLoading(false);
+    }
+  };
+
+  const handleDisable2FA = async () => {
+    const code = setupCode.trim();
+    if (!code || twoFactorLoading) return;
+    setTwoFactorLoading(true);
+    try {
+      const res = await fetch("/api/security/2fa/disable", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setTwoFactorEnabled(false);
+      setSetupCode("");
+      toast.success("2FA disabled");
+      router.refresh();
+    } catch {
+      toast.error("Failed to disable 2FA");
+    } finally {
+      setTwoFactorLoading(false);
+    }
+  };
+
+  const handleRegenerateRecoveryCodes = async () => {
+    const code = setupCode.trim();
+    if (!code || twoFactorLoading) return;
+    setTwoFactorLoading(true);
+    try {
+      const res = await fetch("/api/security/2fa/recovery-codes/regenerate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((d as { error?: string }).error ?? "Failed to regenerate");
+      setRecoveryCodes(Array.isArray((d as { recoveryCodes?: unknown }).recoveryCodes) ? (d as { recoveryCodes: string[] }).recoveryCodes : []);
+      setShowRegenerateConfirm(false);
+      setShowRecoveryCodes(true);
+      toast.success("Recovery codes regenerated");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to regenerate recovery codes");
+    } finally {
+      setTwoFactorLoading(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     if (!userEmail || deleteConfirmEmail.trim().toLowerCase() !== userEmail.trim().toLowerCase()) {
@@ -120,10 +212,7 @@ export default function SecuritySettingsPage() {
       }
 
       // Sign out locally and redirect to login.
-      const supabase = createClient();
-      await supabase.auth.signOut();
-      router.push(routes.public.login);
-      router.refresh();
+      window.location.assign(routes.public.login);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to delete account");
     } finally {
@@ -239,10 +328,69 @@ export default function SecuritySettingsPage() {
 
             {twoFactorEnabled && (
               <div className="space-y-3 pt-2 border-t border-fc-border">
-                <p className="text-sm text-fc-brand">
-                  Authenticator app method configured (stub)
-                </p>
-                <div className="flex gap-2">
+                {!qrDataUrl ? (
+                  <button
+                    type="button"
+                    onClick={handleStart2FA}
+                    disabled={twoFactorLoading}
+                    className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50"
+                  >
+                    {twoFactorLoading ? "Starting…" : "Set up authenticator app"}
+                  </button>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="rounded-lg border border-fc-border bg-white p-4">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- data url from QRCode */}
+                      <img src={qrDataUrl} alt="2FA QR code" className="mx-auto h-44 w-44" />
+                      <p className="mt-3 text-xs text-fc-muted text-center">
+                        Or enter secret: <span className="font-mono text-fc-brand">{setupSecret}</span>
+                      </p>
+                    </div>
+                    <FormField label="Enter a code to verify" id="twofa-verify-code">
+                      <FormInput
+                        id="twofa-verify-code"
+                        value={setupCode}
+                        onChange={(e) => setSetupCode(e.target.value)}
+                        placeholder="123456"
+                        autoComplete="one-time-code"
+                      />
+                    </FormField>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={handleVerify2FA}
+                        disabled={twoFactorLoading || !setupCode.trim()}
+                        className="rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-fc-brand/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {twoFactorLoading ? "Verifying…" : "Verify & enable"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQrDataUrl("");
+                          setSetupSecret("");
+                          setSetupCode("");
+                        }}
+                        disabled={twoFactorLoading}
+                        className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50 disabled:opacity-50"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <FormField label="Authenticator code (required for disable/regenerate)" id="twofa-action-code">
+                  <FormInput
+                    id="twofa-action-code"
+                    value={setupCode}
+                    onChange={(e) => setSetupCode(e.target.value)}
+                    placeholder="123456"
+                    autoComplete="one-time-code"
+                  />
+                </FormField>
+
+                <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => setShowRecoveryCodes(true)}
@@ -256,6 +404,15 @@ export default function SecuritySettingsPage() {
                     className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50"
                   >
                     Regenerate recovery codes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDisable2FA}
+                    disabled={twoFactorLoading || !setupCode.trim()}
+                    className="rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-900 hover:bg-red-100 disabled:opacity-50"
+                    title="Enter a code above, then disable"
+                  >
+                    Disable 2FA
                   </button>
                 </div>
               </div>
@@ -345,7 +502,7 @@ export default function SecuritySettingsPage() {
               Save these codes in a secure place. Each can be used once.
             </p>
             <div className="rounded-lg bg-slate-50 p-4 font-mono text-sm space-y-1">
-              {recoveryCodes.map((code) => (
+              {(recoveryCodes.length ? recoveryCodes : ["(Generate codes by enabling 2FA or regenerating)"]).map((code) => (
                 <div key={code} className="text-fc-brand">
                   {code}
                 </div>
@@ -381,18 +538,18 @@ export default function SecuritySettingsPage() {
                 type="button"
                 onClick={() => {
                   setShowRegenerateConfirm(false);
-                  toast.success("Recovery codes regenerated (stub)");
                 }}
                 className="flex-1 rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-fc-brand/90"
               >
-                Regenerate
+                Cancel
               </button>
               <button
                 type="button"
-                onClick={() => setShowRegenerateConfirm(false)}
+                onClick={handleRegenerateRecoveryCodes}
+                disabled={twoFactorLoading || !setupCode.trim()}
                 className="flex-1 rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50"
               >
-                Cancel
+                {twoFactorLoading ? "Working…" : "Regenerate"}
               </button>
             </div>
           </div>

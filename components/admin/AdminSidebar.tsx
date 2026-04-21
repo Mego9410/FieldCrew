@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Building2, ShieldAlert, DollarSign, Users } from "lucide-react";
+import { LayoutDashboard, Building2, ShieldAlert, DollarSign, Users, X } from "lucide-react";
 
 const nav = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -11,7 +11,13 @@ const nav = [
   { href: "/admin/finances", label: "Finances", icon: DollarSign },
 ] as const;
 
-export function AdminSidebar() {
+export function AdminSidebar({
+  onNavigate,
+  showCloseButton = false,
+}: {
+  onNavigate?: () => void;
+  showCloseButton?: boolean;
+}) {
   const pathname = usePathname();
   return (
     <aside
@@ -22,13 +28,26 @@ export function AdminSidebar() {
         <div className="flex items-center justify-between gap-2">
           <Link
             href="/admin"
+            onClick={onNavigate}
             className="font-display text-lg font-semibold text-fc-brand hover:text-fc-accent min-h-[44px] min-w-[44px] inline-flex items-center"
           >
             FieldCrew
           </Link>
-          <div className="inline-flex items-center gap-1 rounded-lg border border-fc-border bg-fc-surface-muted px-2 py-1 text-[11px] font-semibold text-fc-brand">
-            <ShieldAlert className="h-3.5 w-3.5 text-fc-muted" />
-            Admin
+          <div className="flex items-center gap-2">
+            <div className="inline-flex items-center gap-1 rounded-lg border border-fc-border bg-fc-surface-muted px-2 py-1 text-[11px] font-semibold text-fc-brand">
+              <ShieldAlert className="h-3.5 w-3.5 text-fc-muted" />
+              Admin
+            </div>
+            {showCloseButton && (
+              <button
+                type="button"
+                onClick={onNavigate}
+                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand focus:outline-none focus:ring-2 focus:ring-fc-accent lg:hidden"
+                aria-label="Close admin menu"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -41,6 +60,7 @@ export function AdminSidebar() {
               <Link
                 key={href}
                 href={href}
+                onClick={onNavigate}
                 className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   active
                     ? "bg-fc-surface-muted text-fc-brand"

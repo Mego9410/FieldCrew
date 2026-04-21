@@ -141,6 +141,13 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel, on
         await updateJob(job.id, input);
       } else {
         await addJob(input);
+        void fetch("/api/tutorial/progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ step: 3 }),
+        }).finally(() => {
+          window.dispatchEvent(new Event("fc:tutorial:refresh"));
+        });
         // Reset form so it can't be resubmitted; parent shows confirmation toast
         const todayVal = new Date().toISOString().slice(0, 10);
         setName("");

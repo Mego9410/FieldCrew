@@ -53,6 +53,7 @@ export async function POST(request: Request) {
   const now = new Date();
   let sent = 0;
   let skipped = 0;
+  let mode: "twilio" | "stub" = "twilio";
 
   for (const company of companies) {
     const hours = company.settings?.jobReminderHours ?? 0;
@@ -98,8 +99,9 @@ export async function POST(request: Request) {
             ? `FieldCrew: Job "${job.name}" at ${job.address} starts soon. Open job: ${link}`
             : `FieldCrew: Job "${job.name}" at ${job.address} starts in ${hoursUntil} hours. Open job: ${link}`;
 
-        const ok = await sendSms(worker.phone, message);
-        if (ok) {
+        const res = await sendSms(worker.phone, message);
+        mode = res.mode;
+        if (res.ok) {
           await insertJobReminderSent(job.id, workerId, supabase);
           sent++;
         } else {
@@ -109,5 +111,5 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true, sent, skipped });
+  return NextResponse.json({ ok: true, sent, skipped, mode });
 }

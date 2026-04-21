@@ -29,6 +29,7 @@ export const routes = {
   /** Auth helper routes (server redirects, callbacks) */
   auth: {
     postLogin: "/auth/post-login",
+    twoFactor: "/auth/2fa",
     finish: "/auth/finish",
   },
   /** Admin: internal tools and finance dashboards */

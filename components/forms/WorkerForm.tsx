@@ -64,6 +64,13 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
         await updateWorker(worker.id, input);
       } else {
         const created = await addWorker(input);
+        void fetch("/api/tutorial/progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ step: 2 }),
+        }).finally(() => {
+          window.dispatchEvent(new Event("fc:tutorial:refresh"));
+        });
         if (sendProfileLink) {
           await fetch("/api/invite/send", {
             method: "POST",

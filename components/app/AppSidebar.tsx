@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { useProjects } from "@/lib/hooks/useData";
 import { Home, Briefcase, Users, Clock, Banknote, FolderOpen, BarChart3, Settings, X, ChevronRight, CreditCard } from "lucide-react";
 import { routes } from "@/lib/routes";
+import { Logo } from "@/components/brand/Logo";
 
 const createOptions = [
   { tab: "project", label: "Project" },
@@ -95,12 +96,9 @@ export function AppSidebar({
     >
       <div className="flex flex-col px-3 py-4">
         <div className="flex items-center justify-between gap-2">
-          <Link
-            href={routes.owner.home}
-            className="font-display text-lg font-semibold text-fc-brand hover:text-fc-accent min-h-[44px] min-w-[44px] inline-flex items-center"
-          >
-            FieldCrew
-          </Link>
+          <div className="min-h-[44px] min-w-[44px] inline-flex items-center">
+            <Logo href={routes.owner.home} size="md" className="hover:opacity-90 transition-opacity" priority />
+          </div>
           {showCloseButton && (
             <button
               type="button"
@@ -167,6 +165,13 @@ export function AppSidebar({
               <Link
                 key={href}
                 href={href}
+                data-tour={
+                  href === routes.owner.workers
+                    ? "nav-workers"
+                    : href === routes.owner.home
+                      ? "nav-home"
+                      : undefined
+                }
                 className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   active
                     ? "bg-fc-surface-muted text-fc-brand"
@@ -191,6 +196,13 @@ export function AppSidebar({
                 <Link
                   key={href}
                   href={href}
+                  data-tour={
+                    href === routes.owner.reporting
+                      ? "nav-reporting"
+                      : href === routes.owner.settings
+                        ? "nav-settings"
+                        : undefined
+                  }
                   className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
                     active
                       ? "bg-fc-surface-muted font-medium text-fc-brand"
@@ -267,7 +279,7 @@ export function AppSidebar({
         >
           Back to site
         </Link>
-        <p className="mt-3 text-[11px] font-medium text-fc-muted">FieldCrew</p>
+        <p className="mt-3 text-[11px] font-medium text-fc-muted">© {new Date().getFullYear()} FieldCrew</p>
       </div>
     </aside>
   );

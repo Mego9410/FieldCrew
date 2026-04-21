@@ -90,6 +90,13 @@ export function TimeEntryForm({
         await updateTimeEntry(timeEntry.id, input);
       } else {
         await addTimeEntry(input);
+        void fetch("/api/tutorial/progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ step: 4 }),
+        }).finally(() => {
+          window.dispatchEvent(new Event("fc:tutorial:refresh"));
+        });
       }
       onSuccess?.();
     } catch (err) {

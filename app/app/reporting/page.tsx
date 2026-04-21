@@ -39,7 +39,20 @@ import { Badge } from "@/components/ui/Badge";
 
 type ActiveTab = "overruns" | "overtime" | "all";
 
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia(query);
+    setMatches(m.matches);
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    m.addEventListener("change", handler);
+    return () => m.removeEventListener("change", handler);
+  }, [query]);
+  return matches;
+}
+
 export default function ReportingPage() {
+  const isNarrow = useMediaQuery("(max-width: 480px)");
   const [datePreset, setDatePreset] = useState<DateRangePreset>("last_30_days");
   const [jobTypeId, setJobTypeId] = useState<string>("");
   const [workerId, setWorkerId] = useState<string>("");
@@ -108,6 +121,14 @@ export default function ReportingPage() {
     a.download = `fieldcrew-report-${range.start}-${range.end}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+
+    void fetch("/api/tutorial/progress", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ step: 5, event: "report_exported" }),
+    }).finally(() => {
+      window.dispatchEvent(new Event("fc:tutorial:refresh"));
+    });
   };
 
   const [prevData, setPrevData] = useState<Awaited<ReturnType<typeof getReportingData>> | null>(null);
@@ -365,16 +386,19 @@ export default function ReportingPage() {
               ) : (
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart
-                    data={data.tables.topOverrunning.slice(0, 10).map((r) => ({
-                      ...r,
-                      name: r.jobName.length > 20 ? r.jobName.slice(0, 20) + "…" : r.jobName,
-                    }))}
+                    data={data.tables.topOverrunning.slice(0, 10).map((r) => {
+                      const maxName = isNarrow ? 14 : 20;
+                      return {
+                        ...r,
+                        name: r.jobName.length > maxName ? r.jobName.slice(0, maxName) + "…" : r.jobName,
+                      };
+                    })}
                     layout="vertical"
-                    margin={{ left: 60, right: 20 }}
+                    margin={{ left: isNarrow ? 24 : 60, right: 20 }}
                   >
                     <CartesianGrid strokeDasharray={chartTheme.grid.strokeDasharray} stroke={chartTheme.grid.stroke} strokeOpacity={chartTheme.grid.strokeOpacity} />
                     <XAxis type="number" tick={chartTheme.axis.tick} tickFormatter={(v) => `${v}h`} />
-                    <YAxis type="category" dataKey="name" width={100} tick={chartTheme.axis.tick} />
+                    <YAxis type="category" dataKey="name" width={isNarrow ? 84 : 100} tick={chartTheme.axis.tick} />
                     <Tooltip contentStyle={chartTheme.tooltip.contentStyle} formatter={(value: number | undefined) => [value != null ? `${value.toFixed(1)} hrs` : "", ""]} />
                     <Legend />
                     <Bar dataKey="estimatedHours" fill={chartTheme.colors.secondary} name="Estimated" radius={[0, 4, 4, 0]} />
