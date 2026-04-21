@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, LogOut, ArrowLeft } from "lucide-react";
@@ -8,11 +8,39 @@ import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
 
+function getInitials(input: { name?: string | null; email?: string | null }): string {
+  const rawName = (input.name ?? "").trim();
+  const rawEmail = (input.email ?? "").trim();
+
+  const basis = rawName || rawEmail;
+  if (!basis) return "FC";
+
+  if (rawName) {
+    const parts = rawName
+      .split(/\s+/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
+    return (parts[0]!.slice(0, 1) + parts[parts.length - 1]!.slice(0, 1)).toUpperCase();
+  }
+
+  // Email fallback: first + last character of local-part when possible.
+  const local = rawEmail.split("@")[0] ?? "";
+  if (local.length >= 2) return (local[0] + local[local.length - 1]).toUpperCase();
+  return (local.slice(0, 2) || "FC").toUpperCase();
+}
+
 export function AdminHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const [userInfo, setUserInfo] = useState<{ name?: string | null; email?: string | null }>({
+    name: null,
+    email: null,
+  });
+
+  const initials = useMemo(() => getInitials(userInfo), [userInfo]);
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -24,6 +52,28 @@ export function AdminHeader() {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const supabase = createClient();
+
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (cancelled) return;
+        const u = data.user;
+        const name =
+          (u?.user_metadata as { name?: string | null } | null | undefined)?.name ?? null;
+        setUserInfo({ name, email: u?.email ?? null });
+      })
+      .catch(() => {
+        // ignore
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function handleSignOut() {
@@ -60,7 +110,7 @@ export function AdminHeader() {
             aria-haspopup="true"
           >
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-fc-accent/15 text-xs font-semibold text-fc-accent">
-              FC
+              {initials}
             </span>
             <span className="hidden sm:inline">Admin</span>
             <ChevronDown
