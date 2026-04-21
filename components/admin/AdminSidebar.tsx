@@ -6,8 +6,8 @@ import { LayoutDashboard, Building2, ShieldAlert, DollarSign, Users } from "luci
 
 const nav = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/companies", label: "Companies", icon: Building2 },
   { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/companies", label: "Companies", icon: Building2 },
   { href: "/admin/finances", label: "Finances", icon: DollarSign },
 ] as const;
 
