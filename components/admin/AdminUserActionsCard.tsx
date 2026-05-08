@@ -5,7 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 
-type PostResult = { url?: string; isolated?: boolean; redirectTo?: string };
+type PostResult = {
+  url?: string;
+  isolated?: boolean;
+  redirectTo?: string;
+  emailed?: boolean;
+  emailError?: string;
+};
 
 async function post(path: string, body?: unknown): Promise<PostResult> {
   const res = await fetch(path, {
@@ -42,6 +48,7 @@ export function AdminUserActionsCard({
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [roleInput, setRoleInput] = useState<string>(currentRole ?? "");
 
   const title = compact ? "Actions" : "User actions";
@@ -72,6 +79,7 @@ export function AdminUserActionsCard({
             disabled={busy !== null}
             onClick={async () => {
               setError(null);
+              setNotice(null);
               setBusy("impersonate");
               try {
                 const r = await post("/api/admin/impersonate", { ownerUserId: userId });
@@ -100,6 +108,11 @@ export function AdminUserActionsCard({
           {error}
         </div>
       ) : null}
+      {notice ? (
+        <div className="mt-3 rounded-lg border border-fc-border bg-fc-surface-muted px-3 py-2 text-sm text-fc-brand">
+          {notice}
+        </div>
+      ) : null}
 
       <div className="mt-4 flex flex-wrap gap-2">
         <button
@@ -107,10 +120,15 @@ export function AdminUserActionsCard({
           disabled={busy !== null}
           onClick={async () => {
             setError(null);
+            setNotice(null);
             setBusy("magic");
             try {
               const r = await post(`/api/admin/users/${userId}/magic-link`);
-              openLink(r.url);
+              setNotice(
+                r.emailed
+                  ? "Magic link emailed to the user."
+                  : `Email was not sent.${r.emailError ? ` (${r.emailError})` : ""}`
+              );
             } catch (e) {
               setError(e instanceof Error ? e.message : "Failed");
             } finally {
@@ -127,10 +145,15 @@ export function AdminUserActionsCard({
           disabled={busy !== null}
           onClick={async () => {
             setError(null);
+            setNotice(null);
             setBusy("reset");
             try {
               const r = await post(`/api/admin/users/${userId}/reset-password`);
-              openLink(r.url);
+              setNotice(
+                r.emailed
+                  ? "Password reset email sent."
+                  : `Email was not sent.${r.emailError ? ` (${r.emailError})` : ""}`
+              );
             } catch (e) {
               setError(e instanceof Error ? e.message : "Failed");
             } finally {
@@ -147,6 +170,7 @@ export function AdminUserActionsCard({
           disabled={busy !== null}
           onClick={async () => {
             setError(null);
+            setNotice(null);
             setBusy("logout");
             try {
               await post(`/api/admin/users/${userId}/force-logout`);

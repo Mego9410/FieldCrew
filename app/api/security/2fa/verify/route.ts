@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { sendSecurity2faEnabledEmail } from "@/lib/email/notifications";
 import {
   decryptSecret,
   generateRecoveryCodes,
@@ -68,6 +69,21 @@ export async function POST(request: Request) {
     recovery_codes: recoveryCodesJson,
     updated_at: new Date().toISOString(),
   }).eq("owner_user_id", user.id);
+
+  // Security email (best-effort)
+  try {
+    const origin =
+      process.env.NEXT_PUBLIC_APP_URL ??
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://fieldcrew.app");
+    await sendSecurity2faEnabledEmail({
+      to: user.email ?? "",
+      userEmail: user.email ?? "",
+      eventAt: new Date().toISOString(),
+      device: request.headers.get("user-agent") ?? "—",
+      ipAddress: request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "—",
+      securitySettingsUrl: `${origin.replace(/\/$/, "")}/app/settings/security`,
+    });
+  } catch {}
 
   // Mark this device/session as verified for 2FA-gated routes.
   const cookieStore = await cookies();

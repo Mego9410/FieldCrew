@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { decryptSecret, getTwoFactorRow, verifyTotpCode } from "@/lib/security/twoFactor";
+import { sendSecurity2faDisabledEmail } from "@/lib/email/notifications";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -29,6 +30,21 @@ export async function POST(request: Request) {
     enabled: false,
     updated_at: new Date().toISOString(),
   }).eq("owner_user_id", user.id);
+
+  // Security email (best-effort)
+  try {
+    const origin =
+      process.env.NEXT_PUBLIC_APP_URL ??
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://fieldcrew.app");
+    await sendSecurity2faDisabledEmail({
+      to: user.email ?? "",
+      userEmail: user.email ?? "",
+      eventAt: new Date().toISOString(),
+      device: request.headers.get("user-agent") ?? "—",
+      ipAddress: request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "—",
+      securitySettingsUrl: `${origin.replace(/\/$/, "")}/app/settings/security`,
+    });
+  } catch {}
 
   const cookieStore = await cookies();
   cookieStore.set("fc_2fa", "0", {

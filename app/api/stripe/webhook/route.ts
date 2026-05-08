@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { updateCompany } from "@/lib/data";
+import { getCompanyOwnerRecipient } from "@/lib/email/recipients";
+import { logEmailSent, wasEmailSent } from "@/lib/email/deliveryLog";
+import {
+  sendBillingInvoiceReadyEmail,
+  sendBillingPaymentFailedEmail,
+  sendBillingPlanChangedEmail,
+  sendBillingReceiptEmail,
+  sendBillingSubscriptionCanceledEmail,
+} from "@/lib/email/notifications";
 
 const secret = process.env.STRIPE_WEBHOOK_SECRET;
 const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -72,6 +81,10 @@ export async function POST(request: Request) {
   const untyped = supabase as unknown as UntypedFrom;
 
   try {
+    const billingPortalUrlFallback =
+      (process.env.NEXT_PUBLIC_APP_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://fieldcrew.app")).replace(/\/$/, "") +
+      "/app/settings/billing";
+
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
@@ -130,6 +143,42 @@ export async function POST(request: Request) {
           cancel_at_period_end: Boolean(sub.cancel_at_period_end),
           paused: sub.pause_collection != null,
         });
+
+        // Billing email: plan changed / status changed
+        try {
+          const recipient = await getCompanyOwnerRecipient({ supabase, companyId: companyIdUpdated ?? companyId });
+          if (recipient) {
+            const templateAlias = "fieldcrew-billing-plan-changed";
+            const dedupeKey = event.id;
+            const already = await wasEmailSent({
+              supabase,
+              provider: "stripe",
+              providerEventId: dedupeKey,
+              templateAlias,
+              recipientEmail: recipient.email,
+            });
+            if (!already) {
+              await sendBillingPlanChangedEmail({
+                to: recipient.email,
+                companyName: recipient.companyName ?? "your company",
+                planName: sub.items?.data?.[0]?.price?.nickname ?? sub.items?.data?.[0]?.price?.id ?? "Updated",
+                effectiveAt: new Date(event.created * 1000).toISOString(),
+                billingPortalUrl: billingPortalUrlFallback,
+              });
+              await logEmailSent({
+                supabase,
+                provider: "stripe",
+                providerEventId: dedupeKey,
+                templateAlias,
+                companyId: companyIdUpdated ?? companyId,
+                recipientEmail: recipient.email,
+                metadata: { stripe_subscription_id: sub.id, status: sub.status },
+              });
+            }
+          }
+        } catch (e) {
+          console.error("[stripe/webhook] billing plan changed email failed:", e);
+        }
         break;
       }
       case "customer.subscription.created": {
@@ -188,6 +237,42 @@ export async function POST(request: Request) {
           cancel_at_period_end: Boolean(sub.cancel_at_period_end),
           paused: sub.pause_collection != null,
         });
+
+        // Billing email: subscription canceled
+        try {
+          if (companyIdDeleted) {
+            const recipient = await getCompanyOwnerRecipient({ supabase, companyId: companyIdDeleted });
+            if (recipient) {
+              const templateAlias = "fieldcrew-billing-subscription-canceled";
+              const dedupeKey = event.id;
+              const already = await wasEmailSent({
+                supabase,
+                provider: "stripe",
+                providerEventId: dedupeKey,
+                templateAlias,
+                recipientEmail: recipient.email,
+              });
+              if (!already) {
+                await sendBillingSubscriptionCanceledEmail({
+                  to: recipient.email,
+                  companyName: recipient.companyName ?? "your company",
+                  billingPortalUrl: billingPortalUrlFallback,
+                });
+                await logEmailSent({
+                  supabase,
+                  provider: "stripe",
+                  providerEventId: dedupeKey,
+                  templateAlias,
+                  companyId: companyIdDeleted,
+                  recipientEmail: recipient.email,
+                  metadata: { stripe_subscription_id: sub.id },
+                });
+              }
+            }
+          }
+        } catch (e) {
+          console.error("[stripe/webhook] billing subscription canceled email failed:", e);
+        }
         break;
       }
       case "invoice.paid":
@@ -232,6 +317,119 @@ export async function POST(request: Request) {
           },
           { onConflict: "stripe_invoice_id" }
         );
+
+        // Billing emails driven by invoice events
+        try {
+          if (companyId) {
+            const recipient = await getCompanyOwnerRecipient({ supabase, companyId });
+            if (recipient) {
+              const hostedUrl = inv.hosted_invoice_url ?? billingPortalUrlFallback;
+              const currency = (inv.currency ?? "usd").toUpperCase();
+              const formatMoney = (cents: number | null | undefined) => {
+                if (cents == null) return "—";
+                const v = (cents / 100).toFixed(2);
+                return `${currency} ${v}`;
+              };
+
+              if (event.type === "invoice.payment_failed") {
+                const templateAlias = "fieldcrew-billing-payment-failed";
+                const already = await wasEmailSent({
+                  supabase,
+                  provider: "stripe",
+                  providerEventId: event.id,
+                  templateAlias,
+                  recipientEmail: recipient.email,
+                });
+                if (!already) {
+                  const invWithFinalizationError = inv as Stripe.Invoice & {
+                    last_finalization_error?: { message?: string | null } | null;
+                  };
+                  await sendBillingPaymentFailedEmail({
+                    to: recipient.email,
+                    companyName: recipient.companyName ?? "your company",
+                    failureReason:
+                      invWithFinalizationError.last_finalization_error?.message ??
+                      "Payment could not be processed",
+                    billingPortalUrl: billingPortalUrlFallback,
+                  });
+                  await logEmailSent({
+                    supabase,
+                    provider: "stripe",
+                    providerEventId: event.id,
+                    templateAlias,
+                    companyId,
+                    recipientEmail: recipient.email,
+                    metadata: { stripe_invoice_id: inv.id },
+                  });
+                }
+              }
+
+              if (event.type === "invoice.finalized") {
+                const templateAlias = "fieldcrew-billing-invoice-ready";
+                const already = await wasEmailSent({
+                  supabase,
+                  provider: "stripe",
+                  providerEventId: event.id,
+                  templateAlias,
+                  recipientEmail: recipient.email,
+                });
+                if (!already) {
+                  await sendBillingInvoiceReadyEmail({
+                    to: recipient.email,
+                    companyName: recipient.companyName ?? "your company",
+                    invoiceNumber: (inv.number as string | null) ?? inv.id,
+                    total: formatMoney(inv.amount_due ?? null),
+                    dueAt: inv.due_date ? new Date(inv.due_date * 1000).toISOString() : "—",
+                    invoiceUrl: hostedUrl,
+                  });
+                  await logEmailSent({
+                    supabase,
+                    provider: "stripe",
+                    providerEventId: event.id,
+                    templateAlias,
+                    companyId,
+                    recipientEmail: recipient.email,
+                    metadata: { stripe_invoice_id: inv.id },
+                  });
+                }
+              }
+
+              if (event.type === "invoice.paid") {
+                const templateAlias = "fieldcrew-billing-receipt";
+                const already = await wasEmailSent({
+                  supabase,
+                  provider: "stripe",
+                  providerEventId: event.id,
+                  templateAlias,
+                  recipientEmail: recipient.email,
+                });
+                if (!already) {
+                  await sendBillingReceiptEmail({
+                    to: recipient.email,
+                    companyName: recipient.companyName ?? "your company",
+                    amount: formatMoney(inv.amount_paid ?? inv.amount_due ?? null),
+                    paidAt: inv.status_transitions?.paid_at
+                      ? new Date(inv.status_transitions.paid_at * 1000).toISOString()
+                      : new Date(event.created * 1000).toISOString(),
+                    reference: (inv.number as string | null) ?? inv.id,
+                    receiptUrl: hostedUrl,
+                  });
+                  await logEmailSent({
+                    supabase,
+                    provider: "stripe",
+                    providerEventId: event.id,
+                    templateAlias,
+                    companyId,
+                    recipientEmail: recipient.email,
+                    metadata: { stripe_invoice_id: inv.id },
+                  });
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.error("[stripe/webhook] billing invoice email failed:", e);
+        }
         break;
       }
       case "charge.refunded":

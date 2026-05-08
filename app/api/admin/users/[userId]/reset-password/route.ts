@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminOrResponse } from "@/lib/admin/requireAdmin";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { writeAdminAuditLog } from "@/lib/admin/audit";
+import { sendOpsAlert, sendPasswordRecoveryEmail } from "@/lib/email/notifications";
 
 function getAppOrigin() {
   const raw =
@@ -48,15 +49,36 @@ export async function POST(
     );
   }
 
+  let emailed = false;
+  let emailError: string | null = null;
+  try {
+    await sendPasswordRecoveryEmail({
+      to: email,
+      email,
+      requestedBy: adminGate.admin.email,
+      setPasswordLink: link.properties.action_link,
+    });
+    emailed = true;
+  } catch (e) {
+    emailError = e instanceof Error ? e.message : "Failed to send email";
+    try {
+      await sendOpsAlert({
+        title: "Password recovery email failed",
+        message: "Failed to send a password recovery email from admin action.",
+        details: { userId, email, error: emailError },
+      });
+    } catch {}
+  }
+
   await writeAdminAuditLog({
     actorUserId: adminGate.admin.userId,
     actorEmail: adminGate.admin.email,
     action: "user.reset_password_link",
     targetUserId: userId,
-    metadata: { redirectTo },
+    metadata: { redirectTo, emailed },
   });
 
-  return NextResponse.json({ ok: true, url: link.properties.action_link });
+  return NextResponse.json({ ok: true, emailed, ...(emailError ? { emailError } : {}) });
 }
 
 function routesResetPath() {

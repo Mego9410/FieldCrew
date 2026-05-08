@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { decryptSecret, generateRecoveryCodes, getTwoFactorRow, recoveryCodesToJson, verifyTotpCode } from "@/lib/security/twoFactor";
+import { sendSecurityRecoveryCodesRegeneratedEmail } from "@/lib/email/notifications";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -29,6 +30,21 @@ export async function POST(request: Request) {
     recovery_codes: recoveryCodesToJson(generated.hashes),
     updated_at: new Date().toISOString(),
   }).eq("owner_user_id", user.id);
+
+  // Security email (best-effort; never include codes in email)
+  try {
+    const origin =
+      process.env.NEXT_PUBLIC_APP_URL ??
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://fieldcrew.app");
+    await sendSecurityRecoveryCodesRegeneratedEmail({
+      to: user.email ?? "",
+      userEmail: user.email ?? "",
+      eventAt: new Date().toISOString(),
+      device: request.headers.get("user-agent") ?? "—",
+      ipAddress: request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "—",
+      securitySettingsUrl: `${origin.replace(/\/$/, "")}/app/settings/security`,
+    });
+  } catch {}
 
   return NextResponse.json({ ok: true, recoveryCodes: generated.plain });
 }

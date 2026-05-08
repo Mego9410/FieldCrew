@@ -193,12 +193,36 @@ export function Hero({ regionName }: HeroProps) {
                 <LogoStrip
                   label="Fits your existing stack"
                   items={[
-                    "ServiceTitan",
-                    "Housecall Pro",
-                    "Jobber",
-                    "QuickBooks",
-                    "Google Sheets",
-                    "FieldPulse",
+                    {
+                      name: "QuickBooks",
+                      src: "/logos/integrations/quickbooks.svg",
+                      heightClass: "h-6 sm:h-7",
+                    },
+                    {
+                      name: "Xero",
+                      src: "/logos/integrations/xero.svg",
+                      heightClass: "h-7 sm:h-8",
+                    },
+                    {
+                      name: "Google Sheets",
+                      src: "/logos/integrations/google-sheets.svg",
+                      heightClass: "h-7 sm:h-8",
+                    },
+                    {
+                      name: "Sage",
+                      src: "/logos/integrations/sage.svg",
+                      heightClass: "h-7 sm:h-8",
+                    },
+                    {
+                      name: "ServiceTitan",
+                      src: "/logos/integrations/servicetitan.svg",
+                      heightClass: "h-5 sm:h-6",
+                    },
+                    {
+                      name: "Gusto",
+                      src: "/logos/integrations/gusto.svg",
+                      heightClass: "h-7 sm:h-8",
+                    },
                   ]}
                 />
               </div>

@@ -248,13 +248,25 @@ export function MockAppFrame({
   );
 }
 
+export type LogoStripItem =
+  | string
+  | {
+      name: string;
+      /** Path to a static image (typically /logos/integrations/*.svg). */
+      src: string;
+      /** Tailwind height class for the rendered logo (defaults to h-6). */
+      heightClass?: string;
+      /** Optional href when the tile should link out. */
+      href?: string;
+    };
+
 export function LogoStrip({
   label = "Used by busy owner-operators",
   items,
   className,
 }: {
   label?: string;
-  items: string[];
+  items: LogoStripItem[];
   className?: string;
 }) {
   return (
@@ -263,14 +275,57 @@ export function LogoStrip({
         {label}
       </p>
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {items.map((name) => (
-          <div
-            key={name}
-            className="flex min-h-[44px] items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] px-3 text-xs font-semibold text-white/70"
-          >
-            {name}
-          </div>
-        ))}
+        {items.map((item) => {
+          const isImage = typeof item !== "string";
+          const name = isImage ? item.name : item;
+          const tileClasses = cn(
+            "flex min-h-[56px] items-center justify-center rounded-2xl border px-3 transition-colors duration-200",
+            isImage
+              ? "border-white/15 bg-white hover:bg-white/95"
+              : "border-white/10 bg-white/[0.05] text-xs font-semibold text-white/70"
+          );
+          const heightClass = isImage
+            ? item.heightClass ?? "h-6"
+            : "";
+          const inner = isImage ? (
+            // Plain <img> for static SVG assets in /public.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={item.src}
+              alt={`${item.name} logo`}
+              className={cn("w-auto max-w-full object-contain", heightClass)}
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <span>{item}</span>
+          );
+
+          if (isImage && item.href) {
+            return (
+              <a
+                key={name}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${item.name} (opens in new tab)`}
+                className={tileClasses}
+              >
+                {inner}
+              </a>
+            );
+          }
+
+          return (
+            <div
+              key={name}
+              className={tileClasses}
+              aria-label={isImage ? item.name : undefined}
+            >
+              {inner}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

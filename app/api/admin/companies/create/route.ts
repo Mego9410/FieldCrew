@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminOrResponse } from "@/lib/admin/requireAdmin";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { writeAdminAuditLog } from "@/lib/admin/audit";
+import { sendOpsAlert, sendOwnerWelcomeEmail } from "@/lib/email/notifications";
 
 const WORKER_LIMITS: Record<"starter" | "growth" | "pro", number> = {
   starter: 5,
@@ -123,21 +124,60 @@ export async function POST(request: Request) {
     options: { redirectTo },
   });
 
+  const { data: recovery } = await supabase.auth.admin.generateLink({
+    type: "recovery",
+    email: ownerEmail,
+    options: { redirectTo: `${origin}/login` },
+  });
+
+  const magicLink = link?.properties?.action_link ?? null;
+  const setPasswordLink = recovery?.properties?.action_link ?? null;
+
+  let welcomeEmailSent = false;
+  let welcomeEmailError: string | null = null;
+  if (magicLink && setPasswordLink) {
+    try {
+      await sendOwnerWelcomeEmail({
+        to: ownerEmail,
+        ownerName,
+        companyName,
+        magicLink,
+        setPasswordLink,
+      });
+      welcomeEmailSent = true;
+    } catch (e) {
+      welcomeEmailError = e instanceof Error ? e.message : "Failed to send email";
+      try {
+        await sendOpsAlert({
+          title: "Owner welcome email failed",
+          message: "Failed to send welcome/setup email after admin company creation.",
+          details: {
+            ownerEmail,
+            ownerUserId,
+            companyId,
+            error: welcomeEmailError,
+          },
+        });
+      } catch {}
+    }
+  }
+
   await writeAdminAuditLog({
     actorUserId: adminGate.admin.userId,
     actorEmail: adminGate.admin.email,
     action: "company.create",
     targetCompanyId: companyId,
     targetUserId: ownerUserId,
-    metadata: { planId, workerLimit, waiveFees },
+    metadata: { planId, workerLimit, waiveFees, welcomeEmailSent },
   });
 
   return NextResponse.json({
     ok: true,
     company: { id: companyId, name: companyName },
     owner: { id: ownerUserId, email: ownerEmail, name: ownerName },
-    magicLink: link?.properties?.action_link ?? null,
     waiveFees,
+    welcomeEmailSent,
+    ...(welcomeEmailError ? { welcomeEmailError } : {}),
   });
 }
 

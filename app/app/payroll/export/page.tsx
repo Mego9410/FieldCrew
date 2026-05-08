@@ -13,6 +13,13 @@ import {
   aggregatePayrollRows,
   type PayrollRow,
 } from "@/lib/payrollExport";
+import {
+  PAYROLL_TEMPLATE_GROUPS,
+  buildPayrollCsvBlob,
+  payrollExportFilenameSlug,
+  type PayrollCsvTemplateId,
+  getPayrollTemplateMeta,
+} from "@/lib/csv/payrollTemplates";
 
 function getDefaultDateRange(): { dateFrom: string; dateTo: string } {
   const today = new Date();
@@ -30,7 +37,7 @@ export default function PayrollExportPage() {
   const [dateFrom, setDateFrom] = useState(defaults.dateFrom);
   const [dateTo, setDateTo] = useState(defaults.dateTo);
   const [format, setFormat] = useState<"csv" | "pdf">("csv");
-  const [template, setTemplate] = useState("generic-csv");
+  const [template, setTemplate] = useState<PayrollCsvTemplateId>("generic");
   const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,24 +72,16 @@ export default function PayrollExportPage() {
     []
   );
 
-  const buildCSV = useCallback((rows: PayrollRow[]) => {
-    const headers = ["Worker name", "Total hours", "Job name/ID", "Labor cost"];
-    const escape = (s: string) => `"${String(s).replace(/"/g, '""')}"`;
-    const csv =
-      headers.join(",") +
-      "\n" +
-      rows
-        .map((r) =>
-          [
-            escape(r.workerName),
-            r.totalHours.toFixed(2),
-            escape(r.jobNameOrId),
-            `${CURRENCY_SYMBOL}${r.labourCost.toFixed(2)}`,
-          ].join(",")
-        )
-        .join("\n");
-    return new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  }, []);
+  const buildCSV = useCallback(
+    (rows: PayrollRow[], templateId: PayrollCsvTemplateId) => {
+      return buildPayrollCsvBlob(templateId, rows, {
+        dateFrom,
+        dateTo,
+        currencySymbol: CURRENCY_SYMBOL,
+      });
+    },
+    [dateFrom, dateTo]
+  );
 
   const buildPDF = useCallback(
     async (rows: PayrollRow[]) => {
@@ -126,9 +125,10 @@ export default function PayrollExportPage() {
     }
     setExporting(true);
     try {
-      const filename = `payroll-export-${dateFrom}-${dateTo}`;
+      const slug = payrollExportFilenameSlug(template);
+      const filename = `payroll-export-${slug}-${dateFrom}-${dateTo}`;
       if (format === "csv") {
-        const blob = buildCSV(payrollRows);
+        const blob = buildCSV(payrollRows, template);
         triggerDownload(blob, `${filename}.csv`);
       } else {
         const blob = await buildPDF(payrollRows);
@@ -152,6 +152,7 @@ export default function PayrollExportPage() {
     payrollRows,
     dateFrom,
     dateTo,
+    template,
     buildCSV,
     buildPDF,
     triggerDownload,
@@ -264,11 +265,24 @@ export default function PayrollExportPage() {
                 <select
                   id="export-template"
                   value={template}
-                  onChange={(e) => setTemplate(e.target.value)}
+                  onChange={(e) =>
+                    setTemplate(e.target.value as PayrollCsvTemplateId)
+                  }
                   className="w-full border border-fc-border bg-fc-surface py-2 px-3 text-sm text-fc-brand focus:border-fc-accent focus:outline-none focus:ring-1 focus:ring-fc-accent"
                 >
-                  <option value="generic-csv">Generic CSV</option>
+                  {PAYROLL_TEMPLATE_GROUPS.map((group) => (
+                    <optgroup key={group.label} label={group.label}>
+                      {group.templates.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
                 </select>
+                <p className="mt-2 text-xs text-fc-muted">
+                  {getPayrollTemplateMeta(template).description}
+                </p>
               </div>
             )}
           </Card>

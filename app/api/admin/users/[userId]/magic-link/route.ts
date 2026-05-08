@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminOrResponse } from "@/lib/admin/requireAdmin";
 import { createServiceRoleClient } from "@/lib/supabase/server";
 import { writeAdminAuditLog } from "@/lib/admin/audit";
+import { sendOpsAlert, sendUserMagicLinkEmail } from "@/lib/email/notifications";
 
 function getAppOrigin() {
   const raw =
@@ -48,14 +49,35 @@ export async function POST(
     );
   }
 
+  let emailed = false;
+  let emailError: string | null = null;
+  try {
+    await sendUserMagicLinkEmail({
+      to: email,
+      email,
+      requestedBy: adminGate.admin.email,
+      magicLink: link.properties.action_link,
+    });
+    emailed = true;
+  } catch (e) {
+    emailError = e instanceof Error ? e.message : "Failed to send email";
+    try {
+      await sendOpsAlert({
+        title: "Magic link email failed",
+        message: "Failed to send a magic link email from admin action.",
+        details: { userId, email, error: emailError },
+      });
+    } catch {}
+  }
+
   await writeAdminAuditLog({
     actorUserId: adminGate.admin.userId,
     actorEmail: adminGate.admin.email,
     action: "user.send_magic_link",
     targetUserId: userId,
-    metadata: { redirectTo },
+    metadata: { redirectTo, emailed },
   });
 
-  return NextResponse.json({ ok: true, url: link.properties.action_link });
+  return NextResponse.json({ ok: true, emailed, ...(emailError ? { emailError } : {}) });
 }
 

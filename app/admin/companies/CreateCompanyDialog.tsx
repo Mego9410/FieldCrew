@@ -16,12 +16,12 @@ export function CreateCompanyDialog({
   const [ownerEmail, setOwnerEmail] = useState("");
   const [planId, setPlanId] = useState<"starter" | "growth" | "pro">("starter");
   const [waiveFees, setWaiveFees] = useState(true);
-  const [magicLink, setMagicLink] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const create = async () => {
     setError(null);
+    setSuccess(null);
     setBusy(true);
-    setMagicLink(null);
     try {
       const res = await fetch("/api/admin/companies/create", {
         method: "POST",
@@ -37,10 +37,17 @@ export function CreateCompanyDialog({
       const json = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
         error?: string;
-        magicLink?: string | null;
+        welcomeEmailSent?: boolean;
+        welcomeEmailError?: string;
       };
       if (!res.ok || !json.ok) throw new Error(json.error ?? res.statusText);
-      setMagicLink(json.magicLink ?? null);
+      setSuccess(
+        json.welcomeEmailSent
+          ? "Account created. Welcome email sent to the owner."
+          : `Account created. Email was not sent.${
+              json.welcomeEmailError ? ` (${json.welcomeEmailError})` : ""
+            }`
+      );
       onCreated?.();
       // Server component list won't auto-refresh; reload to show new account immediately.
       if (typeof window !== "undefined") window.location.reload();
@@ -70,7 +77,7 @@ export function CreateCompanyDialog({
                   Create company
                 </div>
                 <div className="mt-0.5 text-sm text-fc-muted">
-                  Creates the company + owner user. Returns a magic link for immediate access.
+                  Creates the company + owner user and emails the owner a sign-in link + password setup link.
                 </div>
               </div>
               <button
@@ -150,35 +157,9 @@ export function CreateCompanyDialog({
               </div>
             </div>
 
-            {magicLink ? (
-              <div className="mt-4 rounded-lg border border-fc-border bg-fc-surface-muted p-3">
-                <div className="text-xs font-semibold text-fc-muted">Magic link</div>
-                <div className="mt-1 break-all text-xs text-fc-brand">
-                  {magicLink}
-                </div>
-                <div className="mt-2 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => navigator.clipboard.writeText(magicLink)}
-                    className="rounded-lg border border-fc-border px-3 py-2 text-sm font-medium text-fc-brand hover:bg-white"
-                  >
-                    Copy
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => window.open(magicLink, "_blank", "noopener,noreferrer")}
-                    className="rounded-lg bg-fc-brand px-3 py-2 text-sm font-medium text-white hover:bg-fc-brand/90"
-                  >
-                    Open
-                  </button>
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg border border-fc-border px-3 py-2 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted"
-                >
-                  Done
-                </button>
-                </div>
+            {success ? (
+              <div className="mt-4 rounded-lg border border-fc-border bg-fc-surface-muted p-3 text-sm text-fc-brand">
+                {success}
               </div>
             ) : null}
 
@@ -189,6 +170,14 @@ export function CreateCompanyDialog({
             ) : null}
 
             <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                disabled={busy}
+                className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-fc-surface-muted disabled:opacity-50"
+              >
+                Done
+              </button>
               <button
                 type="button"
                 onClick={create}

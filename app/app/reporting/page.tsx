@@ -32,6 +32,13 @@ import {
   RPLH_TARGET,
   type DateRangePreset,
 } from "@/lib/reporting.analytics";
+import {
+  REPORTING_TEMPLATE_GROUPS,
+  buildReportingCsvBlob,
+  reportingExportFilename,
+  getReportingTemplateMeta,
+  type ReportingCsvTemplateId,
+} from "@/lib/csv/reportingTemplates";
 import { chartTheme } from "@/components/charts";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -60,6 +67,8 @@ export default function ReportingPage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("overruns");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Awaited<ReturnType<typeof getReportingData>> | null>(null);
+  const [reportCsvTemplate, setReportCsvTemplate] =
+    useState<ReportingCsvTemplateId>("generic");
 
   const range = useMemo(() => getDateRangeFromPreset(datePreset), [datePreset]);
 
@@ -91,34 +100,19 @@ export default function ReportingPage() {
   const handleExportCSV = () => {
     if (!data) return;
     const rows = data.tables.allJobsProfit;
-    const headers = [
-      "Job",
-      "Revenue",
-      "Labor Cost",
-      "Gross Profit",
-      "Margin %",
-      "RPLH ($/hr)",
-    ];
-    const csv =
-      headers.join(",") +
-      "\n" +
-      rows
-        .map((r) =>
-          [
-            `"${r.jobName.replace(/"/g, '""')}"`,
-            r.revenue.toFixed(2),
-            r.labourCost.toFixed(2),
-            r.grossProfit.toFixed(2),
-            r.marginPct != null ? r.marginPct.toFixed(1) : "",
-            r.rplh != null ? r.rplh.toFixed(2) : "",
-          ].join(",")
-        )
-        .join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const blob = buildReportingCsvBlob(reportCsvTemplate, rows, {
+      rangeStart: range.start,
+      rangeEnd: range.end,
+      datePreset,
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `fieldcrew-report-${range.start}-${range.end}.csv`;
+    a.download = reportingExportFilename(reportCsvTemplate, {
+      rangeStart: range.start,
+      rangeEnd: range.end,
+      datePreset,
+    });
     a.click();
     URL.revokeObjectURL(url);
 
@@ -161,7 +155,8 @@ export default function ReportingPage() {
 
   return (
     <div className="px-4 py-6 sm:px-6">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mb-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="font-display text-xl font-bold text-fc-brand">
             Reporting
@@ -170,7 +165,7 @@ export default function ReportingPage() {
             Labor cost, overtime, and job profitability insights.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex max-w-full flex-col gap-2 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center">
           <select
             value={datePreset}
             onChange={(e) => setDatePreset(e.target.value as DateRangePreset)}
@@ -218,11 +213,36 @@ export default function ReportingPage() {
             <option value="in_progress">In progress</option>
             <option value="completed">Completed</option>
           </select>
-          <Button type="button" variant="secondary" onClick={handleExportCSV}>
-            <Download className="h-4 w-4" />
-            Export CSV
-          </Button>
+          <div className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+            <select
+              id="report-csv-template"
+              value={reportCsvTemplate}
+              onChange={(e) =>
+                setReportCsvTemplate(e.target.value as ReportingCsvTemplateId)
+              }
+              className={`${selectClass} min-w-0 sm:min-w-[12rem]`}
+              aria-label="CSV export format"
+            >
+              {REPORTING_TEMPLATE_GROUPS.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.templates.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+            <Button type="button" variant="secondary" onClick={handleExportCSV}>
+              <Download className="h-4 w-4" />
+              Export CSV
+            </Button>
+          </div>
         </div>
+        </div>
+        <p className="mt-2 text-xs text-fc-muted">
+          {getReportingTemplateMeta(reportCsvTemplate).description}
+        </p>
       </div>
 
       {loading ? (

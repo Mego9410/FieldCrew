@@ -123,18 +123,24 @@ export function HeroVisual({ view = 0 }: { view?: ViewType }) {
           <h3 className="mb-4 font-display text-lg font-bold text-fc-brand">Export Payroll</h3>
           <div className="space-y-3">
             <div className="rounded-lg border border-fc-border bg-white p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <FileSpreadsheet className="h-4 w-4 text-fc-accent" />
-                <span className="font-body text-sm font-semibold text-fc-brand">QuickBooks CSV</span>
+              <p className="mb-2 font-body text-xs font-bold uppercase tracking-wide text-fc-muted">
+                Export template
+              </p>
+              <div className="rounded-md border border-fc-accent bg-fc-accent/5 px-3 py-2 font-body text-sm font-semibold text-fc-brand">
+                QuickBooks
               </div>
-              <p className="font-body text-xs text-fc-muted">Worker, hours, job, labor $</p>
+              <p className="mt-2 font-body text-xs text-fc-muted">
+                Employee, customer/job, hours, labor amount, pay period
+              </p>
             </div>
             <div className="rounded-lg border border-fc-border bg-white p-4">
               <div className="mb-2 flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4 text-fc-muted" />
-                <span className="font-body text-sm font-semibold text-fc-muted">Generic CSV</span>
+                <span className="font-body text-sm font-semibold text-fc-brand">ServiceTitan</span>
               </div>
-              <p className="font-body text-xs text-fc-muted">Standard format</p>
+              <p className="font-body text-xs text-fc-muted">
+                Plus Housecall Pro, Jobber, FieldPulse, Xero, ADP, Gusto, and more
+              </p>
             </div>
           </div>
         </div>
