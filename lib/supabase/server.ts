@@ -1,14 +1,7 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-
-function getSupabaseAnonKey() {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    ""
-  );
-}
+import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 
 /**
  * Supabase server client for Server Components, Server Actions, and Route Handlers.
@@ -16,7 +9,7 @@ function getSupabaseAnonKey() {
  */
 export async function createClient() {
   const cookieStore = await cookies();
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const url = getSupabaseUrl();
   const key = getSupabaseAnonKey();
 
   return createServerClient(url, key, {

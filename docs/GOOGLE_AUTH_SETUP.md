@@ -2,16 +2,51 @@
 
 The app already has Google sign-in wired in code. To make it work, configure Google Cloud and Supabase once.
 
+## Branded auth domain (production — `auth.getfieldcrew.com`)
+
+Users should see **`auth.getfieldcrew.com`** during Google sign-in, not `*.supabase.co`.
+
+### Setup used in this project (Vercel proxy)
+
+`auth.getfieldcrew.com` stays on **Vercel** (same project as the app). Middleware rewrites `/auth/v1/*` to your real Supabase project URL.
+
+1. **Vercel → Environment Variables (Production)**:
+   - `NEXT_PUBLIC_SUPABASE_URL` = `https://auth.getfieldcrew.com`
+   - `SUPABASE_PROJECT_URL` = `https://<PROJECT_REF>.supabase.co` (e.g. `https://dndmaagfzgnelwnoqnjf.supabase.co`)
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your anon key
+   - `NEXT_PUBLIC_APP_URL` = `https://getfieldcrew.com`
+2. **Google Cloud → Authorized redirect URIs**:
+   - `https://auth.getfieldcrew.com/auth/v1/callback`
+3. **Supabase → Redirect URLs** (app return path):
+   - `https://getfieldcrew.com/auth/callback`
+   - `http://localhost:3000/auth/callback`
+4. **Supabase → Site URL**: `https://getfieldcrew.com`
+5. Redeploy Vercel.
+
+**Verify after deploy:** open  
+`https://auth.getfieldcrew.com/auth/v1/health`  
+You should get a small JSON response — **not** the FieldCrew “Page not found” screen.
+
+If you see **404 Page not found**, `SUPABASE_PROJECT_URL` is missing/wrong or the deploy without the middleware proxy hasn’t shipped yet.
+
+### Alternative: Supabase-native custom domain
+
+Instead of the Vercel proxy, you can CNAME `auth.getfieldcrew.com` directly to Supabase (remove the hostname from Vercel). Then set `NEXT_PUBLIC_SUPABASE_URL=https://auth.getfieldcrew.com` and you do **not** need `SUPABASE_PROJECT_URL`.
+
+Local dev: keep `NEXT_PUBLIC_SUPABASE_URL=https://<PROJECT_REF>.supabase.co` in `.env.local`.
+
+---
+
 ## Run on both localhost and Vercel
 
 Use **one** Google OAuth client and **one** Supabase project. Add **all** of the URLs below so sign-in works from localhost and from your Vercel URL.
 
 | Where | What to add |
 |-------|-------------|
-| **Google** → Authorized JavaScript origins | `http://localhost:3000`, `http://localhost:3001`, `https://field-crew.vercel.app` |
-| **Google** → Authorized redirect URIs | `https://<PROJECT_REF>.supabase.co/auth/v1/callback` (only this one; copy from Supabase Dashboard) |
-| **Supabase** → Redirect URLs | `http://localhost:3000/auth/callback`, `http://localhost:3001/auth/callback`, `https://field-crew.vercel.app/auth/callback` (if missing, Supabase may send users to `/` with `?code=...`; the app will still redirect the code to the callback) |
-| **Supabase** → Site URL | Set to whichever you’re testing (e.g. `http://localhost:3000` for local, `https://field-crew.vercel.app` for prod). Both work as long as the matching callback URL is in the list above. |
+| **Google** → Authorized JavaScript origins | `http://localhost:3000`, `https://getfieldcrew.com` |
+| **Google** → Authorized redirect URIs | `https://auth.getfieldcrew.com/auth/v1/callback` **or** `https://<PROJECT_REF>.supabase.co/auth/v1/callback` (must match Supabase Google provider callback) |
+| **Supabase** → Redirect URLs | `http://localhost:3000/auth/callback`, `https://getfieldcrew.com/auth/callback` |
+| **Supabase** → Site URL | `https://getfieldcrew.com` (prod) or `http://localhost:3000` (local) |
 
 No code or env changes are needed: the app uses the current origin for redirects, so localhost and Vercel both work.
 

@@ -1,20 +1,15 @@
+"use client";
+
 import { createBrowserClient, parse, serialize } from "@supabase/ssr";
+import { resolveSupabaseConfig } from "@/lib/supabase/env";
+import { getSupabaseRuntimeConfig } from "@/lib/supabase/runtime-config";
 
 /**
  * Supabase browser client for Client Components.
- * Uses NEXT_PUBLIC_SUPABASE_ANON_KEY or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.
+ * Prefers runtime config from SupabaseConfigProvider (server env at request time).
  */
-function getSupabaseAnonKey() {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    ""
-  );
-}
-
 export function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const key = getSupabaseAnonKey();
+  const { url, anonKey: key } = resolveSupabaseConfig(getSupabaseRuntimeConfig());
   const isSecure =
     typeof window !== "undefined" && window.location?.protocol === "https:";
   return createBrowserClient(url, key, {

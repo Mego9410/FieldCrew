@@ -4,6 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import {
+  formatAuthError,
+  isSupabaseConfigured,
+  resolveSupabaseConfig,
+  SUPABASE_CONFIG_ERROR,
+} from "@/lib/supabase/env";
+import { getSupabaseRuntimeConfig } from "@/lib/supabase/runtime-config";
 import { routes } from "@/lib/routes";
 import {
   Mail,
@@ -38,6 +45,8 @@ export function LoginClient() {
   );
   const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
+  const supabaseConfig = () => resolveSupabaseConfig(getSupabaseRuntimeConfig());
+
   useEffect(() => {
     if (typeof window === "undefined" || !window.location.hash) return;
     const hashParams = new URLSearchParams(
@@ -63,18 +72,34 @@ export function LoginClient() {
     e.preventDefault();
     setError(null);
     setResendStatus("idle");
+    const config = supabaseConfig();
+    if (!isSupabaseConfigured(config)) {
+      setError(SUPABASE_CONFIG_ERROR);
+      return;
+    }
     setLoading("email");
 
-    const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const supabase = createClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    setLoading(null);
-    if (signInError) {
-      setError(signInError.message);
+      if (signInError) {
+        setError(formatAuthError(signInError.message, config));
+        return;
+      }
+    } catch (err) {
+      setError(
+        formatAuthError(
+          err instanceof Error ? err.message : "Sign-in failed",
+          config
+        )
+      );
       return;
+    } finally {
+      setLoading(null);
     }
     const next = searchParams.get("next");
     const nextPath =
@@ -85,40 +110,99 @@ export function LoginClient() {
 
   const handleResendConfirmation = async () => {
     if (!email?.trim()) return;
-    setResendStatus("sending");
-    const supabase = createClient();
-    const { error: resendError } = await supabase.auth.resend({
-      type: "signup",
-      email: email.trim(),
-    });
-    if (resendError) {
-      setResendStatus("error");
-      setError(resendError.message);
+    const config = supabaseConfig();
+    if (!isSupabaseConfigured(config)) {
+      setError(SUPABASE_CONFIG_ERROR);
       return;
     }
-    setResendStatus("sent");
+    setResendStatus("sending");
+    try {
+      const supabase = createClient();
+      const { error: resendError } = await supabase.auth.resend({
+        type: "signup",
+        email: email.trim(),
+      });
+      if (resendError) {
+        setResendStatus("error");
+        setError(formatAuthError(resendError.message, config));
+        return;
+      }
+      setResendStatus("sent");
+    } catch (err) {
+      setResendStatus("error");
+      setError(
+        formatAuthError(
+          err instanceof Error ? err.message : "Resend failed",
+          config
+        )
+      );
+    }
   };
 
   const handleGoogleSignIn = async () => {
     setError(null);
+    const config = supabaseConfig();
+    if (!isSupabaseConfigured(config)) {
+      setError(SUPABASE_CONFIG_ERROR);
+      return;
+    }
     setLoading("google");
 
-    const supabase = createClient();
-    const origin = getSiteOrigin();
-    const next = searchParams.get("next");
-    const nextPath =
-      next?.startsWith("/") && !next.startsWith("//") ? next : routes.auth.postLogin;
-    const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+    try {
+      const supabase = createClient();
+      const origin = getSiteOrigin();
+      const next = searchParams.get("next");
+      const nextPath =
+        next?.startsWith("/") && !next.startsWith("//") ? next : routes.auth.postLogin;
+      const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+      const supabaseHost = (() => {
+        try {
+          return new URL(config.url).hostname;
+        } catch {
+          return "";
+        }
+      })();
+      // #region agent log
+      fetch("http://127.0.0.1:7645/ingest/a668a102-dde3-42a2-b40c-2c27cb853024", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Debug-Session-Id": "00297d",
+        },
+        body: JSON.stringify({
+          sessionId: "00297d",
+          runId: "pre-fix",
+          hypothesisId: "H5",
+          location: "login-client.tsx:handleGoogleSignIn",
+          message: "OAuth redirect hosts",
+          data: {
+            appOrigin: origin,
+            supabaseApiHost: supabaseHost,
+            callbackHost: new URL(redirectTo).hostname,
+            crossDomainPkceRisk: supabaseHost !== new URL(redirectTo).hostname,
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
 
-    const { error: signInError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo },
-    });
+      const { error: signInError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo },
+      });
 
-    setLoading(null);
-    if (signInError) {
-      setError(signInError.message);
-      return;
+      if (signInError) {
+        setError(formatAuthError(signInError.message, config));
+      }
+    } catch (err) {
+      setError(
+        formatAuthError(
+          err instanceof Error ? err.message : "Google sign-in failed",
+          config
+        )
+      );
+    } finally {
+      setLoading(null);
     }
   };
 

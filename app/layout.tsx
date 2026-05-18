@@ -5,6 +5,8 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { SupabaseConfigProvider } from "@/components/supabase/SupabaseConfigProvider";
+import { getServerSupabasePublicConfig } from "@/lib/supabase/server-public-config";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -74,6 +76,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabaseConfig = getServerSupabasePublicConfig();
+
   return (
     <html
       lang="en"
@@ -95,7 +99,9 @@ gtag('config', 'G-C1W6ME1LTW');
         </Script>
       </head>
       <body suppressHydrationWarning className="min-h-screen bg-fc-page font-body text-fc-brand">
-        {children}
+        <SupabaseConfigProvider config={supabaseConfig}>
+          {children}
+        </SupabaseConfigProvider>
         <Analytics />
         <SpeedInsights />
       </body>

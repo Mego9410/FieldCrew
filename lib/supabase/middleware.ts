@@ -3,17 +3,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ensureOwnerUserForAuthUser, getSubscriptionStatusForUser } from "@/lib/data";
 import { routes } from "@/lib/routes";
 import { isAllowlistedAdminEmail } from "@/lib/admin/allowlist";
+import { agentLog } from "@/lib/debug/agent-log";
+import { getSupabaseAnonKey, getSupabaseUrl, isSupabaseConfigured } from "@/lib/supabase/env";
 
-function getSupabaseAnonKey() {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    ""
-  );
-}
-
-const hasEnvVars =
-  process.env.NEXT_PUBLIC_SUPABASE_URL && getSupabaseAnonKey();
+const hasEnvVars = isSupabaseConfigured();
 
 /**
  * Refreshes the Supabase auth session and keeps cookies in sync.
@@ -26,11 +19,19 @@ export async function updateSession(request: NextRequest) {
   const sessionCookies: CookieEntry[] = [];
 
   if (!hasEnvVars) {
+    // #region agent log
+    agentLog(
+      "lib/supabase/middleware.ts:updateSession",
+      "skipped session update — env not configured at module load",
+      { pathname: request.nextUrl.pathname, hasCode: request.nextUrl.searchParams.has("code") },
+      "H4"
+    );
+    // #endregion
     return supabaseResponse;
   }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    getSupabaseUrl(),
     getSupabaseAnonKey(),
     {
       cookies: {
@@ -63,9 +64,33 @@ export async function updateSession(request: NextRequest) {
 
   if (isOAuthCodeReturn) {
     const code = searchParams.get("code")!;
+    const supabaseUrl = getSupabaseUrl();
+    // #region agent log
+    agentLog(
+      "lib/supabase/middleware.ts:oauth",
+      "OAuth code exchange attempt",
+      {
+        pathname,
+        callbackHost: request.nextUrl.hostname,
+        supabaseUrlHost: supabaseUrl ? new URL(supabaseUrl).hostname : "",
+        crossDomainCallback:
+          Boolean(supabaseUrl) &&
+          new URL(supabaseUrl).hostname !== request.nextUrl.hostname,
+      },
+      "H5"
+    );
+    // #endregion
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (error) {
+      // #region agent log
+      agentLog(
+        "lib/supabase/middleware.ts:oauth",
+        "OAuth exchange failed",
+        { errorMessage: error.message },
+        "H5"
+      );
+      // #endregion
       const loginUrl = new URL(routes.public.login, request.url);
       loginUrl.searchParams.set("error", encodeURIComponent(error.message));
       return NextResponse.redirect(loginUrl);
