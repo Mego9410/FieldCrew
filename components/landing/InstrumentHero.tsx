@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Clock, Play } from "lucide-react";
-import { DemoVideoModal } from "@/components/landing/DemoVideoModal";
+import { ArrowRight, Clock } from "lucide-react";
 import { InstrumentConsolePreview } from "@/components/landing/InstrumentConsolePreview";
 import { LogoStrip } from "@/components/landing/PublicPagePrimitives";
 
@@ -12,12 +10,8 @@ type InstrumentHeroProps = {
 };
 
 export function InstrumentHero({ regionName }: InstrumentHeroProps) {
-  const [isDemoOpen, setIsDemoOpen] = useState(false);
-
   return (
     <section className="relative overflow-hidden bg-fc-navy-950 text-white" aria-label="Hero">
-      <DemoVideoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
-
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div
           className="absolute inset-0"
@@ -66,15 +60,6 @@ export function InstrumentHero({ regionName }: InstrumentHeroProps) {
               >
                 See what you&apos;re losing <ArrowRight className="ml-2 h-[18px] w-[18px]" aria-hidden />
               </Link>
-
-              <button
-                type="button"
-                onClick={() => setIsDemoOpen(true)}
-                className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/25 bg-transparent px-6 text-[15px] font-bold text-white transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950"
-              >
-                <Play className="mr-2 h-[18px] w-[18px]" aria-hidden />
-                Watch 2‑min demo
-              </button>
             </div>
 
             <div className="mt-5 inline-flex items-center gap-2 text-sm text-slate-400">

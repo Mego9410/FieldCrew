@@ -98,14 +98,18 @@ export function InstrumentConsolePreview({ className }: ConsolePreviewProps) {
             </span>
           </div>
 
-          <div className="mt-4 flex h-24 items-end gap-2">
+          <div className="mt-4 flex items-end gap-2 sm:gap-3">
             {bars.map((b, i) => (
-              <div key={i} className="flex min-w-0 flex-1 flex-col justify-end gap-1">
-                <span className="block w-full bg-fc-orange-500" style={{ height: `${b.a}%` }} aria-hidden />
-                <span className="block w-full" style={{ height: `${b.q}%`, background: "rgba(100,116,139,0.45)" }} aria-hidden />
-                <span className="mt-1 text-center font-mono text-[9px] text-[var(--console-steel,#64748b)]">
-                  JOB {i + 1}
-                </span>
+              <div key={i} className="flex min-w-0 flex-1 flex-col gap-1">
+                <div className="flex h-24 flex-col justify-end gap-1">
+                  <span className="block w-full rounded-[1px] bg-fc-orange-500" style={{ height: `${b.a}%` }} aria-hidden />
+                  <span
+                    className="block w-full rounded-[1px]"
+                    style={{ height: `${b.q}%`, background: "rgba(100,116,139,0.45)" }}
+                    aria-hidden
+                  />
+                </div>
+                <span className="text-center font-mono text-[9px] text-[var(--console-steel,#64748b)]">JOB {i + 1}</span>
               </div>
             ))}
           </div>

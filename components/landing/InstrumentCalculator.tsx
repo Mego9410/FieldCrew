@@ -84,7 +84,7 @@ function InstrumentSlider({ label, foot, unit = "", accent, min, max, value, ste
           if (e.key === "ArrowRight") onChange(clamp(value + step, min, max));
         }}
         className={cn(
-          "relative mt-2 h-[18px] cursor-pointer select-none",
+          "relative mt-2 h-[22px] cursor-pointer touch-none select-none",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-fc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--console-surface,#0f1620)]",
         )}
       >
