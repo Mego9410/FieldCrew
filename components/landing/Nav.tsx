@@ -87,7 +87,8 @@ export function Nav() {
       return;
     }
     const onScroll = () => {
-      setHeroVisible(window.scrollY < 400);
+      // Match marketing spec: nav flips to light once scrolled past the hero.
+      setHeroVisible(window.scrollY < 560);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });

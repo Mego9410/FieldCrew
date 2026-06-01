@@ -1,22 +1,17 @@
 import { Nav } from "@/components/landing/Nav";
-import { Hero } from "@/components/landing/Hero";
-import { IndustryProblem } from "@/components/landing/IndustryProblem";
-import { RelatableBusinessImpact } from "@/components/landing/RelatableBusinessImpact";
-import { MoneyDisappearsFlow } from "@/components/landing/MoneyDisappearsFlow";
-import { CalculatorCoreValue } from "@/components/landing/CalculatorCoreValue";
-import { Solution } from "@/components/landing/Solution";
-import { ObjectionHandling } from "@/components/landing/ObjectionHandling";
-import { SimpleStart } from "@/components/landing/SimpleStart";
-import { PricingSection4 } from "@/components/landing/PricingSection4";
-import { FinalCta } from "@/components/landing/FinalCta";
-import { CtaSupportMicrocopy } from "@/components/landing/CtaSupportMicrocopy";
 import { Footer } from "@/components/landing/Footer";
 import { PlansScrollPrompt } from "@/components/landing/PlansScrollPrompt";
 import { headers } from "next/headers";
-import Link from "next/link";
-import { routes } from "@/lib/routes";
-import { ShareLinks } from "@/components/landing/ShareLinks";
-import { BentoCard, SectionBand, SectionHeader } from "@/components/landing/PublicPagePrimitives";
+import { InstrumentHero } from "@/components/landing/InstrumentHero";
+import { InstrumentCalculator } from "@/components/landing/InstrumentCalculator";
+import {
+  InstrumentCompareSection,
+  InstrumentHowItWorks,
+  InstrumentReassurance,
+  InstrumentScaleSection,
+} from "@/components/landing/InstrumentSections";
+import { InstrumentPricing } from "@/components/landing/InstrumentPricing";
+import { InstrumentFinalCta } from "@/components/landing/InstrumentFinalCta";
 
 const US_STATE_NAMES: Record<string, string> = {
   AL: "Alabama",
@@ -133,174 +128,16 @@ export default async function Home() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <PlansScrollPrompt heroId="homepage-hero" pricingId="pricing" href="/#pricing" />
-        <div className="relative overflow-hidden bg-fc-navy-950">
-          <div
-            className="pointer-events-none absolute inset-0 z-0"
-            aria-hidden
-            style={{
-              background:
-                "radial-gradient(ellipse 95% 70% at 50% 12%, rgba(249,115,22,0.14) 0%, transparent 55%), radial-gradient(ellipse 110% 90% at 50% 100%, rgba(3,7,18,0.92) 0%, transparent 58%)",
-            }}
-          />
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[340px] bg-gradient-to-b from-transparent via-[var(--fc-bg-page)]/85 to-[var(--fc-bg-page)]"
-            aria-hidden
-          />
-          <div className="relative z-10">
-            <div id="homepage-hero">
-              <Hero regionName={visitorRegionName} />
-            </div>
-            <CalculatorCoreValue />
-          </div>
+        <div id="homepage-hero">
+          <InstrumentHero regionName={visitorRegionName} />
         </div>
-        <IndustryProblem />
-        <RelatableBusinessImpact />
-        <MoneyDisappearsFlow />
-        <Solution />
-        <ObjectionHandling />
-        <SimpleStart />
-        <SectionBand
-          variant="white"
-          className="py-14 sm:py-20"
-          labelledBy="homepage-seo-copy"
-        >
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start">
-              <div>
-                <SectionHeader
-                  eyebrow="Background"
-                  title="Find where labor profit disappears (and recover it)"
-                  description="FieldCrew is built for owner-operators running small HVAC teams who feel busy but can’t see why margins don’t match the schedule."
-                  titleId="homepage-seo-copy"
-                  className="max-w-2xl"
-                />
-                <div className="mt-6 space-y-4 text-[15px] leading-7 text-fc-muted sm:text-base">
-                  <p>
-                    The leak usually isn’t demand. It’s the quiet gap between what was quoted and what
-                    actually happened in the field: jobs that run long, untracked time, and overtime
-                    used to catch up after the plan slips.
-                  </p>
-                  <p>
-                    If you manage 5–20 technicians, those small overruns repeat across dozens of jobs
-                    per month. One callback, one install that goes 60–90 minutes over, one day where the
-                    crew loses an hour to parts or paperwork — it adds up. The result is labor cost
-                    drifting past what you billed, and payroll eating the margin you expected to keep.
-                  </p>
-                  <BentoCard as="div" className="p-0">
-                    <details className="group px-5 py-4 sm:px-6 sm:py-5">
-                      <summary className="cursor-pointer list-none font-semibold text-fc-brand outline-none [&::-webkit-details-marker]:hidden">
-                        Read the quick breakdown
-                        <span className="ml-2 text-fc-muted group-open:hidden">+</span>
-                        <span className="ml-2 text-fc-muted hidden group-open:inline">–</span>
-                      </summary>
-                      <div className="mt-3 space-y-3 text-[15px] leading-7 text-fc-muted sm:text-base">
-                        <p>
-                          FieldCrew helps you measure the problem in a way you can act on. Instead of guessing,
-                          you can review quoted vs actual time, identify patterns (which job types, which days,
-                          which crews), and prioritize the fixes that recover profit fastest.
-                        </p>
-                        <p>
-                          This isn’t time tracking for the sake of tracking. It’s a simple, owner-friendly way
-                          to connect field reality to the numbers that matter: labor efficiency, overtime exposure,
-                          and the true cost of each job type.
-                        </p>
-                        <p>
-                          Start with a quick calculator to estimate the monthly impact, then use the same workflow
-                          to build a practical recovery cadence. The goal isn’t more spreadsheets — it’s clarity:
-                          where the money is going, what to change next, and how to protect your margins as you grow.
-                        </p>
-                      </div>
-                    </details>
-                  </BentoCard>
-                </div>
-              </div>
-
-              <aside className="space-y-6">
-                <BentoCard>
-                  <h3 className="font-display text-lg font-bold text-fc-brand">
-                    Popular resources
-                  </h3>
-                  <p className="mt-2 text-sm text-fc-muted">
-                    Jump straight to the calculators, examples, and next steps.
-                  </p>
-                  <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-1">
-                    <li>
-                      <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.profitLeak}>
-                        Profit leak calculator
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.hiddenProfit}>
-                        Hidden labor profit calculator
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href="#how-it-works">
-                        How it works
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.sampleReport}>
-                        Sample report
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.owner.subscribe}>
-                        Pricing
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.blog}>
-                        Blog for HVAC owners
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.about}>
-                        About FieldCrew
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline" href={routes.public.support}>
-                        Support
-                      </Link>
-                    </li>
-                  </ul>
-
-                  <p className="mt-4 text-xs text-fc-muted">
-                    External reference:{" "}
-                    <a
-                      href="https://www.dol.gov/agencies/whd/overtime"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-semibold text-fc-accent underline underline-offset-4 hover:no-underline"
-                    >
-                      U.S. Department of Labor — Overtime pay
-                    </a>
-                  </p>
-                </BentoCard>
-
-                <BentoCard className="bg-gradient-to-b from-slate-50 via-white to-slate-50/70">
-                  <h3 className="font-display text-lg font-bold text-fc-brand">
-                    Share FieldCrew
-                  </h3>
-                  <p className="mt-2 text-sm text-fc-muted">
-                    Send this page to another owner who’s feeling the margin squeeze.
-                  </p>
-                  <div className="mt-4">
-                    <ShareLinks
-                      url="https://fieldcrew.com/"
-                      title="FieldCrew — Recover hidden labor profit"
-                      ariaLabel="Share FieldCrew homepage"
-                    />
-                  </div>
-                </BentoCard>
-              </aside>
-            </div>
-          </div>
-        </SectionBand>
-        <PricingSection4 variant="marketing" />
-        <FinalCta />
-        <CtaSupportMicrocopy />
+        <InstrumentCalculator />
+        <InstrumentScaleSection />
+        <InstrumentCompareSection />
+        <InstrumentHowItWorks />
+        <InstrumentReassurance />
+        <InstrumentPricing />
+        <InstrumentFinalCta />
       </main>
       <Footer />
     </>
