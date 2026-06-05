@@ -1,24 +1,25 @@
-import { getAuthProxyConfig } from "@/lib/supabase/auth-proxy";
+import { getSupabaseProjectOrigin } from "@/lib/supabase/auth-proxy";
 import { updateSession } from "@/lib/supabase/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   try {
-    const host =
-      request.headers.get("x-forwarded-host") ??
-      request.headers.get("host") ??
-      "";
-    const hostname = host.split(",")[0]?.trim().replace(/:\d+$/, "") ?? "";
     const pathname = request.nextUrl.pathname;
 
-    const authProxy = getAuthProxyConfig();
-
-    if (authProxy && hostname === authProxy.authHost) {
-      const target = new URL(
-        `${pathname}${request.nextUrl.search}`,
-        authProxy.supabaseOrigin
-      );
-      return NextResponse.rewrite(target);
+    // The branded auth domain (e.g. auth.getfieldcrew.com) is served by this app on
+    // Vercel. Supabase issues OAuth callback URLs on that domain, so Google redirects
+    // back to /auth/v1/callback here. Forward every GoTrue endpoint (/auth/v1/*) to the
+    // real Supabase project; otherwise these requests hit Next.js and return its 404.
+    // The app itself has no /auth/v1/* routes, so this never shadows a real page.
+    if (pathname.startsWith("/auth/v1/")) {
+      const supabaseOrigin = getSupabaseProjectOrigin();
+      if (supabaseOrigin) {
+        const target = new URL(
+          `${pathname}${request.nextUrl.search}`,
+          supabaseOrigin
+        );
+        return NextResponse.rewrite(target);
+      }
     }
 
     return await updateSession(request);
