@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, clearStaleAuthCookies } from "@/lib/supabase/client";
 import {
   formatAuthError,
   isSupabaseConfigured,
@@ -149,6 +149,7 @@ export function LoginClient() {
     setLoading("google");
 
     try {
+      clearStaleAuthCookies();
       const supabase = createClient();
       const origin = getSiteOrigin();
       const next = searchParams.get("next");

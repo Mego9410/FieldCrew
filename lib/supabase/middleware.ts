@@ -60,7 +60,16 @@ export async function updateSession(request: NextRequest) {
     if (error) {
       const loginUrl = new URL(routes.public.login, request.url);
       loginUrl.searchParams.set("error", encodeURIComponent(error.message));
-      return NextResponse.redirect(loginUrl);
+      const errorRes = NextResponse.redirect(loginUrl);
+      // Self-heal PKCE failures: a stale/mismatched code-verifier cookie (e.g. left
+      // behind by an earlier failed attempt) otherwise poisons every retry. Clear any
+      // verifier cookies so the next sign-in starts from a clean state.
+      for (const cookie of request.cookies.getAll()) {
+        if (cookie.name.includes("code-verifier")) {
+          errorRes.cookies.set(cookie.name, "", { path: "/", maxAge: 0 });
+        }
+      }
+      return errorRes;
     }
 
     if (data?.session?.user) {

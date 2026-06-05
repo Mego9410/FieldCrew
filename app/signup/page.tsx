@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, clearStaleAuthCookies } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import { Nav } from "@/components/landing/Nav";
@@ -78,6 +78,7 @@ export default function SignUpPage() {
     setSuccessMessage(null);
     setLoading("google");
 
+    clearStaleAuthCookies();
     const supabase = createClient();
     const origin = getSiteOrigin();
     const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextRedirect)}`;

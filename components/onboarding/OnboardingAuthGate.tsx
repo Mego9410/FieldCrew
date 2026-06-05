@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, Loader2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, clearStaleAuthCookies } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
 
 function getSiteOrigin() {
@@ -29,6 +29,7 @@ export function OnboardingAuthGate() {
     setSuccessMessage(null);
     setLoading("google");
 
+    clearStaleAuthCookies();
     const supabase = createClient();
     const origin = getSiteOrigin();
     const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(onboardingPath)}`;
