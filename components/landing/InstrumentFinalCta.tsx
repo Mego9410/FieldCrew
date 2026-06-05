@@ -39,7 +39,7 @@ export function InstrumentFinalCta() {
             See my monthly leak <ArrowRight className="ml-2 h-[18px] w-[18px]" aria-hidden />
           </Link>
           <Link
-            href={routes.owner.subscribe}
+            href={`${routes.public.signup}?plan=growth`}
             className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/25 bg-transparent px-6 text-[15px] font-bold text-white transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950"
           >
             Start for $9

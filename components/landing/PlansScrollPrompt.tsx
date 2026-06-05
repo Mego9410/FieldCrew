@@ -88,6 +88,7 @@ export function PlansScrollPrompt({
       className={cn(
         // Desktop: side card, vertically centered. Mobile: fall back to bottom toast.
         "fixed bottom-5 right-5 z-50 select-none",
+        open ? "pointer-events-auto" : "pointer-events-none",
         "w-[min(288px,calc(100vw-40px))]",
         "sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2",
         // Make it a tall, portrait card on desktop (matches screenshot aspect).

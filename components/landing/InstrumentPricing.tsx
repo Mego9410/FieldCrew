@@ -4,9 +4,18 @@ import Link from "next/link";
 import { Check, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { routes } from "@/lib/routes";
+import type { PlanId } from "@/lib/pricing-plans";
 
-const PLANS = [
+const PLANS: ReadonlyArray<{
+  id: PlanId;
+  name: string;
+  work: string;
+  price: number;
+  hot: boolean;
+  features: readonly string[];
+}> = [
   {
+    id: "starter",
     name: "Starter",
     work: "For solo + small crews",
     price: 49,
@@ -14,6 +23,7 @@ const PLANS = [
     features: ["Up to 5 technicians", "Quoted vs actual tracking", "Labor cost per job", "QuickBooks-ready exports", "Email support"],
   },
   {
+    id: "growth",
     name: "Growth",
     work: "For growing shops",
     price: 89,
@@ -28,13 +38,14 @@ const PLANS = [
     ],
   },
   {
+    id: "pro",
     name: "Pro",
     work: "For multi-crew operations",
     price: 149,
     hot: false,
     features: ["Unlimited technicians", "Everything in Growth", "Project + multi-job rollups", "Advanced reporting", "Dedicated onboarding"],
   },
-] as const;
+];
 
 export function InstrumentPricing() {
   return (
@@ -108,9 +119,9 @@ export function InstrumentPricing() {
               </ul>
 
               <Link
-                href={routes.owner.subscribe}
+                href={`${routes.public.signup}?plan=${p.id}`}
                 className={cn(
-                  "mt-8 inline-flex min-h-[50px] w-full items-center justify-center rounded-full text-[15px] font-bold transition focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950",
+                  "relative z-10 mt-8 flex min-h-[50px] w-full items-center justify-center rounded-full text-[15px] font-bold transition focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950",
                   p.hot
                     ? "bg-fc-orange-500 text-fc-navy-950 hover:bg-fc-orange-600"
                     : "border border-white/20 bg-white/5 text-white hover:bg-white/10",

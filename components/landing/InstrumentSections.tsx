@@ -271,7 +271,7 @@ export function InstrumentReassurance() {
 
             <div className="mt-7">
               <Link
-                href={routes.owner.subscribe}
+                href={`${routes.public.signup}?plan=growth`}
                 className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-fc-orange-500 px-6 text-[15px] font-bold text-fc-navy-950 transition hover:bg-fc-orange-600 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-fc-navy-950"
               >
                 Start for $9

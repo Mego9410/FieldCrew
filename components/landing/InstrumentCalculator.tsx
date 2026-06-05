@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { routes } from "@/lib/routes";
+import { suggestPlanIdForWorkers } from "@/lib/pricing-plans";
 
 type SliderSpec = {
   label: string;
@@ -117,6 +118,7 @@ export function InstrumentCalculator() {
   const leak = Math.round(techs * rate * (overrun / 100) * hrsMo);
   const otShare = Math.round(leak * 0.42);
   const quoteShare = Math.round(leak * 0.58);
+  const suggestedPlan = suggestPlanIdForWorkers(techs);
 
   return (
     <section id="calculator" className="relative overflow-hidden bg-fc-navy-950 text-white">
@@ -208,8 +210,8 @@ export function InstrumentCalculator() {
 
             <div className="mt-7">
               <Link
-                href={routes.owner.subscribe}
-                className="inline-flex min-h-[52px] w-full items-center justify-center rounded-full bg-fc-orange-500 px-6 text-[15px] font-bold text-fc-navy-950 transition hover:bg-fc-orange-600 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-[var(--console-bg,#0a0e14)]"
+                href={`${routes.public.signup}?plan=${suggestedPlan}`}
+                className="flex min-h-[52px] w-full items-center justify-center rounded-full bg-fc-orange-500 px-6 text-[15px] font-bold text-fc-navy-950 transition hover:bg-fc-orange-600 focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-[var(--console-bg,#0a0e14)]"
               >
                 Build my profit report <ArrowRight className="ml-2 h-[18px] w-[18px]" aria-hidden />
               </Link>
@@ -217,7 +219,7 @@ export function InstrumentCalculator() {
                 Free · no card ·{" "}
                 <Link
                   href={routes.public.sampleReport}
-                  className="font-semibold text-fc-orange-400 underline decoration-fc-orange-400 underline-offset-4 hover:no-underline focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-[var(--console-bg,#0a0e14)]"
+                  className="font-semibold text-fc-orange-500 underline decoration-fc-orange-500 underline-offset-4 hover:no-underline focus:outline-none focus:ring-2 focus:ring-fc-accent focus:ring-offset-2 focus:ring-offset-[var(--console-bg,#0a0e14)]"
                 >
                   want to see an example report first?
                 </Link>

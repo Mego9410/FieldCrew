@@ -20,7 +20,7 @@ function getNextRedirect(searchParams: URLSearchParams): string {
   const next = searchParams.get("next");
   if (next?.startsWith("/") && !next.startsWith("//")) return next;
   const plan = searchParams.get("plan");
-  if (plan) return routes.owner.onboarding;
+  if (plan) return `${routes.owner.onboarding}?plan=${encodeURIComponent(plan)}`;
   return routes.owner.home;
 }
 
