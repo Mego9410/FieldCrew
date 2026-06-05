@@ -12,9 +12,9 @@ Users should see **`auth.getfieldcrew.com`** during Google sign-in, not `*.supab
 
 1. **Vercel → Environment Variables (Production)**:
    - `NEXT_PUBLIC_SUPABASE_URL` = `https://auth.getfieldcrew.com`
-   - `SUPABASE_PROJECT_URL` = `https://<PROJECT_REF>.supabase.co` (e.g. `https://dndmaagfzgnelwnoqnjf.supabase.co`)
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your anon key
    - `NEXT_PUBLIC_APP_URL` = `https://getfieldcrew.com`
+   - `SUPABASE_PROJECT_URL` = `https://<PROJECT_REF>.supabase.co` (e.g. `https://dndmaagfzgnelwnoqnjf.supabase.co`) — *optional.* The proxy now derives the real `*.supabase.co` origin from the anon key's JWT `ref` claim, so this is only needed if you use a non‑JWT publishable key (`sb_publishable_...`).
 2. **Google Cloud → Authorized redirect URIs**:
    - `https://auth.getfieldcrew.com/auth/v1/callback`
 3. **Supabase → Redirect URLs** (app return path):

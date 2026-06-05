@@ -2,6 +2,8 @@
  * Branded auth host (e.g. auth.getfieldcrew.com) on Vercel must proxy to the real
  * Supabase project URL — otherwise /auth/v1/authorize returns the app 404 page.
  */
+import { getSupabaseAnonKey } from "@/lib/supabase/env";
+
 export type AuthProxyConfig = {
   authHost: string;
   supabaseOrigin: string;
@@ -9,6 +11,23 @@ export type AuthProxyConfig = {
 
 function trimOrigin(url: string) {
   return url.replace(/\/$/, "");
+}
+
+/** Decode a Supabase legacy JWT key (anon/service) and return its project `ref` claim. */
+function projectRefFromJwt(key: string): string | null {
+  const parts = key.split(".");
+  if (parts.length !== 3) return null;
+  try {
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const json =
+      typeof atob !== "undefined"
+        ? atob(base64)
+        : Buffer.from(base64, "base64").toString("utf8");
+    const parsed = JSON.parse(json) as { ref?: unknown };
+    return typeof parsed.ref === "string" && parsed.ref ? parsed.ref : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Real Supabase API origin (always *.supabase.co). */
@@ -28,35 +47,18 @@ export function getSupabaseProjectOrigin(): string | null {
       /* skip invalid */
     }
   }
+
+  // Fallback: derive the project origin from the anon key JWT (its `ref` claim).
+  // This keeps the branded-domain proxy working even when SUPABASE_PROJECT_URL
+  // is not set, as long as a legacy JWT anon key is configured.
+  const ref = projectRefFromJwt(getSupabaseAnonKey());
+  if (ref) return `https://${ref}.supabase.co`;
+
   return null;
 }
 
 export function getAuthProxyConfig(): AuthProxyConfig | null {
   const publicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  // #region agent log
-  if (typeof fetch !== "undefined") {
-    fetch("http://127.0.0.1:7645/ingest/a668a102-dde3-42a2-b40c-2c27cb853024", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Debug-Session-Id": "00297d",
-      },
-      body: JSON.stringify({
-        sessionId: "00297d",
-        runId: "pre-fix",
-        hypothesisId: "H1",
-        location: "lib/supabase/auth-proxy.ts:getAuthProxyConfig",
-        message: "resolve proxy config",
-        data: {
-          hasPublicUrl: Boolean(publicUrl),
-          publicHost: publicUrl ? new URL(publicUrl).hostname : null,
-          projectOrigin: getSupabaseProjectOrigin(),
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-  }
-  // #endregion
   if (!publicUrl) return null;
 
   let publicHost: string;

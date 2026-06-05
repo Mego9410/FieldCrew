@@ -5,7 +5,6 @@ import {
   isSupabaseConfigured,
   resolveSupabaseConfig,
 } from "@/lib/supabase/env";
-import { agentLog } from "@/lib/debug/agent-log";
 
 /**
  * Auth configuration audit (no secrets). Disabled in production unless
@@ -66,13 +65,6 @@ export async function GET(request: Request) {
       hostname !== authProxy.authHost &&
       serverConfig.url.includes(authProxy.authHost),
   };
-
-  agentLog(
-    "app/api/debug/auth-audit/route.ts:GET",
-    "auth audit snapshot",
-    audit as Record<string, unknown>,
-    "H1-H5"
-  );
 
   return NextResponse.json(audit);
 }

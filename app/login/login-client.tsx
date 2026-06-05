@@ -155,36 +155,6 @@ export function LoginClient() {
       const nextPath =
         next?.startsWith("/") && !next.startsWith("//") ? next : routes.auth.postLogin;
       const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
-      const supabaseHost = (() => {
-        try {
-          return new URL(config.url).hostname;
-        } catch {
-          return "";
-        }
-      })();
-      // #region agent log
-      fetch("http://127.0.0.1:7645/ingest/a668a102-dde3-42a2-b40c-2c27cb853024", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Debug-Session-Id": "00297d",
-        },
-        body: JSON.stringify({
-          sessionId: "00297d",
-          runId: "pre-fix",
-          hypothesisId: "H5",
-          location: "login-client.tsx:handleGoogleSignIn",
-          message: "OAuth redirect hosts",
-          data: {
-            appOrigin: origin,
-            supabaseApiHost: supabaseHost,
-            callbackHost: new URL(redirectTo).hostname,
-            crossDomainPkceRisk: supabaseHost !== new URL(redirectTo).hostname,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
 
       const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: "google",
