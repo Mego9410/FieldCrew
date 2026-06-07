@@ -29,6 +29,7 @@ export default function WorkersPage() {
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "cards">("list");
   const [sendingWorkerId, setSendingWorkerId] = useState<string | null>(null);
+  const [openingWorkerId, setOpeningWorkerId] = useState<string | null>(null);
   const { items: workers, loading, refetch } = useWorkers();
   const toast = useToast();
   const readOnlyMode = useReadOnlyMode();
@@ -67,6 +68,42 @@ export default function WorkersPage() {
       }
     },
     [readOnlyMode, toast, refetch]
+  );
+
+  const handleOpenAsWorker = useCallback(
+    async (workerId: string) => {
+      if (readOnlyMode) {
+        toast.error("Finish onboarding to preview the worker app.");
+        return;
+      }
+      // Open the tab synchronously so it isn't blocked, then point it at the
+      // worker portal once we have a valid invite token.
+      const win = window.open("", "_blank", "noopener,noreferrer");
+      setOpeningWorkerId(workerId);
+      try {
+        const res = await fetch("/api/invite/createTokens", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ workerIds: [workerId] }),
+        });
+        const data = await res.json().catch(() => ({}));
+        const token = data?.invites?.[0]?.token as string | undefined;
+        if (!res.ok || !token) {
+          if (win) win.close();
+          toast.error(data?.error ?? "Could not open worker app");
+          return;
+        }
+        const url = routes.worker.home(token);
+        if (win) win.location.href = url;
+        else window.open(url, "_blank", "noopener,noreferrer");
+      } catch {
+        if (win) win.close();
+        toast.error("Could not open worker app");
+      } finally {
+        setOpeningWorkerId(null);
+      }
+    },
+    [readOnlyMode, toast]
   );
 
   const filtered = workers.filter(
@@ -215,15 +252,15 @@ export default function WorkersPage() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Link
-                        href={routes.worker.home(worker.id)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-fc border border-fc-border bg-fc-surface px-2.5 py-1.5 text-xs font-medium text-fc-brand transition-all duration-fc hover:border-fc-accent/50 hover:bg-fc-surface-muted"
+                      <button
+                        type="button"
+                        onClick={() => handleOpenAsWorker(worker.id)}
+                        disabled={openingWorkerId === worker.id}
+                        className="inline-flex items-center gap-1.5 rounded-fc border border-fc-border bg-fc-surface px-2.5 py-1.5 text-xs font-medium text-fc-brand transition-all duration-fc hover:border-fc-accent/50 hover:bg-fc-surface-muted disabled:opacity-50"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
-                        Open as worker
-                      </Link>
+                        {openingWorkerId === worker.id ? "Opening…" : "Open as worker"}
+                      </button>
                     </TableCell>
                     <TableCell>
                       <button
@@ -292,15 +329,15 @@ export default function WorkersPage() {
                 </span>
               </div>
               <div className="mt-2 flex gap-2">
-                <a
-                  href={routes.worker.home(worker.id)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 border border-fc-border bg-fc-surface py-2 text-xs font-semibold text-fc-brand hover:bg-fc-surface-muted"
+                <button
+                  type="button"
+                  onClick={() => handleOpenAsWorker(worker.id)}
+                  disabled={openingWorkerId === worker.id}
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 border border-fc-border bg-fc-surface py-2 text-xs font-semibold text-fc-brand hover:bg-fc-surface-muted disabled:opacity-50"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
-                  Open as worker
-                </a>
+                  {openingWorkerId === worker.id ? "Opening…" : "Open as worker"}
+                </button>
                 <button
                   type="button"
                   onClick={() => handleSendProfileLink(worker.id)}

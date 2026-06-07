@@ -125,12 +125,23 @@ export async function POST(request: Request) {
     metadata: { redirectTo },
   });
 
-  return NextResponse.json({
-    url: data.properties.action_link,
-    isolated: Boolean(isolatedOrigin),
-    redirectTo,
-    linkRedirectTo,
-    target: { ownerUserId: ownerId, companyId: targetCompanyId, email },
-  });
+  // The action_link is a one-time credential. It must reach the admin's browser
+  // to open the isolated impersonation tab, but it must never be cached or stored
+  // in any shared/intermediary cache or browser history-restorable response.
+  return NextResponse.json(
+    {
+      url: data.properties.action_link,
+      isolated: Boolean(isolatedOrigin),
+      redirectTo,
+      linkRedirectTo,
+      target: { ownerUserId: ownerId, companyId: targetCompanyId, email },
+    },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, private",
+        Pragma: "no-cache",
+      },
+    }
+  );
 }
 

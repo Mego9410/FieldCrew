@@ -23,6 +23,7 @@ CREATE INDEX IF NOT EXISTS idx_company_onboarding_profile_trade ON company_onboa
 
 ALTER TABLE company_onboarding_profile ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Owner CRUD onboarding profile of own company" ON company_onboarding_profile;
 CREATE POLICY "Owner CRUD onboarding profile of own company"
   ON company_onboarding_profile FOR ALL
   USING (

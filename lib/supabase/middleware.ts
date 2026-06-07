@@ -4,6 +4,7 @@ import { ensureOwnerUserForAuthUser, getSubscriptionStatusForUser } from "@/lib/
 import { routes } from "@/lib/routes";
 import { isAllowlistedAdminEmail } from "@/lib/admin/allowlist";
 import { getSupabaseAnonKey, getSupabaseUrl, isSupabaseConfigured } from "@/lib/supabase/env";
+import { TWO_FACTOR_COOKIE, isValidTwoFactorCookie } from "@/lib/security/twoFactorCookie";
 
 const hasEnvVars = isSupabaseConfigured();
 
@@ -161,7 +162,10 @@ export async function updateSession(request: NextRequest) {
 
   // 2FA gating (device-level cookie). If enabled for the owner, require /auth/2fa before /app or /admin.
   if ((isAppRoute || isAdminRoute) && user && !isTwoFactorRoute) {
-    const has2faCookie = request.cookies.get("fc_2fa")?.value === "1";
+    const has2faCookie = await isValidTwoFactorCookie(
+      user.id,
+      request.cookies.get(TWO_FACTOR_COOKIE)?.value
+    );
     if (!has2faCookie) {
       const { data: twofa } = await supabase
         .from("owner_two_factor")

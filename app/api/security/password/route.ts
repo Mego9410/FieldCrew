@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { TWO_FACTOR_COOKIE } from "@/lib/security/twoFactorCookie";
+import { rateLimit, tooManyRequests } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -7,6 +10,9 @@ export async function POST(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const rl = rateLimit(`password:${user.id}`, { limit: 5, windowMs: 15 * 60_000 });
+  if (!rl.allowed) return tooManyRequests(rl.retryAfterSeconds);
 
   let body: { currentPassword?: string; newPassword?: string } = {};
   try {
@@ -37,6 +43,16 @@ export async function POST(request: Request) {
   if (updateError) {
     return NextResponse.json({ error: updateError.message }, { status: 500 });
   }
+
+  // Invalidate the device 2FA cookie so a password change forces re-verification.
+  const cookieStore = await cookies();
+  cookieStore.set(TWO_FACTOR_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 0,
+  });
 
   return NextResponse.json({ ok: true });
 }

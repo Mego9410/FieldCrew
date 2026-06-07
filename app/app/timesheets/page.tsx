@@ -1,13 +1,6 @@
 import {
-  Search,
-  Filter,
-  Calendar,
   User,
-  Check,
-  X,
   Clock,
-  ChevronLeft,
-  ChevronRight,
   DollarSign,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -49,7 +42,6 @@ type TimesheetRow = {
   hours: number;
   jobs: number;
   earnings: number;
-  status: "pending" | "approved";
 };
 
 function buildTimesheetRows(workers: Worker[], timeEntries: TimeEntry[]): TimesheetRow[] {
@@ -84,7 +76,6 @@ function buildTimesheetRows(workers: Worker[], timeEntries: TimeEntry[]): Timesh
       hours,
       jobs: jobIds.size,
       earnings: Math.round(hours * rate * 100) / 100,
-      status: "pending",
     });
   }
 
@@ -105,51 +96,14 @@ export default async function TimesheetsPage() {
       <div className="mb-6">
         <h1 className="font-display text-xl font-bold text-fc-brand">Timesheets</h1>
         <p className="mt-0.5 text-sm text-fc-muted">
-          View and approve timesheets by period.
+          Hours and earnings summarised by worker and week.
         </p>
       </div>
 
       <section className="mb-8">
         <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-fc-muted">
-          By period
+          By week
         </h2>
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <div className="flex items-center border border-fc-border bg-fc-surface">
-          <button
-            type="button"
-            className="p-2.5 text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"
-            aria-label="Previous period"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <span className="flex items-center gap-2 border-x border-fc-border px-4 py-2.5 text-sm font-semibold text-fc-brand">
-            <Calendar className="h-4 w-4 text-fc-muted" />
-            Feb 3 – 9, 2025
-          </span>
-          <button
-            type="button"
-            className="p-2.5 text-fc-muted hover:bg-fc-surface-muted hover:text-fc-brand"
-            aria-label="Next period"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
-        <div className="relative flex-1 min-w-[200px] max-w-xs">
-          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-fc-muted" />
-          <input
-            type="search"
-            placeholder="Search by worker…"
-            className="w-full border border-fc-border bg-fc-surface py-2 pl-8 pr-3 text-sm text-fc-brand placeholder:text-fc-muted focus:border-fc-accent focus:outline-none focus:ring-1 focus:ring-fc-accent"
-          />
-        </div>
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 border border-fc-border bg-fc-surface px-3 py-2 text-sm font-semibold text-fc-brand hover:bg-fc-surface-muted"
-        >
-          <Filter className="h-4 w-4" />
-          Filters
-        </button>
-      </div>
 
       <div className="border border-fc-border bg-fc-surface overflow-hidden">
         <div className="overflow-x-auto">
@@ -161,14 +115,12 @@ export default async function TimesheetsPage() {
                 <th className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-fc-muted">Hours</th>
                 <th className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-fc-muted">Jobs</th>
                 <th className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-fc-muted">Earnings</th>
-                <th className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-fc-muted">Status</th>
-                <th className="px-3 py-2 text-right text-[10px] font-bold uppercase tracking-widest text-fc-muted">Actions</th>
               </tr>
             </thead>
             <tbody>
               {timesheets.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-3 py-8 text-center text-fc-muted">
+                  <td colSpan={5} className="px-3 py-8 text-center text-fc-muted">
                     No timesheets yet. Time entries from your workers will appear here.
                   </td>
                 </tr>
@@ -199,37 +151,6 @@ export default async function TimesheetsPage() {
                         <DollarSign className="h-3.5 w-3.5" />
                         ${ts.earnings.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span
-                        className={`inline-flex px-2.5 py-0.5 text-xs font-semibold ${
-                          ts.status === "approved"
-                            ? "bg-fc-success-bg text-fc-success"
-                            : "bg-fc-warning-bg text-fc-warning"
-                        }`}
-                      >
-                        {ts.status}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      {ts.status === "pending" && (
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            type="button"
-                            className="inline-flex items-center gap-1.5 border border-fc-border bg-fc-surface px-2.5 py-1.5 text-xs font-semibold text-fc-brand hover:bg-fc-surface-muted"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                            Reject
-                          </button>
-                          <button
-                            type="button"
-                            className="inline-flex items-center gap-1.5 bg-fc-accent px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-fc-accent-dark"
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                            Approve
-                          </button>
-                        </div>
-                      )}
                     </td>
                   </tr>
                 ))

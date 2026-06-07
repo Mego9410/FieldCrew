@@ -1,7 +1,18 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getClientIp, rateLimit, tooManyRequests } from "@/lib/rateLimit";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_JSON_FIELD_BYTES = 10_000;
+
+function withinSizeLimit(value: unknown): boolean {
+  if (value == null) return true;
+  try {
+    return JSON.stringify(value).length <= MAX_JSON_FIELD_BYTES;
+  } catch {
+    return false;
+  }
+}
 
 interface LeadPayload {
   email: string;
@@ -18,6 +29,12 @@ function validateEmail(email: unknown): email is string {
 }
 
 export async function POST(request: Request) {
+  const rl = rateLimit(`leads:${getClientIp(request)}`, {
+    limit: 5,
+    windowMs: 60_000,
+  });
+  if (!rl.allowed) return tooManyRequests(rl.retryAfterSeconds);
+
   let body: LeadPayload;
   try {
     body = await request.json();
@@ -35,10 +52,23 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!withinSizeLimit(body.inputs) || !withinSizeLimit(body.outputs)) {
+    return NextResponse.json(
+      { error: "Payload too large" },
+      { status: 413 }
+    );
+  }
+
+  // Preserve lead qualification flag alongside calculator inputs so it is not lost.
+  const inputs =
+    body.isHvacOwnerManager !== undefined
+      ? { ...(body.inputs ?? {}), isHvacOwnerManager: body.isHvacOwnerManager }
+      : body.inputs ?? null;
+
   const payload = {
     email: body.email.trim().toLowerCase(),
     source: body.source ?? "hidden_profit",
-    inputs: body.inputs ?? null,
+    inputs,
     outputs: body.outputs ?? null,
     created_at: new Date().toISOString(),
   };

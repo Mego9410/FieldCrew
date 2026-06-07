@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getClientIp, rateLimit, tooManyRequests } from "@/lib/rateLimit";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_MESSAGE_LENGTH = 5000;
 
 interface ContactPayload {
   name: string;
@@ -25,6 +27,12 @@ function isValidTopic(v: unknown): v is ContactPayload["topic"] {
 }
 
 export async function POST(request: Request) {
+  const rl = rateLimit(`contact:${getClientIp(request)}`, {
+    limit: 5,
+    windowMs: 60_000,
+  });
+  if (!rl.allowed) return tooManyRequests(rl.retryAfterSeconds);
+
   let body: ContactPayload;
   try {
     body = await request.json();
@@ -46,6 +54,12 @@ export async function POST(request: Request) {
   }
   if (!isNonEmptyString(body.message)) {
     return NextResponse.json({ error: "Message is required." }, { status: 400 });
+  }
+  if (body.message.trim().length > MAX_MESSAGE_LENGTH) {
+    return NextResponse.json(
+      { error: `Message must be ${MAX_MESSAGE_LENGTH} characters or fewer.` },
+      { status: 400 }
+    );
   }
 
   const payload = {

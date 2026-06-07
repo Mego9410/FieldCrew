@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getJobs, getWorkers, getTimeEntries, getJobTypes } from "@/lib/data";
+import {
+  getCompanyForCurrentUser,
+  getJobs,
+  getWorkers,
+  getTimeEntries,
+  getJobTypes,
+} from "@/lib/data";
 import { buildLabourCostTrendPayload } from "@/lib/labour-cost-trend";
 
 const DEFAULT_RANGE_DAYS = 90;
@@ -9,6 +15,14 @@ const ALLOWED_RANGES = [30, 90, 180, 365];
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
+
+    // Explicit auth + company scoping (don't rely on RLS alone).
+    const company = await getCompanyForCurrentUser(supabase);
+    if (!company) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const currency = company.settings?.companyCurrency?.trim() || "USD";
+
     const { searchParams } = new URL(request.url);
     const rangeDaysParam = searchParams.get("rangeDays");
     const rangeDays = rangeDaysParam
@@ -23,10 +37,11 @@ export async function GET(request: NextRequest) {
       : undefined;
 
     const [jobs, workers, timeEntries, jobTypes] = await Promise.all([
-      getJobs(undefined, undefined, supabase),
-      getWorkers(undefined, supabase),
+      getJobs(company.id, undefined, supabase),
+      getWorkers(company.id, supabase),
+      // getTimeEntries filters by worker_id/job_id; company scoping is enforced by RLS.
       getTimeEntries(undefined, undefined, supabase),
-      getJobTypes(undefined, supabase),
+      getJobTypes(company.id, supabase),
     ]);
 
     const payload = buildLabourCostTrendPayload(
@@ -36,7 +51,7 @@ export async function GET(request: NextRequest) {
       jobTypes,
       {
         rangeDays: effectiveRange,
-        currency: "GBP",
+        currency,
         targetLabourCostPerJob:
           targetLabourCostPerJob != null && targetLabourCostPerJob >= 0
             ? targetLabourCostPerJob

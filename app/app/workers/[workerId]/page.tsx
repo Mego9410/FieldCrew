@@ -125,6 +125,32 @@ export default function WorkerDetailPage() {
 
   const loading = workerLoading || entriesLoading || jobsLoading;
 
+  const [opening, setOpening] = useState(false);
+  async function handleOpenAsWorker(workerId: string) {
+    const win = window.open("", "_blank", "noopener,noreferrer");
+    setOpening(true);
+    try {
+      const res = await fetch("/api/invite/createTokens", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workerIds: [workerId] }),
+      });
+      const data = await res.json().catch(() => ({}));
+      const token = data?.invites?.[0]?.token as string | undefined;
+      if (!res.ok || !token) {
+        if (win) win.close();
+        return;
+      }
+      const url = routes.worker.home(token);
+      if (win) win.location.href = url;
+      else window.open(url, "_blank", "noopener,noreferrer");
+    } catch {
+      if (win) win.close();
+    } finally {
+      setOpening(false);
+    }
+  }
+
   if (workerLoading && !worker) {
     return (
       <div className="px-4 py-6 sm:px-6">
@@ -174,15 +200,15 @@ export default function WorkerDetailPage() {
             <p className="mt-0.5 text-sm text-fc-muted">Worker performance profile.</p>
           </div>
         </div>
-        <a
-          href={routes.worker.home(worker.id)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-fc-border bg-white px-3 py-2 text-sm font-medium text-fc-brand transition-colors hover:bg-slate-50 hover:border-fc-accent/50"
+        <button
+          type="button"
+          onClick={() => handleOpenAsWorker(worker.id)}
+          disabled={opening}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-fc-border bg-white px-3 py-2 text-sm font-medium text-fc-brand transition-colors hover:bg-slate-50 hover:border-fc-accent/50 disabled:opacity-50"
         >
           <ExternalLink className="h-4 w-4" />
-          Open as worker
-        </a>
+          {opening ? "Opening…" : "Open as worker"}
+        </button>
       </div>
 
       {/* Details card (compact, keep for phone/rate) */}

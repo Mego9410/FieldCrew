@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { getCompanyForCurrentUser } from "@/lib/data";
+import { createStripeServerClient } from "@/lib/stripe/server";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -55,6 +56,29 @@ export async function POST(request: Request) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Stop billing: cancel the Stripe subscription so a "deleted" account is not
+  // charged again. Best-effort — a Stripe failure must not block account deletion.
+  if (company.stripeSubscriptionId) {
+    const stripe = createStripeServerClient();
+    if (stripe) {
+      try {
+        await stripe.subscriptions.cancel(company.stripeSubscriptionId);
+        await companiesTable
+          .update({ subscription_status: "canceled", stripe_subscription_id: null })
+          .eq("id", company.id);
+      } catch (err) {
+        console.error("[delete-account] Stripe cancel failed:", err);
+      }
+    }
+  }
+
+  // Revoke the current session so the user is logged out immediately.
+  try {
+    await supabase.auth.signOut();
+  } catch (err) {
+    console.error("[delete-account] signOut failed:", err);
   }
 
   return NextResponse.json({ ok: true });

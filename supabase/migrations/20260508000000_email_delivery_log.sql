@@ -6,7 +6,7 @@ create table if not exists public.email_delivery_log (
   provider text not null default 'resend',
   provider_event_id text,
   template_alias text not null,
-  company_id uuid,
+  company_id text,
   recipient_email text not null,
   sent_at timestamptz not null default now(),
   metadata jsonb
@@ -23,6 +23,7 @@ create index if not exists email_delivery_log_company_idx
 alter table public.email_delivery_log enable row level security;
 
 -- Owners can view their own company's log (read-only).
+drop policy if exists "Owners can read email delivery log" on public.email_delivery_log;
 create policy "Owners can read email delivery log"
   on public.email_delivery_log
   for select
@@ -31,7 +32,7 @@ create policy "Owners can read email delivery log"
     exists (
       select 1
       from public.owner_users ou
-      where ou.id = auth.uid()
+      where ou.id = auth.uid()::text
         and ou.company_id = email_delivery_log.company_id
     )
   );

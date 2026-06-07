@@ -46,9 +46,7 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel, on
   const [time, setTime] = useState(job?.time ?? "09:00");
   const [hoursPerDay, setHoursPerDay] = useState(job?.hoursPerDay?.toString() ?? "4");
   const [hoursExpected, setHoursExpected] = useState(job?.hoursExpected?.toString() ?? "");
-  const [workerIds, setWorkerIds] = useState<string[]>(
-    job?.workerIds ?? (workers.some((w) => w.id === "test-worker") ? ["test-worker"] : [])
-  );
+  const [workerIds, setWorkerIds] = useState<string[]>(job?.workerIds ?? []);
   const [workerSearch, setWorkerSearch] = useState("");
   const [typeId, setTypeId] = useState(job?.typeId ?? "");
   const [customerName, setCustomerName] = useState(job?.customerName ?? "");
@@ -56,6 +54,7 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel, on
   const [status, setStatus] = useState<Job["status"]>(job?.status ?? "scheduled");
   const [instructions, setInstructions] = useState(job?.instructions ?? "");
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const companyWorkers = workers.filter((w) => w.companyId === companyId);
   const filteredWorkers = workerSearch.trim()
@@ -75,6 +74,7 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel, on
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     setError(null);
 
     if (!name.trim()) {
@@ -136,6 +136,7 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel, on
       instructions: job ? instructions.trim() : (instructions.trim() || undefined),
     };
 
+    setSubmitting(true);
     try {
       if (job) {
         await updateJob(job.id, input);
@@ -174,6 +175,8 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel, on
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save job");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -402,15 +405,17 @@ export function JobForm({ job, projectId: propProjectId, onSuccess, onCancel, on
         <div className="flex gap-2">
           <button
             type="submit"
-            className="rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-fc-brand/90"
+            disabled={submitting}
+            className="rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-fc-brand/90 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {job ? "Update" : "Create"} job
+            {submitting ? "Saving…" : `${job ? "Update" : "Create"} job`}
           </button>
           {onCancel && (
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50"
+              disabled={submitting}
+              className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50 disabled:opacity-60"
             >
               Cancel
             </button>

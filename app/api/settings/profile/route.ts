@@ -79,6 +79,21 @@ export async function PATCH(request: Request) {
   if (!lastName) return NextResponse.json({ error: "Last name is required" }, { status: 400 });
   if (!email || !isValidEmail(email)) return NextResponse.json({ error: "Valid email is required" }, { status: 400 });
 
+  // Keep the Supabase Auth email (used for login) in sync with the profile email.
+  // Supabase sends a confirmation to the new address; the change applies once
+  // confirmed, so the owner can still log in with the old email until then.
+  let emailChangePending = false;
+  if (email !== (user.email ?? "").trim().toLowerCase()) {
+    const { error: authEmailError } = await supabase.auth.updateUser({ email });
+    if (authEmailError) {
+      return NextResponse.json(
+        { error: `Could not update login email: ${authEmailError.message}` },
+        { status: 400 }
+      );
+    }
+    emailChangePending = true;
+  }
+
   const fullName = `${firstName} ${lastName}`.trim();
   const updatedOwner = await updateOwnerUser(owner.id, { name: fullName, email }, supabase);
   if (!updatedOwner) return NextResponse.json({ error: "Failed to update owner" }, { status: 500 });
@@ -94,6 +109,7 @@ export async function PATCH(request: Request) {
   const split = splitName(updatedOwner.name);
   return NextResponse.json({
     ok: true,
+    emailChangePending,
     profile: {
       firstName: split.firstName,
       lastName: split.lastName,

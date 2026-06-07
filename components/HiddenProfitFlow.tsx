@@ -28,7 +28,7 @@ export function HiddenProfitFlow() {
   const [showLeadCapture, setShowLeadCapture] = useState(false);
   const [leadEmail, setLeadEmail] = useState("");
   const [leadCheckbox, setLeadCheckbox] = useState(false);
-  const [leadStatus, setLeadStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [leadStatus, setLeadStatus] = useState<"idle" | "loading" | "success" | "error" | "invalid">("idle");
 
   const runCalculation = useCallback(() => {
     const result = calculateLeakage(inputs);
@@ -52,6 +52,10 @@ export function HiddenProfitFlow() {
     e.preventDefault();
     const email = leadEmail.trim();
     if (!email) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setLeadStatus("invalid");
+      return;
+    }
     setLeadStatus("loading");
     try {
       const res = await fetch("/api/leads", {
@@ -222,6 +226,9 @@ export function HiddenProfitFlow() {
                       />
                       I’m an HVAC owner/manager
                     </label>
+                    {leadStatus === "invalid" && (
+                      <p className="text-sm text-fc-danger">Please enter a valid email address.</p>
+                    )}
                     {leadStatus === "error" && (
                       <p className="text-sm text-fc-danger">Something went wrong. Try again.</p>
                     )}

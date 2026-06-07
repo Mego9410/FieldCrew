@@ -25,9 +25,11 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
   const [hourlyRate, setHourlyRate] = useState(worker?.hourlyRate?.toString() ?? "");
   const [sendProfileLink, setSendProfileLink] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     setError(null);
 
     if (!name.trim()) {
@@ -59,6 +61,7 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
       companyId,
     };
 
+    setSubmitting(true);
     try {
       if (worker) {
         await updateWorker(worker.id, input);
@@ -94,6 +97,8 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
         return;
       }
       setError(err instanceof Error ? err.message : "Failed to save worker");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -154,15 +159,17 @@ export function WorkerForm({ worker, onSuccess, onCancel }: WorkerFormProps) {
       <div className="flex gap-2 pt-2">
         <button
           type="submit"
-          className="rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-fc-brand/90"
+          disabled={submitting}
+          className="rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-fc-brand/90 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {worker ? "Update" : "Create"} worker
+          {submitting ? "Saving…" : `${worker ? "Update" : "Create"} worker`}
         </button>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50"
+            disabled={submitting}
+            className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50 disabled:opacity-60"
           >
             Cancel
           </button>

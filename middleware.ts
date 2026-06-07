@@ -25,6 +25,20 @@ export async function middleware(request: NextRequest) {
     return await updateSession(request);
   } catch (e) {
     console.error("[middleware]", e);
+    // Fail closed for protected areas: if session handling throws, never let an
+    // unauthenticated/unverified request fall through to /app or /admin.
+    const pathname = request.nextUrl.pathname;
+    const isProtected =
+      pathname === "/app" ||
+      pathname.startsWith("/app/") ||
+      pathname === "/admin" ||
+      pathname.startsWith("/admin/");
+    if (isProtected) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("next", pathname);
+      loginUrl.searchParams.set("error", "session_error");
+      return NextResponse.redirect(loginUrl);
+    }
     return NextResponse.next({ request });
   }
 }

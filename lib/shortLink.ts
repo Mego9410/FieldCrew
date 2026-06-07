@@ -44,11 +44,11 @@ export async function getShortLinkTarget(
   supabase: any,
   code: string
 ): Promise<string | null> {
-  const { data, error } = await supabase
-    .from("short_links")
-    .select("target_path")
-    .eq("code", code.toLowerCase())
-    .single();
-  if (error || !data?.target_path) return null;
-  return data.target_path as string;
+  // Uses a SECURITY DEFINER RPC so anon redirects work without a table-wide
+  // SELECT policy (which would allow enumerating every short link).
+  const { data, error } = await supabase.rpc("get_short_link_target", {
+    p_code: code.toLowerCase(),
+  });
+  if (error || !data) return null;
+  return typeof data === "string" ? data : null;
 }

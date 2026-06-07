@@ -185,7 +185,7 @@ export function OnboardingAuthGate() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  minLength={6}
+                  minLength={mode === "signup" ? 8 : undefined}
                   className="min-h-12 w-full rounded-lg border border-fc-border bg-white py-3 pl-10 pr-3 text-fc-brand shadow-[inset_0_1px_1px_rgb(15_23_42_/0.03)] placeholder:text-fc-muted transition-[border-color,box-shadow] duration-200 ease-out focus:border-fc-accent focus:outline-none focus:ring-2 focus:ring-fc-accent/25 focus:ring-offset-0 disabled:opacity-70"
                   disabled={loading !== null}
                 />

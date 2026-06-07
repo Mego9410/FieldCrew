@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { decryptSecret, getTwoFactorRow, verifyTotpCode } from "@/lib/security/twoFactor";
 import { sendSecurity2faDisabledEmail } from "@/lib/email/notifications";
+import { TWO_FACTOR_COOKIE } from "@/lib/security/twoFactorCookie";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
   } catch {}
 
   const cookieStore = await cookies();
-  cookieStore.set("fc_2fa", "0", {
+  cookieStore.set(TWO_FACTOR_COOKIE, "", {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

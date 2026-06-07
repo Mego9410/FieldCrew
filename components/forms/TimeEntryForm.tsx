@@ -47,9 +47,11 @@ export function TimeEntryForm({
   const [breaks, setBreaks] = useState(timeEntry?.breaks?.toString() ?? "0");
   const [notes, setNotes] = useState(timeEntry?.notes ?? "");
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     setError(null);
 
     if (!workerId) {
@@ -85,6 +87,7 @@ export function TimeEntryForm({
       notes: notes.trim() || undefined,
     };
 
+    setSubmitting(true);
     try {
       if (timeEntry) {
         await updateTimeEntry(timeEntry.id, input);
@@ -101,6 +104,8 @@ export function TimeEntryForm({
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save time entry");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -176,15 +181,17 @@ export function TimeEntryForm({
       <div className="flex gap-2 pt-2">
         <button
           type="submit"
-          className="rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-fc-brand/90"
+          disabled={submitting}
+          className="rounded-lg bg-fc-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-fc-brand/90 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {timeEntry ? "Update" : "Create"} time entry
+          {submitting ? "Saving…" : `${timeEntry ? "Update" : "Create"} time entry`}
         </button>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50"
+            disabled={submitting}
+            className="rounded-lg border border-fc-border px-4 py-2.5 text-sm font-medium text-fc-brand hover:bg-slate-50 disabled:opacity-60"
           >
             Cancel
           </button>

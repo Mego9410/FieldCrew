@@ -3,6 +3,12 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { sendSecurity2faEnabledEmail } from "@/lib/email/notifications";
 import {
+  TWO_FACTOR_COOKIE,
+  TWO_FACTOR_COOKIE_MAX_AGE,
+  twoFactorCookieValue,
+} from "@/lib/security/twoFactorCookie";
+import { rateLimit, tooManyRequests } from "@/lib/rateLimit";
+import {
   decryptSecret,
   generateRecoveryCodes,
   getTwoFactorRow,
@@ -18,6 +24,10 @@ export async function POST(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Throttle TOTP/recovery attempts to prevent brute force of the 6-digit code.
+  const rl = rateLimit(`2fa-verify:${user.id}`, { limit: 10, windowMs: 5 * 60_000 });
+  if (!rl.allowed) return tooManyRequests(rl.retryAfterSeconds);
 
   let body: { code?: string; recoveryCode?: string } = {};
   try {
@@ -85,14 +95,16 @@ export async function POST(request: Request) {
     });
   } catch {}
 
-  // Mark this device/session as verified for 2FA-gated routes.
+  // Mark this device/session as verified for 2FA-gated routes. The cookie value
+  // is an HMAC bound to this user id so it can't be forged or reused by another
+  // account on the same browser.
   const cookieStore = await cookies();
-  cookieStore.set("fc_2fa", "1", {
+  cookieStore.set(TWO_FACTOR_COOKIE, await twoFactorCookieValue(user.id), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 24 * 30,
+    maxAge: TWO_FACTOR_COOKIE_MAX_AGE,
   });
 
   return NextResponse.json({
