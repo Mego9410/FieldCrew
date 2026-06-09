@@ -14,6 +14,8 @@ export interface PostFrontmatter {
   description: string;
   excerpt: string;
   publishDate: string; // ISO date
+  /** Optional refresh date for freshness signals and sitemap lastModified */
+  updatedDate?: string;
   category: string;
   tags: string[];
   slug: string;

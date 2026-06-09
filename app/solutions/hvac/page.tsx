@@ -4,8 +4,10 @@ import { Footer } from "@/components/landing/Footer";
 import { HvacSolutionsContent } from "@/components/solutions/HvacSolutionsContent";
 
 export const metadata: Metadata = {
-  title: "HVAC Solution — FieldCrew",
-  description: "How FieldCrew helps HVAC businesses recover hidden labor profit.",
+  title: "HVAC Workforce Management Software",
+  description:
+    "Scheduling, time tracking, and payroll for HVAC crews — with live job-cost visibility so labor stops eating your margin. Start for $9.",
+  alternates: { canonical: "/solutions/hvac" },
 };
 
 export default function SolutionsHvacPage() {

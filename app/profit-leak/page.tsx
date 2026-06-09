@@ -11,9 +11,10 @@ import {
 import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
-  title: "Profit Leak Calculator — FieldCrew",
+  title: "HVAC Labor Profit Leak Calculator",
   description:
-    "Estimate your monthly profit leak from under-quoted labor and overtime. See the dollar number in under a minute.",
+    "Estimate monthly HVAC labor profit leak from under-quoted jobs and overtime. See the dollar number in under a minute. Start fixing it for $9.",
+  alternates: { canonical: "/profit-leak" },
 };
 
 export default function ProfitLeakPage() {
@@ -30,7 +31,7 @@ export default function ProfitLeakPage() {
         <PublicPageHero
           className="py-8 sm:py-10 lg:py-12"
           eyebrow="Calculator"
-          title="Profit leak calculator"
+          title="HVAC labor profit leak calculator"
           description="Estimate monthly recoverable labor profit from under-quoted work and overtime pressure in under a minute."
         />
         <ProfitLeakCalculator />

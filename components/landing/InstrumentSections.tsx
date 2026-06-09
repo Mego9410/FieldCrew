@@ -104,6 +104,13 @@ export function InstrumentScaleSection() {
             <p className="relative mt-4 max-w-xl text-sm leading-6 text-[var(--console-text-muted,#94a3b8)]">
               Lost across small HVAC businesses every year to labor inefficiency that never shows up on an invoice.
             </p>
+            <p className="relative mt-2 max-w-xl text-xs leading-5 text-[var(--console-steel,#64748b)]">
+              FieldCrew estimate: ~120,000 US HVAC contractors × $3,750–$5,000 avg annual leak per shop.
+              Not third-party data.{" "}
+              <Link href="/profit-leak" className="underline hover:text-slate-300">
+                Run your own number
+              </Link>
+            </p>
 
             <div className="relative mt-6 h-2 overflow-hidden rounded-full bg-[var(--console-border,#1e2936)]">
               <span

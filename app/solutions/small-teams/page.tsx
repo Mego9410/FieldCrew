@@ -4,8 +4,10 @@ import { Footer } from "@/components/landing/Footer";
 import { SmallTeamsSolutionsContent } from "@/components/solutions/SmallTeamsSolutionsContent";
 
 export const metadata: Metadata = {
-  title: "Small Team Operations — FieldCrew",
-  description: "FieldCrew for small service teams that need margin visibility without complexity.",
+  title: "Field Service Software for Small HVAC Teams",
+  description:
+    "Workforce software for 3–50 tech shops: scheduling, time tracking, and payroll with job-level labor cost. No enterprise complexity. Start for $9.",
+  alternates: { canonical: "/solutions/small-teams" },
 };
 
 export default function SolutionsSmallTeamsPage() {

@@ -62,6 +62,14 @@ export function InstrumentHero({ regionName }: InstrumentHeroProps) {
               </Link>
             </div>
 
+            <p className="mt-4 text-xs text-slate-500">
+              FieldCrew estimate based on a typical 5–10 tech HVAC shop at $35–$45/hr loaded labor
+              rate with 10–20% labor overrun.{" "}
+              <Link href="/profit-leak" className="text-slate-400 underline hover:text-slate-300">
+                See how we calculate this
+              </Link>
+            </p>
+
             <div className="mt-5 inline-flex items-center gap-2 text-sm text-slate-400">
               <Clock className="h-4 w-4" aria-hidden />
               Takes about 60 seconds · no card, no install for your crew

@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import { DocsSidebar, type DocsNavGroup } from "@/components/docs/DocsSidebar";
 import { DocsToc } from "@/components/docs/DocsToc";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildDocsBreadcrumbs } from "@/lib/seo/breadcrumbs";
 
 interface DocsLayoutProps {
   title: string;
@@ -19,8 +21,11 @@ export function DocsLayout({
   toc = [],
   children,
 }: DocsLayoutProps) {
+  const breadcrumbSchema = buildDocsBreadcrumbs(currentPath, title);
+
   return (
     <main id="main" className="min-h-screen border-b border-fc-border bg-white">
+      <JsonLd data={breadcrumbSchema} />
       <section className="border-b border-fc-border bg-fc-surface-muted/50 py-10 sm:py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="font-display text-3xl font-bold text-fc-brand sm:text-4xl">{title}</h1>

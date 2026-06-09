@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/blog/loaders";
 import { BlogIndexClient } from "@/components/blog/BlogIndexClient";
+import { getSiteUrl } from "@/lib/site";
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  process.env.VERCEL_URL ||
-  "http://localhost:3000";
-const baseUrl = SITE_URL.startsWith("http") ? SITE_URL : `https://${SITE_URL}`;
+const baseUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   title: "Field Notes — FieldCrew Blog | Profit Recovery & Operational Control",

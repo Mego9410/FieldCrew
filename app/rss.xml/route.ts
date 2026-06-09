@@ -1,12 +1,8 @@
 import { getAllPosts } from "@/lib/blog/loaders";
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  process.env.VERCEL_URL ||
-  "http://localhost:3000";
-const baseUrl = SITE_URL.startsWith("http") ? SITE_URL : `https://${SITE_URL}`;
+import { getSiteUrl } from "@/lib/site";
 
 export async function GET() {
+  const baseUrl = getSiteUrl();
   const posts = getAllPosts();
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
@@ -27,7 +23,7 @@ export async function GET() {
       <description>${escapeXml(p.frontmatter.description)}</description>
       <pubDate>${new Date(p.frontmatter.publishDate).toUTCString()}</pubDate>
       <guid isPermaLink="true">${baseUrl}/blog/${p.slug}</guid>
-    </item>`
+    </item>`,
       )
       .join("")}
   </channel>

@@ -5,8 +5,10 @@ import { Footer } from "@/components/landing/Footer";
 import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
-  title: "About FieldCrew",
-  description: "Learn what FieldCrew is building for HVAC owners and operations teams.",
+  title: "About FieldCrew — Built for HVAC Owners",
+  description:
+    "FieldCrew helps US HVAC owners see where labor profit leaks and fix it with scheduling, time tracking, and payroll tied to every job.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
@@ -33,7 +35,7 @@ export default function AboutPage() {
 
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:gap-12 lg:py-14 lg:px-8">
           <article className="space-y-10 lg:col-span-2">
-            <section>
+            <section id="why-problem-exists">
               <h2 className="font-display text-2xl font-bold text-fc-brand">Why this problem exists</h2>
               <div className="mt-4 space-y-4 text-fc-muted">
                 <p>
@@ -48,7 +50,7 @@ export default function AboutPage() {
               </div>
             </section>
 
-            <section>
+            <section id="what-we-do">
               <h2 className="font-display text-2xl font-bold text-fc-brand">What we are doing to solve it</h2>
               <div className="mt-4 space-y-4 text-fc-muted">
                 <p>
@@ -63,7 +65,7 @@ export default function AboutPage() {
               </div>
             </section>
 
-            <section>
+            <section id="how-we-work">
               <h2 className="font-display text-2xl font-bold text-fc-brand">How we work with customers</h2>
               <div className="mt-4 space-y-4 text-fc-muted">
                 <p>
@@ -83,17 +85,17 @@ export default function AboutPage() {
               <h2 className="mb-4 font-display text-lg font-bold text-fc-brand">In this page</h2>
               <ul className="space-y-3">
                 <li>
-                  <a href="#main" className="text-sm font-medium text-fc-brand hover:text-fc-accent">
+                  <a href="#why-problem-exists" className="text-sm font-medium text-fc-brand hover:text-fc-accent">
                     Why this problem exists
                   </a>
                 </li>
                 <li>
-                  <a href="#main" className="text-sm font-medium text-fc-brand hover:text-fc-accent">
+                  <a href="#what-we-do" className="text-sm font-medium text-fc-brand hover:text-fc-accent">
                     What we are doing to solve it
                   </a>
                 </li>
                 <li>
-                  <a href="#main" className="text-sm font-medium text-fc-brand hover:text-fc-accent">
+                  <a href="#how-we-work" className="text-sm font-medium text-fc-brand hover:text-fc-accent">
                     How we work with customers
                   </a>
                 </li>

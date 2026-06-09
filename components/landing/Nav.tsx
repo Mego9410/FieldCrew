@@ -29,6 +29,10 @@ function getMobileNavLinks(pathname: string) {
         title: "Product",
         items: [
           { href: productHref, label: "How it works" },
+          { href: routes.public.hvacTimeTracking, label: "Time tracking" },
+          { href: routes.public.hvacSchedulingSoftware, label: "Scheduling" },
+          { href: routes.public.hvacPayrollSoftware, label: "Payroll" },
+          { href: routes.public.dispatchSoftware, label: "Dispatch" },
           { href: "/profit-leak", label: "Profit leak estimate" },
           { href: "/sample-report", label: "Sample report" },
           { href: "/about", label: "About us" },
@@ -120,6 +124,10 @@ export function Nav() {
 
   const productLinks = [
     { title: "How it works", href: productHref },
+    { title: "Time tracking", href: routes.public.hvacTimeTracking },
+    { title: "Scheduling", href: routes.public.hvacSchedulingSoftware },
+    { title: "Payroll", href: routes.public.hvacPayrollSoftware },
+    { title: "Dispatch", href: routes.public.dispatchSoftware },
     { title: "Profit leak estimate", href: "/profit-leak" },
     { title: "Sample report", href: "/sample-report" },
     { title: "About us", href: "/about" },

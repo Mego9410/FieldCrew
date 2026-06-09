@@ -4,9 +4,10 @@ import { Footer } from "@/components/landing/Footer";
 import { SampleReportTutorial } from "@/components/sample-report/SampleReportTutorial";
 
 export const metadata: Metadata = {
-  title: "Sample Monthly Labor Profit Report — FieldCrew",
+  title: "Sample HVAC Labor Profit Report",
   description:
-    "See a real example of FieldCrew’s Monthly Labor Profit Report for a 10-tech HVAC company. Overtime breakdown, job overruns, leakage sources, and recoverable profit.",
+    "See a sample Monthly Labor Profit Report for a 10-tech HVAC company: overtime breakdown, job overruns, leakage sources, and recoverable profit.",
+  alternates: { canonical: "/sample-report" },
 };
 
 export default function SampleReportPage() {

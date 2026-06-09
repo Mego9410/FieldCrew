@@ -5,9 +5,10 @@ import { Footer } from "@/components/landing/Footer";
 import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
-  title: "Security — FieldCrew",
+  title: "Security & Data Protection for HVAC Payroll",
   description:
-    "Security practices and controls used by FieldCrew to protect operational and payroll-related data.",
+    "How FieldCrew protects operational and payroll data for HVAC contractors: encryption, access controls, and your data stays yours.",
+  alternates: { canonical: "/security" },
 };
 
 export default function SecurityPage() {

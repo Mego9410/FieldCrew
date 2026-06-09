@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -12,12 +13,11 @@ import { StickyCTA } from "@/components/blog/StickyCTA";
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { FAQ } from "@/components/blog/FAQ";
 import { BlogCardImage } from "@/components/blog/BlogCardImage";
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  process.env.VERCEL_URL ||
-  "http://localhost:3000";
-const baseUrl = SITE_URL.startsWith("http") ? SITE_URL : `https://${SITE_URL}`;
+import { AuthorByline } from "@/components/blog/AuthorByline";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildAuthorSchema } from "@/lib/blog/authors";
+import { buildBlogPostBreadcrumbs } from "@/lib/seo/breadcrumbs";
+import { getSiteUrl } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: "Post not found" };
 
   const { frontmatter } = post;
+  const baseUrl = getSiteUrl();
   const url = `${baseUrl}/blog/${slug}`;
 
   return {
@@ -44,6 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url,
       type: "article",
       publishedTime: frontmatter.publishDate,
+      modifiedTime: frontmatter.updatedDate ?? frontmatter.publishDate,
       images: frontmatter.heroImage
         ? [{ url: `${baseUrl}${frontmatter.heroImage}` }]
         : undefined,
@@ -56,12 +58,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
   const { frontmatter } = post;
+  const baseUrl = getSiteUrl();
   const posts = getAllPosts();
   const tags = Array.isArray(frontmatter.tags) ? frontmatter.tags : [];
   const related = posts
@@ -69,7 +80,7 @@ export default async function BlogPostPage({ params }: Props) {
       (p) =>
         p.slug !== slug &&
         (p.frontmatter.category === frontmatter.category ||
-          p.frontmatter.tags.some((t) => tags.includes(t)))
+          p.frontmatter.tags.some((t) => tags.includes(t))),
     )
     .slice(0, 3);
   const relatedFallback = posts.filter((p) => p.slug !== slug).slice(0, 3);
@@ -81,8 +92,9 @@ export default async function BlogPostPage({ params }: Props) {
     headline: frontmatter.title,
     description: frontmatter.description,
     datePublished: frontmatter.publishDate,
-    author: { "@type": "Organization", name: "FieldCrew" },
-    publisher: { "@type": "Organization", name: "FieldCrew" },
+    dateModified: frontmatter.updatedDate ?? frontmatter.publishDate,
+    author: buildAuthorSchema(),
+    publisher: { "@type": "Organization", name: "FieldCrew", url: baseUrl },
     url: `${baseUrl}/blog/${slug}`,
   };
 
@@ -103,20 +115,16 @@ export default async function BlogPostPage({ params }: Props) {
         }
       : null;
 
+  const breadcrumbSchema = buildBlogPostBreadcrumbs(slug, frontmatter.title);
   const postUrl = `${baseUrl}/blog/${slug}`;
+  const showUpdated =
+    frontmatter.updatedDate && frontmatter.updatedDate !== frontmatter.publishDate;
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      <JsonLd
+        data={[breadcrumbSchema, articleJsonLd, ...(faqJsonLd ? [faqJsonLd] : [])]}
       />
-      {faqJsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-        />
-      )}
       <StickyCTA />
       <article className="border-b border-fc-border bg-white">
         <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -124,12 +132,13 @@ export default async function BlogPostPage({ params }: Props) {
             <div className="relative z-10 -mt-2 mb-8 w-full">
               <div className="relative w-full min-h-[200px] aspect-[21/9] rounded-xl overflow-hidden border border-fc-border bg-fc-surface shadow-fc-lg">
                 {frontmatter.heroImage && frontmatter.heroImage.startsWith("/") ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={frontmatter.heroImage}
                     alt={frontmatter.title}
-                    className="absolute inset-0 h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                     sizes="(min-width: 1024px) 896px, 100vw"
+                    priority
                   />
                 ) : (
                   <BlogCardImage
@@ -151,12 +160,13 @@ export default async function BlogPostPage({ params }: Props) {
             <p className="mt-4 text-lg text-fc-muted">{frontmatter.excerpt}</p>
             <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-fc-muted">
               <time dateTime={frontmatter.publishDate}>
-                {new Date(frontmatter.publishDate).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                Published {formatDate(frontmatter.publishDate)}
               </time>
+              {showUpdated ? (
+                <time dateTime={frontmatter.updatedDate}>
+                  Last updated {formatDate(frontmatter.updatedDate!)}
+                </time>
+              ) : null}
               <ReadingTime minutes={post.readingTimeMinutes} />
               {Array.isArray(frontmatter.tags) &&
                 frontmatter.tags.slice(0, 4).map((tag: string) => (
@@ -165,6 +175,7 @@ export default async function BlogPostPage({ params }: Props) {
                   </Badge>
                 ))}
             </div>
+            <AuthorByline />
             <ShareRow url={postUrl} title={frontmatter.title} />
           </header>
 

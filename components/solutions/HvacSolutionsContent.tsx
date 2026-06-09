@@ -7,6 +7,36 @@ import { HeroViewSwitcher } from "@/components/landing/HeroViewSwitcher";
 import { CountUp } from "@/components/ui/CountUp";
 import { routes } from "@/lib/routes";
 
+const pillarLinks = [
+  {
+    href: routes.public.hvacTimeTracking,
+    title: "HVAC time tracking",
+    description: "Job-coded hours from the van — no app install.",
+  },
+  {
+    href: routes.public.hvacSchedulingSoftware,
+    title: "HVAC scheduling",
+    description: "Schedule crews with live labor cost visibility.",
+  },
+  {
+    href: routes.public.hvacPayrollSoftware,
+    title: "HVAC payroll",
+    description: "Pay techs accurately and export to QuickBooks.",
+  },
+  {
+    href: routes.public.dispatchSoftware,
+    title: "HVAC dispatch",
+    description: "Assign jobs and catch overruns before overtime.",
+  },
+] as const;
+
+const blogClusterLinks = [
+  { href: "/blog/hidden-payroll-leak", title: "Hidden payroll leak" },
+  { href: "/blog/manual-vs-digital-time-tracking", title: "Manual vs digital time tracking" },
+  { href: "/blog/hvac-job-costing-explained", title: "HVAC job costing explained" },
+  { href: "/blog/reduce-overtime-costs", title: "Reduce overtime costs" },
+] as const;
+
 type InfoCard = {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
@@ -89,12 +119,23 @@ export function HvacSolutionsContent() {
               Solutions · HVAC
             </p>
             <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-fc-brand sm:text-4xl lg:text-5xl">
-              Built for HVAC teams that are busy... but still losing money on jobs
+              HVAC workforce management software that protects your margin
             </h1>
             <p className="mt-4 max-w-xl text-lg text-slate-700">
-              FieldCrew shows you exactly where labor hours slip, where overtime gets created, and
-              which jobs are quietly killing your margin.
+              FieldCrew combines scheduling, time tracking, dispatch, and payroll in one workflow —
+              so you see exactly where labor hours slip and which jobs are quietly killing your margin.
             </p>
+            <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-fc-accent">
+                Short answer
+              </p>
+              <p className="mt-2 text-sm leading-6 text-slate-700">
+                HVAC workforce management software should tie scheduling, technician time tracking,
+                dispatch, and payroll to every job — so labor cost per job is visible in real time,
+                not after payroll. FieldCrew does this for small US HVAC shops without enterprise
+                complexity.
+              </p>
+            </div>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href={routes.public.sampleReport}
@@ -131,6 +172,44 @@ export function HvacSolutionsContent() {
             />
             <HeroViewSwitcher />
           </motion.div>
+        </div>
+      </section>
+
+      <section className="border-b border-slate-200 py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2 className="font-display text-2xl font-bold text-fc-brand sm:text-3xl">
+            Everything in one HVAC workforce stack
+          </h2>
+          <p className="mt-2 text-slate-600">
+            Pick the area you need — each connects to the same job-level labor data.
+          </p>
+          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {pillarLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <h3 className="font-display text-lg font-semibold text-fc-brand">{link.title}</h3>
+                <p className="mt-2 text-sm text-slate-700">{link.description}</p>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-8">
+            <h3 className="font-display text-lg font-semibold text-fc-brand">Related guides</h3>
+            <ul className="mt-3 flex flex-wrap gap-3">
+              {blogClusterLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm font-medium text-fc-accent hover:underline"
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -240,6 +319,13 @@ export function HvacSolutionsContent() {
           </div>
           <p className="mt-4 text-slate-600">
             Most of this comes from small overruns and overtime, not big mistakes.
+          </p>
+          <p className="mt-2 text-xs text-slate-500">
+            FieldCrew estimate: loaded labor rate × typical 12–18% annual overrun × crew size.
+            Not third-party data.{" "}
+            <Link href={routes.public.profitLeak} className="text-fc-accent hover:underline">
+              Run your own number
+            </Link>
           </p>
         </div>
       </section>

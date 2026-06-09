@@ -1,6 +1,7 @@
 import { Nav } from "@/components/landing/Nav";
 import { Footer } from "@/components/landing/Footer";
 import { PlansScrollPrompt } from "@/components/landing/PlansScrollPrompt";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { headers } from "next/headers";
 import { InstrumentHero } from "@/components/landing/InstrumentHero";
 import { InstrumentCalculator } from "@/components/landing/InstrumentCalculator";
@@ -12,6 +13,12 @@ import {
 } from "@/components/landing/InstrumentSections";
 import { InstrumentPricing } from "@/components/landing/InstrumentPricing";
 import { InstrumentFinalCta } from "@/components/landing/InstrumentFinalCta";
+import { getSiteUrl } from "@/lib/site";
+import {
+  buildFaqPageSchema,
+  buildSoftwareApplicationSchema,
+  homepageFaq,
+} from "@/lib/seo/schema";
 
 const US_STATE_NAMES: Record<string, string> = {
   AL: "Alabama",
@@ -76,7 +83,6 @@ async function getVisitorRegionName(): Promise<string | null> {
     return null;
   }
 
-  // Vercel provides ISO region codes; expand US states for friendlier marketing copy.
   if (countryCode.toUpperCase() === "US") {
     return US_STATE_NAMES[regionCode.toUpperCase()] ?? null;
   }
@@ -86,30 +92,42 @@ async function getVisitorRegionName(): Promise<string | null> {
 
 export default async function Home() {
   const visitorRegionName = await getVisitorRegionName();
+  const baseUrl = getSiteUrl();
+  const faqSchema = buildFaqPageSchema(homepageFaq);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://fieldcrew.com/#organization",
+        "@id": `${baseUrl}/#organization`,
         name: "FieldCrew",
-        url: "https://fieldcrew.com/",
+        url: `${baseUrl}/`,
       },
       {
         "@type": "WebSite",
-        "@id": "https://fieldcrew.com/#website",
-        url: "https://fieldcrew.com/",
+        "@id": `${baseUrl}/#website`,
+        url: `${baseUrl}/`,
         name: "FieldCrew",
-        publisher: { "@id": "https://fieldcrew.com/#organization" },
+        publisher: { "@id": `${baseUrl}/#organization` },
       },
       {
         "@type": "WebPage",
-        "@id": "https://fieldcrew.com/#webpage",
-        url: "https://fieldcrew.com/",
-        name: "FieldCrew — Recover hidden labor profit",
-        isPartOf: { "@id": "https://fieldcrew.com/#website" },
-        about: { "@id": "https://fieldcrew.com/#organization" },
+        "@id": `${baseUrl}/#webpage`,
+        url: `${baseUrl}/`,
+        name: "HVAC Field Service Software for Crews & Payroll | FieldCrew",
+        isPartOf: { "@id": `${baseUrl}/#website` },
+        about: { "@id": `${baseUrl}/#organization` },
       },
+      buildSoftwareApplicationSchema({
+        name: "FieldCrew",
+        description:
+          "Workforce management and payroll software for US HVAC contractors: crew scheduling, dispatch, job-coded technician time tracking, and labor-cost visibility.",
+        path: "/",
+      }),
+      ...(faqSchema
+        ? [{ "@type": "FAQPage", mainEntity: faqSchema.mainEntity }]
+        : []),
     ],
   };
 
@@ -123,10 +141,7 @@ export default async function Home() {
       </a>
       <Nav />
       <main id="main">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <JsonLd data={jsonLd} />
         <PlansScrollPrompt heroId="homepage-hero" pricingId="pricing" href="/#pricing" />
         <div id="homepage-hero">
           <InstrumentHero regionName={visitorRegionName} />

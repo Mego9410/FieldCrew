@@ -39,13 +39,13 @@ const shareTechMono = Share_Tech_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://fieldcrew.com"),
+  metadataBase: new URL("https://getfieldcrew.com"),
   title: {
-    default: "FieldCrew — Recover hidden labor profit",
+    default: "HVAC Field Service Software for Crews & Payroll",
     template: "%s — FieldCrew",
   },
   description:
-    "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labor inefficiency. FieldCrew shows you where and how to recover it.",
+    "Schedule crews, track tech hours by job, and run accurate payroll — and see exactly where labor profit leaks. Built for small US HVAC contractors. Start for $9.",
   alternates: {
     canonical: "/",
   },
@@ -53,15 +53,15 @@ export const metadata: Metadata = {
     type: "website",
     url: "/",
     siteName: "FieldCrew",
-    title: "FieldCrew — Recover hidden labor profit",
+    title: "HVAC Field Service Software for Crews & Payroll | FieldCrew",
     description:
-      "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labor inefficiency. FieldCrew shows you where and how to recover it.",
+      "Schedule crews, track tech hours by job, and run accurate payroll — and see exactly where labor profit leaks. Built for small US HVAC contractors. Start for $9.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "FieldCrew — Recover hidden labor profit",
+    title: "HVAC Field Service Software for Crews & Payroll | FieldCrew",
     description:
-      "Most 10-tech HVAC companies lose $5,000–$15,000/month in hidden labor inefficiency. FieldCrew shows you where and how to recover it.",
+      "Schedule crews, track tech hours by job, and run accurate payroll — and see exactly where labor profit leaks. Built for small US HVAC contractors. Start for $9.",
   },
 };
 
